@@ -11,6 +11,7 @@ use App\Http\Controllers\ThanhToanController;
 use App\Http\Controllers\DonhangController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\TinTucController;
+use App\Http\Controllers\KhuyenMaiController;
 
 // Admin controllers — dùng alias để tránh trùng tên với controller frontend
 use App\Http\Controllers\Admin\AdminDashboardController;
@@ -80,7 +81,7 @@ Route::prefix('tai-khoan')->name('account.')->group(function () {
 });
 Route::get('/tin-tuc',              [TinTucController::class, 'index'])->name('tin-tuc.index');
 Route::get('/tin-tuc/{slug}',       [TinTucController::class, 'show'])->name('tin-tuc.show');
-
+Route::get('/khuyen-mai', [KhuyenMaiController::class, 'index'])->name('khuyen-mai');
 
 // ===== ADMIN =====
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'check.admin:staff'])->group(function () {
@@ -137,4 +138,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'check.admin:staff']
     [AdminTinTucController::class, 'toggleKichHoat'])
     ->name('tin-tuc.toggle');
 
+    
+
+    
 });

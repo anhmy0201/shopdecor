@@ -181,7 +181,7 @@
     <div class="container">
         <div class="d-flex justify-content-between">
             <div>
-                <i class="fas fa-envelope"></i><a href="mailto:hello@shopdecor.vn">hello@shopdecor.vn</a>
+                <i class="fas fa-envelope"></i><a href="mailto:anhmy0201@gmail.com">anhmy0201@gmail.com</a>
                 <span class="mx-2">|</span>
                 <i class="fab fa-facebook"></i><a href="#">Facebook</a>
                 <span class="mx-2">|</span>
@@ -209,7 +209,7 @@
             {{-- Hotline --}}
             <div class="hotline d-none d-lg-block text-center">
                 <div><i class="fas fa-phone-alt text-danger"></i> Hotline:</div>
-                <strong>0901 234 567</strong>
+                <strong>0799 669 238</strong>
             </div>
 
             {{-- Search --}}
@@ -292,6 +292,10 @@
                 <a class="nav-link" href="{{ url('/san-pham-ban-chay') }}">SẢN PHẨM BÁN CHẠY</a>
             </li>
             <li class="nav-item">
+                <a class="nav-link {{ request()->is('khuyen-mai') ? 'active' : '' }}"
+                   href="{{ route('khuyen-mai') }}">KHUYẾN MÃI</a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link {{ request()->is('tin-tuc*') ? 'active' : '' }}"
                     href="{{ route('tin-tuc.index') }}">TIN TỨC</a>
             </li>
@@ -368,8 +372,8 @@
                 <h6>Liên Hệ</h6>
                 <ul class="list-unstyled">
                     <li><i class="fas fa-map-marker-alt"></i>123 Nguyễn Huệ, Q.1, TP.HCM</li>
-                    <li><i class="fas fa-phone"></i><a href="tel:0901234567">0901 234 567</a></li>
-                    <li><i class="fas fa-envelope"></i><a href="mailto:hello@shopdecor.vn">hello@shopdecor.vn</a></li>
+                    <li><i class="fas fa-phone"></i><a href="tel:0799669238">0799 669 238</a></li>
+                    <li><i class="fas fa-envelope"></i><a href="mailto:anhmy0201@gmail.com">anhmy0201@gmail.com</a></li>
                     <li><i class="fas fa-clock"></i>8:00 – 22:00 mỗi ngày</li>
                 </ul>
             </div>

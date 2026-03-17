@@ -482,4 +482,4 @@ document.getElementById('formThanhToan').addEventListener('submit', function () 
     btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang xử lý...';
 });
 </script>
-@endsectionaaa
+@endsection
