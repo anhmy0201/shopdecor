@@ -13,160 +13,77 @@
         * { font-family: Arial, sans-serif; }
         body { background: #f5f5f5; }
 
-        /* ===== TOPBAR ===== */
-        .topbar {
-            background: #1a5276;
-            color: #fff;
-            font-size: 0.82rem;
-            padding: 6px 0;
-        }
+        /* TOPBAR */
+        .topbar { background: #1a5276; color: #fff; font-size: 0.82rem; padding: 6px 0; }
         .topbar a { color: #cce5ff; text-decoration: none; }
         .topbar a:hover { color: #fff; }
         .topbar i { margin-right: 4px; }
 
-        /* ===== HEADER ===== */
-        .site-header {
-            background: #fff;
-            border-bottom: 1px solid #ddd;
-            padding: 12px 0;
-        }
-        .site-header .logo {
-            font-size: 1.6rem;
-            font-weight: 700;
-            color: #1a5276;
-            text-decoration: none;
-        }
+        /* HEADER */
+        .site-header { background: #fff; border-bottom: 1px solid #ddd; padding: 12px 0; }
+        .site-header .logo { font-size: 1.6rem; font-weight: 700; color: #1a5276; text-decoration: none; }
         .site-header .logo span { color: #e74c3c; }
-        .site-header .hotline {
-            font-size: 0.85rem;
-            color: #333;
-        }
-        .site-header .hotline strong {
-            color: #e74c3c;
-            font-size: 1.1rem;
-        }
+        .site-header .hotline { font-size: 0.85rem; color: #333; }
+        .site-header .hotline strong { color: #e74c3c; font-size: 1.1rem; }
         .search-bar input {
-            border: 2px solid #1a5276;
-            border-right: none;
-            border-radius: 3px 0 0 3px;
-            padding: 7px 12px;
-            font-size: 0.88rem;
-            outline: none;
-            width: 280px;
+            border: 2px solid #1a5276; border-right: none;
+            border-radius: 3px 0 0 3px; padding: 7px 12px;
+            font-size: 0.88rem; outline: none; width: 280px;
         }
         .search-bar button {
-            background: #1a5276;
-            color: #fff;
-            border: 2px solid #1a5276;
-            border-radius: 0 3px 3px 0;
-            padding: 7px 14px;
-            cursor: pointer;
+            background: #1a5276; color: #fff;
+            border: 2px solid #1a5276; border-radius: 0 3px 3px 0;
+            padding: 7px 14px; cursor: pointer;
         }
         .search-bar button:hover { background: #154360; }
         .cart-btn {
-            background: #e74c3c;
-            color: #fff;
-            border: none;
-            border-radius: 3px;
-            padding: 8px 16px;
-            font-size: 0.88rem;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
+            background: #e74c3c; color: #fff; border: none;
+            border-radius: 3px; padding: 8px 16px; font-size: 0.88rem;
+            text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
         }
         .cart-btn:hover { background: #c0392b; color: #fff; }
         .cart-btn .badge {
-            background: #fff;
-            color: #e74c3c;
-            border-radius: 50%;
-            font-size: 0.7rem;
-            font-weight: 700;
-            padding: 2px 5px;
+            background: #fff; color: #e74c3c; border-radius: 50%;
+            font-size: 0.7rem; font-weight: 700; padding: 2px 5px;
         }
 
-        /* ===== MAIN NAVBAR ===== */
-        .main-nav {
-            background: #1a5276;
-        }
+        /* MAIN NAVBAR */
+        .main-nav { background: #1a5276; }
         .main-nav .nav-link {
-            color: #fff !important;
-            font-size: 0.88rem;
-            font-weight: 600;
-            padding: 10px 16px !important;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
+            color: #fff !important; font-size: 0.88rem; font-weight: 600;
+            padding: 10px 16px !important; text-transform: uppercase; letter-spacing: 0.3px;
         }
         .main-nav .nav-link:hover,
-        .main-nav .nav-link.active {
-            background: #e74c3c;
-            color: #fff !important;
-        }
+        .main-nav .nav-link.active { background: #e74c3c; color: #fff !important; }
         .main-nav .dropdown-menu {
-            border-radius: 0;
-            border: none;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.15);
-            margin-top: 0;
+            border-radius: 0; border: none;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.15); margin-top: 0;
         }
-        .main-nav .dropdown-item {
-            font-size: 0.85rem;
-            padding: 8px 16px;
-        }
-        .main-nav .dropdown-item:hover {
-            background: #eaf4fb;
-            color: #1a5276;
-        }
-        .danh-muc-btn {
-            background: #e74c3c;
-            color: #fff !important;
-            padding: 10px 18px !important;
-        }
-        .danh-muc-btn:hover { background: #c0392b; }
+        .main-nav .dropdown-item { font-size: 0.85rem; padding: 8px 16px; }
+        .main-nav .dropdown-item:hover { background: #eaf4fb; color: #1a5276; }
 
-        /* ===== USER NAV ===== */
-        .user-nav {
-            background: #154360;
-            padding: 4px 0;
-            font-size: 0.8rem;
-        }
+        /* USER NAV */
+        .user-nav { background: #154360; padding: 4px 0; font-size: 0.8rem; }
         .user-nav a { color: #afd6f5; text-decoration: none; }
         .user-nav a:hover { color: #fff; }
 
-        /* ===== FLASH MESSAGES ===== */
-        .flash-messages {
-            position: fixed;
-            top: 80px;
-            right: 20px;
-            z-index: 9999;
-            min-width: 300px;
-        }
+        /* FLASH MESSAGES */
+        .flash-messages { position: fixed; top: 80px; right: 20px; z-index: 9999; min-width: 300px; }
 
-        /* ===== FOOTER ===== */
-        footer {
-            background: #1a1a1a;
-            color: #bbb;
-            font-size: 0.88rem;
-            margin-top: 40px;
-        }
+        /* FOOTER */
+        footer { background: #1a1a1a; color: #bbb; font-size: 0.88rem; margin-top: 40px; }
         footer h6 {
-            color: #fff;
-            font-weight: 700;
-            text-transform: uppercase;
-            font-size: 0.9rem;
-            border-bottom: 2px solid #e74c3c;
-            padding-bottom: 8px;
-            margin-bottom: 15px;
+            color: #fff; font-weight: 700; text-transform: uppercase;
+            font-size: 0.9rem; border-bottom: 2px solid #e74c3c;
+            padding-bottom: 8px; margin-bottom: 15px;
         }
         footer a { color: #bbb; text-decoration: none; }
         footer a:hover { color: #e74c3c; }
         footer li { margin-bottom: 6px; }
         footer i { color: #e74c3c; margin-right: 6px; }
         .footer-bottom {
-            background: #111;
-            padding: 12px 0;
-            color: #777;
-            font-size: 0.8rem;
-            border-top: 1px solid #333;
+            background: #111; padding: 12px 0;
+            color: #777; font-size: 0.8rem; border-top: 1px solid #333;
         }
 
         main { min-height: calc(100vh - 300px); }
@@ -266,11 +183,6 @@
 <nav class="main-nav d-none d-lg-block">
     <div class="container">
         <ul class="nav">
-            <li class="nav-item">
-                <a class="nav-link danh-muc-btn" href="#">
-                    <i class="fas fa-bars me-2"></i>DANH MỤC SẢN PHẨM
-                </a>
-            </li>
             <li class="nav-item">
                 <a class="nav-link {{ request()->is('/') ? 'active' : '' }}" href="{{ url('/') }}">TRANG CHỦ</a>
             </li>

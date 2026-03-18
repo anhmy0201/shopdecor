@@ -17,7 +17,7 @@
 <div class="row justify-content-center">
 <div class="col-lg-8">
 
-<form action="{{ $magiamgia ? route('admin.magiamgia.update', $magiamgia) : route('admin.magiamgia.store') }}"
+<form action="{{ $magiamgia ? route('admin.magiamgia.update', $magiamgia->id) : route('admin.magiamgia.store') }}"
       method="POST">
     @csrf
     @if($magiamgia) @method('PUT') @endif

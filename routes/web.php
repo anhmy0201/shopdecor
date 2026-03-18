@@ -46,6 +46,7 @@ Route::get('/auth/google',          [GoogleController::class, 'redirect'])->name
 Route::get('/auth/google/callback', [GoogleController::class, 'callback']);
 
 // ===== DANH MỤC & SẢN PHẨM =====
+Route::get('/san-pham', [DanhMucController::class, 'index']);
 Route::get('/danh-muc/{slug}', [DanhMucController::class, 'show']);
 Route::get('/san-pham/{slug}', [SanphamController::class, 'show']);
 
@@ -82,7 +83,7 @@ Route::prefix('tai-khoan')->name('account.')->group(function () {
 Route::get('/tin-tuc',              [TinTucController::class, 'index'])->name('tin-tuc.index');
 Route::get('/tin-tuc/{slug}',       [TinTucController::class, 'show'])->name('tin-tuc.show');
 Route::get('/khuyen-mai', [KhuyenMaiController::class, 'index'])->name('khuyen-mai');
-
+Route::view('/gioi-thieu', 'pages.gioi-thieu')->name('gioi-thieu');
 // ===== ADMIN =====
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'check.admin:staff'])->group(function () {
 
@@ -105,7 +106,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'check.admin:staff']
         ->name('donhang.cap-nhat-trang-thai');
 
     // Mã giảm giá
-    Route::resource('magiamgia', MagiamgiaController::class);
+    Route::resource('magiamgia', MagiamgiaController::class)
+     ->parameters(['magiamgia' => 'magiamgia']); 
     Route::patch('magiamgia/{magiamgia}/toggle',
         [MagiamgiaController::class, 'toggleKichHoat'])
         ->name('magiamgia.toggle');

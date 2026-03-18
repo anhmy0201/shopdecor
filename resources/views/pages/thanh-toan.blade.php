@@ -4,386 +4,293 @@
 
 @section('extra-css')
 <style>
-    .breadcrumb-bar {
-        background: #eaf4fb;
-        border-bottom: 1px solid #d0e8f5;
-        padding: 8px 0;
-        font-size: 0.82rem;
-    }
-    .breadcrumb-bar a { color: #1a5276; text-decoration: none; }
-    .breadcrumb-bar a:hover { text-decoration: underline; }
-    .breadcrumb-bar span { color: #888; }
-    .main-content { padding: 24px 0 40px; }
 
-    .block-title {
-        background: #1a5276;
-        color: #fff;
-        font-size: 0.88rem;
-        font-weight: 700;
-        padding: 9px 15px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        text-transform: uppercase;
-    }
-    .form-block { border: 1px solid #ddd; background: #fff; margin-bottom: 18px; }
-    .form-block-body { padding: 18px; }
-    .form-label { font-size: 0.82rem; font-weight: 600; color: #444; margin-bottom: 4px; }
-    .form-label .req { color: #e74c3c; }
-    .form-control-custom {
-        width: 100%;
-        border: 1px solid #ddd;
-        padding: 8px 12px;
-        font-size: 0.85rem;
-        color: #333;
-        outline: none;
-        transition: border-color 0.15s;
-        border-radius: 0;
-        background: #fff;
-    }
-    .form-control-custom:focus { border-color: #1a5276; }
-    .form-control-custom.is-invalid { border-color: #e74c3c; }
-    textarea.form-control-custom { resize: vertical; min-height: 80px; }
+    .breadcrumb-bar { background:#eaf4fb; border-bottom:1px solid #d0e8f5; font-size:.82rem; }
+    .breadcrumb-bar a { color:#1a5276; text-decoration:none; }
+    .breadcrumb-bar a:hover { text-decoration:underline; }
 
-    /* ===== DANH SÁCH ĐỊA CHỈ ===== */
-    .dia-chi-list { border-bottom: 1px dashed #ddd; padding-bottom: 14px; margin-bottom: 16px; }
-    .dia-chi-label { font-size: 0.82rem; font-weight: 700; color: #444; margin-bottom: 10px; }
-    .dia-chi-item {
-        border: 2px solid #ddd;
-        padding: 10px 14px;
+    .block-title { background:#1a5276; color:#fff; font-size:.88rem; font-weight:700; padding:9px 15px; text-transform:uppercase; }
+
+    .dia-chi-item, .payment-option {
+        border: 2px solid #dee2e6;
         cursor: pointer;
-        display: flex;
-        align-items: flex-start;
-        gap: 10px;
-        transition: all 0.15s;
-        margin-bottom: 8px;
-        background: #fff;
+        transition: border-color .15s, background .15s;
     }
-    .dia-chi-item:hover { border-color: #1a5276; background: #f8fbfe; }
-    .dia-chi-item.selected { border-color: #1a5276; background: #eaf4fb; }
-    .dia-chi-item input[type="radio"] { accent-color: #1a5276; margin-top: 3px; flex-shrink: 0; }
-    .dia-chi-item-name { font-size: 0.85rem; font-weight: 700; color: #222; }
-    .dia-chi-item-detail { font-size: 0.78rem; color: #666; margin-top: 2px; line-height: 1.5; }
-    .badge-mac-dinh {
-        background: #1a5276; color: #fff;
-        font-size: 0.65rem; font-weight: 700;
-        padding: 1px 7px; margin-left: 6px; vertical-align: middle;
-    }
-    .btn-dia-chi-moi {
-        background: none;
-        border: 2px dashed #ddd;
-        color: #888;
-        font-size: 0.82rem;
-        padding: 8px 14px;
-        cursor: pointer;
-        width: 100%;
-        text-align: left;
-        transition: all 0.15s;
-        margin-top: 4px;
-    }
-    .btn-dia-chi-moi:hover { border-color: #1a5276; color: #1a5276; }
+    .dia-chi-item:hover,   .payment-option:hover    { border-color:#1a5276; background:#f8fbfe; }
+    .dia-chi-item.selected,.payment-option.selected { border-color:#1a5276; background:#eaf4fb; }
+    input[type="radio"] { accent-color:#1a5276; }
 
-    /* ===== PHƯƠNG THỨC THANH TOÁN ===== */
-    .payment-option {
-        border: 2px solid #ddd; padding: 12px 16px; cursor: pointer;
-        display: flex; align-items: center; gap: 12px;
-        transition: all 0.15s; margin-bottom: 10px; background: #fff;
-    }
-    .payment-option:last-child { margin-bottom: 0; }
-    .payment-option:hover { border-color: #1a5276; background: #f8fbfe; }
-    .payment-option.selected { border-color: #1a5276; background: #eaf4fb; }
-    .payment-option input[type="radio"] { accent-color: #1a5276; width: 16px; height: 16px; flex-shrink: 0; }
-    .payment-option-icon { width: 36px; height: 36px; background: #1a5276; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
-    .payment-option.cod .payment-option-icon { background: #27ae60; }
-    .payment-option-info strong { font-size: 0.88rem; color: #222; display: block; }
-    .payment-option-info span { font-size: 0.78rem; color: #888; }
+    .badge-mac-dinh { background:#1a5276; color:#fff; font-size:.65rem; font-weight:700; padding:1px 7px; }
 
-    /* ===== MÃ GIẢM GIÁ ===== */
-    .voucher-box { display: flex; gap: 8px; }
-    .voucher-box input { flex: 1; border: 1px solid #ddd; padding: 8px 12px; font-size: 0.85rem; outline: none; text-transform: uppercase; }
-    .voucher-box input:focus { border-color: #1a5276; }
-    .btn-ap-ma { background: #1a5276; color: #fff; border: none; padding: 8px 18px; font-size: 0.82rem; font-weight: 600; cursor: pointer; white-space: nowrap; }
-    .btn-ap-ma:hover { background: #154360; }
-    .voucher-result { margin-top: 8px; font-size: 0.82rem; display: none; }
-    .voucher-result.success { color: #27ae60; }
-    .voucher-result.error { color: #e74c3c; }
+    .btn-dia-chi-moi { border:2px dashed #dee2e6; color:#6c757d; font-size:.82rem; width:100%; text-align:left; transition:all .15s; }
+    .btn-dia-chi-moi:hover { border-color:#1a5276; color:#1a5276; }
 
-    /* ===== TỔNG ĐƠN HÀNG ===== */
-    .order-summary { border: 1px solid #ddd; background: #fff; }
-    .order-summary-title { background: #1a5276; color: #fff; font-weight: 700; font-size: 0.88rem; padding: 9px 15px; text-transform: uppercase; }
-    .order-summary-body { padding: 15px; }
-    .order-item { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px dashed #eee; align-items: center; }
-    .order-item:last-child { border-bottom: none; }
-    .order-item img { width: 54px; height: 54px; object-fit: cover; border: 1px solid #ddd; flex-shrink: 0; }
-    .order-item-name { font-size: 0.8rem; font-weight: 600; color: #222; line-height: 1.4; flex: 1; }
-    .order-item-bienthe { font-size: 0.72rem; color: #888; margin-top: 2px; }
-    .order-item-price { font-size: 0.82rem; font-weight: 700; color: #e74c3c; white-space: nowrap; }
-    .order-item-qty { font-size: 0.75rem; color: #888; }
-    .summary-row { display: flex; justify-content: space-between; padding: 7px 0; font-size: 0.85rem; border-bottom: 1px dashed #eee; }
-    .summary-row:last-child { border-bottom: none; }
-    .summary-row.discount { color: #27ae60; }
-    .summary-row.total { font-weight: 700; font-size: 1rem; color: #e74c3c; border-top: 2px solid #ddd; border-bottom: none; padding-top: 10px; margin-top: 4px; }
-    .btn-dat-hang { display: block; width: 100%; background: #e74c3c; color: #fff; border: none; padding: 13px; font-size: 0.95rem; font-weight: 700; text-align: center; cursor: pointer; margin-top: 14px; transition: background 0.2s; }
-    .btn-dat-hang:hover { background: #c0392b; }
-    .btn-dat-hang:disabled { background: #ccc; cursor: not-allowed; }
-    .error-msg { color: #e74c3c; font-size: 0.75rem; margin-top: 3px; display: block; }
+    .payment-option-icon { width:36px; height:36px; background:#1a5276; color:#fff; font-size:1rem; flex-shrink:0; }
+    .payment-option.cod .payment-option-icon { background:#198754; }
 
-    #formDiaChiMoi { display: none; }
-    #formDiaChiMoi.show { display: block; }
+    .summary-total { font-weight:700; font-size:1rem; color:#dc3545; border-top:2px solid #dee2e6; }
+
+    textarea.form-control { resize:vertical; min-height:80px; }
+    #formDiaChiMoi { display:none; }
+    #formDiaChiMoi.show { display:block; }
+    .voucher-result { display:none; font-size:.82rem; }
 </style>
 @endsection
 
 @section('content')
 
-<div class="breadcrumb-bar">
+<div class="breadcrumb-bar py-2">
     <div class="container">
         <a href="{{ url('/') }}"><i class="fas fa-home me-1"></i>Trang chủ</a>
-        <span class="mx-2">›</span>
+        <span class="mx-2 text-muted">›</span>
         <a href="{{ route('gio-hang') }}">Giỏ hàng</a>
-        <span class="mx-2">›</span>
-        <span>Thanh toán</span>
+        <span class="mx-2 text-muted">›</span>
+        <span class="text-muted">Thanh toán</span>
     </div>
 </div>
 
-<div class="main-content">
-    <div class="container">
-        <form action="{{ url('/thanh-toan') }}" method="POST" id="formThanhToan">
-            @csrf
-            <input type="hidden" name="magiamgia_id" id="magiamgiaId" value="">
+<div class="container py-4">
+    <form action="{{ url('/thanh-toan') }}" method="POST" id="formThanhToan">
+        @csrf
+        <input type="hidden" name="magiamgia_id" id="magiamgiaId" value="">
 
-            <div class="row">
+        <div class="row">
 
-                {{-- ===== CỘT TRÁI ===== --}}
-                <div class="col-lg-7 mb-4">
+            {{-- ===== CỘT TRÁI ===== --}}
+            <div class="col-lg-7 mb-4">
 
-                    <div class="form-block">
-                        <div class="block-title">
-                            <i class="fas fa-map-marker-alt"></i> Thông tin giao hàng
-                        </div>
-                        <div class="form-block-body">
-
-                            {{-- Danh sách địa chỉ đã lưu --}}
-                            @if($diaChis->count() > 0)
-                            <div class="dia-chi-list">
-                                <div class="dia-chi-label">
-                                    <i class="fas fa-bookmark me-1" style="color:#1a5276;"></i>Địa chỉ đã lưu
-                                </div>
-                                @foreach($diaChis as $dc)
-                                <div class="dia-chi-item {{ $dc->mac_dinh ? 'selected' : '' }}"
-                                     onclick="chonDiaChi(this, {{ $dc->id }})">
-                                    <input type="radio" name="_dia_chi_chon" value="{{ $dc->id }}"
-                                           {{ $dc->mac_dinh ? 'checked' : '' }}>
-                                    <div style="flex:1;">
-                                        <div class="dia-chi-item-name">
-                                            {{ $dc->ho_ten }}
-                                            <span style="font-weight:400;color:#888;font-size:0.8rem;">— {{ $dc->so_dien_thoai }}</span>
-                                            @if($dc->mac_dinh)
-                                                <span class="badge-mac-dinh">Mặc định</span>
-                                            @endif
-                                        </div>
-                                        <div class="dia-chi-item-detail">
-                                            {{ $dc->dia_chi_chi_tiet }}, {{ $dc->phuong_xa }},
-                                            {{ $dc->quan_huyen }}, {{ $dc->tinh_thanh }}
-                                        </div>
-                                    </div>
-                                </div>
-                                @endforeach
-
-                                <button type="button" class="btn-dia-chi-moi" onclick="toggleFormMoi()">
-                                    <i class="fas fa-plus me-1"></i>Giao đến địa chỉ khác
-                                </button>
-                            </div>
-                            @endif
-
-                            {{-- Form nhập địa chỉ (luôn hiện nếu chưa có địa chỉ lưu) --}}
-                            <div id="formDiaChiMoi" class="{{ $diaChis->count() === 0 ? 'show' : '' }}">
-                                <div class="row g-3">
-                                    <div class="col-sm-6">
-                                        <label class="form-label">Họ và tên <span class="req">*</span></label>
-                                        <input type="text" name="ten_nguoi_nhan" id="ten_nguoi_nhan"
-                                               class="form-control-custom @error('ten_nguoi_nhan') is-invalid @enderror"
-                                               value="{{ old('ten_nguoi_nhan', $diaChiMacDinh?->ho_ten ?? Auth::user()?->ho_ten) }}"
-                                               placeholder="Nguyễn Văn A">
-                                        @error('ten_nguoi_nhan')<span class="error-msg">{{ $message }}</span>@enderror
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <label class="form-label">Số điện thoại <span class="req">*</span></label>
-                                        <input type="text" name="so_dien_thoai" id="so_dien_thoai"
-                                               class="form-control-custom @error('so_dien_thoai') is-invalid @enderror"
-                                               value="{{ old('so_dien_thoai', $diaChiMacDinh?->so_dien_thoai ?? Auth::user()?->so_dien_thoai) }}"
-                                               placeholder="0901234567">
-                                        @error('so_dien_thoai')<span class="error-msg">{{ $message }}</span>@enderror
-                                    </div>
-
-                                    {{-- Email — chỉ hiện cho khách chưa đăng nhập --}}
-                                    @guest
-                                    <div class="col-12">
-                                        <label class="form-label">
-                                            Email nhận xác nhận đơn
-                                            <span style="font-weight:400;color:#888;font-size:0.78rem;">(không bắt buộc)</span>
-                                        </label>
-                                        <input type="email" name="email" id="email"
-                                               class="form-control-custom @error('email') is-invalid @enderror"
-                                               value="{{ old('email') }}"
-                                               placeholder="example@email.com">
-                                        @error('email')<span class="error-msg">{{ $message }}</span>@enderror
-                                    </div>
-                                    @endguest
-                                    <div class="col-12">
-                                        <label class="form-label">Địa chỉ chi tiết <span class="req">*</span></label>
-                                        <input type="text" name="dia_chi_chi_tiet" id="dia_chi_chi_tiet"
-                                               class="form-control-custom @error('dia_chi_chi_tiet') is-invalid @enderror"
-                                               value="{{ old('dia_chi_chi_tiet', $diaChiMacDinh?->dia_chi_chi_tiet) }}"
-                                               placeholder="Số nhà, tên đường, tổ/ấp...">
-                                        @error('dia_chi_chi_tiet')<span class="error-msg">{{ $message }}</span>@enderror
-                                    </div>
-                                    <div class="col-sm-4">
-                                        <label class="form-label">Phường/Xã <span class="req">*</span></label>
-                                        <input type="text" name="phuong_xa" id="phuong_xa"
-                                               class="form-control-custom @error('phuong_xa') is-invalid @enderror"
-                                               value="{{ old('phuong_xa', $diaChiMacDinh?->phuong_xa) }}"
-                                               placeholder="Phường Mỹ Long">
-                                        @error('phuong_xa')<span class="error-msg">{{ $message }}</span>@enderror
-                                    </div>
-                                    <div class="col-sm-4">
-                                        <label class="form-label">Quận/Huyện <span class="req">*</span></label>
-                                        <input type="text" name="quan_huyen" id="quan_huyen"
-                                               class="form-control-custom @error('quan_huyen') is-invalid @enderror"
-                                               value="{{ old('quan_huyen', $diaChiMacDinh?->quan_huyen) }}"
-                                               placeholder="TP. Long Xuyên">
-                                        @error('quan_huyen')<span class="error-msg">{{ $message }}</span>@enderror
-                                    </div>
-                                    <div class="col-sm-4">
-                                        <label class="form-label">Tỉnh/Thành phố <span class="req">*</span></label>
-                                        <input type="text" name="tinh_thanh" id="tinh_thanh"
-                                               class="form-control-custom @error('tinh_thanh') is-invalid @enderror"
-                                               value="{{ old('tinh_thanh', $diaChiMacDinh?->tinh_thanh) }}"
-                                               placeholder="An Giang">
-                                        @error('tinh_thanh')<span class="error-msg">{{ $message }}</span>@enderror
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
+                {{-- Thông tin giao hàng --}}
+                <div class="border bg-white mb-3">
+                    <div class="block-title d-flex align-items-center gap-2">
+                        <i class="fas fa-map-marker-alt"></i> Thông tin giao hàng
                     </div>
+                    <div class="p-3">
 
-                    {{-- Phương thức thanh toán --}}
-                    <div class="form-block">
-                        <div class="block-title">
-                            <i class="fas fa-credit-card"></i> Phương thức thanh toán
-                        </div>
-                        <div class="form-block-body">
-                            <label class="payment-option cod selected" onclick="chonThanhToan(this)">
-                                <input type="radio" name="phuong_thuc_thanhtoan" value="cod" checked>
-                                <div class="payment-option-icon cod"><i class="fas fa-money-bill-wave"></i></div>
-                                <div class="payment-option-info">
-                                    <strong>Thanh toán khi nhận hàng (COD)</strong>
-                                    <span>Thanh toán bằng tiền mặt khi nhận được hàng</span>
+                        @if($diaChis->count() > 0)
+                        <div class="pb-3 mb-3" style="border-bottom:1px dashed #dee2e6">
+                            <p class="fw-bold small mb-2">
+                                <i class="fas fa-bookmark me-1" style="color:#1a5276"></i>Địa chỉ đã lưu
+                            </p>
+                            @foreach($diaChis as $dc)
+                            <div class="dia-chi-item d-flex align-items-start gap-2 p-2 mb-2 {{ $dc->mac_dinh ? 'selected' : '' }}"
+                                 onclick="chonDiaChi(this, {{ $dc->id }})">
+                                <input type="radio" name="_dia_chi_chon" value="{{ $dc->id }}"
+                                       class="mt-1 flex-shrink-0" {{ $dc->mac_dinh ? 'checked' : '' }}>
+                                <div class="flex-grow-1">
+                                    <div class="fw-bold" style="font-size:.85rem">
+                                        {{ $dc->ho_ten }}
+                                        <span class="fw-normal text-muted" style="font-size:.8rem">— {{ $dc->so_dien_thoai }}</span>
+                                        @if($dc->mac_dinh)
+                                            <span class="badge-mac-dinh">Mặc định</span>
+                                        @endif
+                                    </div>
+                                    <div class="text-muted" style="font-size:.78rem;line-height:1.5">
+                                        {{ $dc->dia_chi_chi_tiet }}, {{ $dc->phuong_xa }},
+                                        {{ $dc->quan_huyen }}, {{ $dc->tinh_thanh }}
+                                    </div>
                                 </div>
-                            </label>
-                            <label class="payment-option" onclick="chonThanhToan(this)">
-                                <input type="radio" name="phuong_thuc_thanhtoan" value="chuyen_khoan">
-                                <div class="payment-option-icon"><i class="fas fa-university"></i></div>
-                                <div class="payment-option-info">
-                                    <strong>Chuyển khoản ngân hàng</strong>
-                                    <span>Vietcombank — 1234567890 — NGUYEN VAN A</span>
-                                </div>
-                            </label>
-                            @error('phuong_thuc_thanhtoan')<span class="error-msg">{{ $message }}</span>@enderror
-                        </div>
-                    </div>
-
-                    {{-- Mã giảm giá --}}
-                    <div class="form-block">
-                        <div class="block-title">
-                            <i class="fas fa-tag"></i> Mã giảm giá
-                        </div>
-                        <div class="form-block-body">
-                            <div class="voucher-box">
-                                <input type="text" id="maCode" placeholder="Nhập mã giảm giá..." maxlength="50">
-                                <button type="button" class="btn-ap-ma" onclick="apMaGiamGia()">
-                                    <i class="fas fa-check me-1"></i>Áp dụng
-                                </button>
-                            </div>
-                            <div class="voucher-result" id="voucherResult"></div>
-                        </div>
-                    </div>
-
-                    {{-- Ghi chú --}}
-                    <div class="form-block">
-                        <div class="block-title">
-                            <i class="fas fa-pen"></i> Ghi chú đơn hàng
-                        </div>
-                        <div class="form-block-body">
-                            <textarea name="ghi_chu_khach" class="form-control-custom"
-                                      placeholder="Ghi chú thêm về đơn hàng, ví dụ: giao giờ hành chính...">{{ old('ghi_chu_khach') }}</textarea>
-                        </div>
-                    </div>
-
-                </div>
-
-                {{-- ===== CỘT PHẢI: ĐƠN HÀNG ===== --}}
-                <div class="col-lg-5">
-                    <div class="order-summary">
-                        <div class="order-summary-title">
-                            <i class="fas fa-receipt me-2"></i>Đơn hàng ({{ $giohang->chitiets->count() }} sản phẩm)
-                        </div>
-                        <div class="order-summary-body">
-                            @foreach($giohang->chitiets as $ct)
-                            <div class="order-item">
-                                <img src="{{ asset($ct->sanpham->anhChinh?->duong_dan_anh ?? 'images/no-image.png') }}"
-                                     alt="{{ $ct->sanpham->ten_san_pham }}">
-                                <div class="order-item-name flex-1">
-                                    {{ $ct->sanpham->ten_san_pham }}
-                                    @if($ct->bienthe)
-                                        <div class="order-item-bienthe">{{ $ct->bienthe->ten_bienthe }}</div>
-                                    @endif
-                                    <div class="order-item-qty">x{{ $ct->so_luong }}</div>
-                                </div>
-                                <div class="order-item-price">{{ number_format($ct->thanh_tien) }}đ</div>
                             </div>
                             @endforeach
 
-                            <div style="margin-top:12px;">
-                                <div class="summary-row">
-                                    <span>Tạm tính:</span>
-                                    <span>{{ number_format($giohang->tong_tien) }}đ</span>
+                            <button type="button" class="btn btn-light btn-sm btn-dia-chi-moi mt-1" onclick="toggleFormMoi()">
+                                <i class="fas fa-plus me-1"></i>Giao đến địa chỉ khác
+                            </button>
+                        </div>
+                        @endif
+
+                        <div id="formDiaChiMoi" class="{{ $diaChis->count() === 0 ? 'show' : '' }}">
+                            <div class="row g-3">
+                                <div class="col-sm-6">
+                                    <label class="form-label small fw-semibold">Họ và tên <span class="text-danger">*</span></label>
+                                    <input type="text" name="ten_nguoi_nhan" id="ten_nguoi_nhan"
+                                           class="form-control form-control-sm rounded-0 @error('ten_nguoi_nhan') is-invalid @enderror"
+                                           value="{{ old('ten_nguoi_nhan', $diaChiMacDinh?->ho_ten ?? Auth::user()?->ho_ten) }}"
+                                           placeholder="Nguyễn Văn A">
+                                    @error('ten_nguoi_nhan')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                 </div>
-                                <div class="summary-row">
-                                    <span>Phí vận chuyển:</span>
-                                    <span style="color:#27ae60;">Miễn phí</span>
+                                <div class="col-sm-6">
+                                    <label class="form-label small fw-semibold">Số điện thoại <span class="text-danger">*</span></label>
+                                    <input type="text" name="so_dien_thoai" id="so_dien_thoai"
+                                           class="form-control form-control-sm rounded-0 @error('so_dien_thoai') is-invalid @enderror"
+                                           value="{{ old('so_dien_thoai', $diaChiMacDinh?->so_dien_thoai ?? Auth::user()?->so_dien_thoai) }}"
+                                           placeholder="0901234567">
+                                    @error('so_dien_thoai')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                 </div>
-                                <div class="summary-row discount" id="rowGiam" style="display:none;">
-                                    <span id="tenMaHienThi">Giảm giá:</span>
-                                    <span id="soTienGiamHienThi">-0đ</span>
+
+                                @guest
+                                <div class="col-12">
+                                    <label class="form-label small fw-semibold">
+                                        Email <span class="text-muted fw-normal">(không bắt buộc)</span>
+                                    </label>
+                                    <input type="email" name="email" id="email"
+                                           class="form-control form-control-sm rounded-0 @error('email') is-invalid @enderror"
+                                           value="{{ old('email') }}" placeholder="example@email.com">
+                                    @error('email')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                 </div>
-                                <div class="summary-row total">
-                                    <span>Tổng thanh toán:</span>
-                                    <span id="tongThanhToan">{{ number_format($giohang->tong_tien) }}đ</span>
+                                @endguest
+
+                                <div class="col-12">
+                                    <label class="form-label small fw-semibold">Địa chỉ chi tiết <span class="text-danger">*</span></label>
+                                    <input type="text" name="dia_chi_chi_tiet" id="dia_chi_chi_tiet"
+                                           class="form-control form-control-sm rounded-0 @error('dia_chi_chi_tiet') is-invalid @enderror"
+                                           value="{{ old('dia_chi_chi_tiet', $diaChiMacDinh?->dia_chi_chi_tiet) }}"
+                                           placeholder="Số nhà, tên đường, tổ/ấp...">
+                                    @error('dia_chi_chi_tiet')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                </div>
+                                <div class="col-sm-4">
+                                    <label class="form-label small fw-semibold">Phường/Xã <span class="text-danger">*</span></label>
+                                    <input type="text" name="phuong_xa" id="phuong_xa"
+                                           class="form-control form-control-sm rounded-0 @error('phuong_xa') is-invalid @enderror"
+                                           value="{{ old('phuong_xa', $diaChiMacDinh?->phuong_xa) }}" placeholder="Phường Mỹ Long">
+                                    @error('phuong_xa')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                </div>
+                                <div class="col-sm-4">
+                                    <label class="form-label small fw-semibold">Quận/Huyện <span class="text-danger">*</span></label>
+                                    <input type="text" name="quan_huyen" id="quan_huyen"
+                                           class="form-control form-control-sm rounded-0 @error('quan_huyen') is-invalid @enderror"
+                                           value="{{ old('quan_huyen', $diaChiMacDinh?->quan_huyen) }}" placeholder="TP. Long Xuyên">
+                                    @error('quan_huyen')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                </div>
+                                <div class="col-sm-4">
+                                    <label class="form-label small fw-semibold">Tỉnh/Thành phố <span class="text-danger">*</span></label>
+                                    <input type="text" name="tinh_thanh" id="tinh_thanh"
+                                           class="form-control form-control-sm rounded-0 @error('tinh_thanh') is-invalid @enderror"
+                                           value="{{ old('tinh_thanh', $diaChiMacDinh?->tinh_thanh) }}" placeholder="An Giang">
+                                    @error('tinh_thanh')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                 </div>
                             </div>
-
-                            <button type="submit" class="btn-dat-hang" id="btnDatHang">
-                                <i class="fas fa-check-circle me-2"></i>ĐẶT HÀNG NGAY
-                            </button>
-
-                            <a href="{{ route('gio-hang') }}"
-                               style="display:block;text-align:center;font-size:0.8rem;color:#888;margin-top:10px;text-decoration:none;">
-                                <i class="fas fa-arrow-left me-1"></i>Quay lại giỏ hàng
-                            </a>
                         </div>
-                    </div>
 
-                    <div style="background:#fff;border:1px solid #ddd;padding:12px 15px;margin-top:14px;font-size:0.78rem;color:#555;">
-                        <div class="mb-2"><i class="fas fa-shield-alt text-danger me-2"></i>Thông tin được bảo mật tuyệt đối</div>
-                        <div class="mb-2"><i class="fas fa-truck text-danger me-2"></i>Miễn phí ship toàn quốc</div>
-                        <div><i class="fas fa-undo text-danger me-2"></i>Đổi trả trong 7 ngày nếu lỗi nhà sản xuất</div>
+                    </div>
+                </div>
+
+                {{-- Phương thức thanh toán --}}
+                <div class="border bg-white mb-3">
+                    <div class="block-title d-flex align-items-center gap-2">
+                        <i class="fas fa-credit-card"></i> Phương thức thanh toán
+                    </div>
+                    <div class="p-3">
+                        <label class="payment-option cod d-flex align-items-center gap-3 p-2 mb-2 selected" onclick="chonThanhToan(this)">
+                            <input type="radio" name="phuong_thuc_thanhtoan" value="cod" checked>
+                            <div class="payment-option-icon d-flex align-items-center justify-content-center">
+                                <i class="fas fa-money-bill-wave"></i>
+                            </div>
+                            <div>
+                                <strong class="d-block" style="font-size:.88rem">Thanh toán khi nhận hàng (COD)</strong>
+                                <span class="text-muted" style="font-size:.78rem">Thanh toán bằng tiền mặt khi nhận được hàng</span>
+                            </div>
+                        </label>
+                        <label class="payment-option d-flex align-items-center gap-3 p-2" onclick="chonThanhToan(this)">
+                            <input type="radio" name="phuong_thuc_thanhtoan" value="chuyen_khoan">
+                            <div class="payment-option-icon d-flex align-items-center justify-content-center">
+                                <i class="fas fa-university"></i>
+                            </div>
+                            <div>
+                                <strong class="d-block" style="font-size:.88rem">Chuyển khoản ngân hàng</strong>
+                                <span class="text-muted" style="font-size:.78rem">Vietcombank — 1234567890 — NGUYEN VAN A</span>
+                            </div>
+                        </label>
+                        @error('phuong_thuc_thanhtoan')<span class="text-danger small d-block mt-1">{{ $message }}</span>@enderror
+                    </div>
+                </div>
+
+                {{-- Mã giảm giá --}}
+                <div class="border bg-white mb-3">
+                    <div class="block-title d-flex align-items-center gap-2">
+                        <i class="fas fa-tag"></i> Mã giảm giá
+                    </div>
+                    <div class="p-3">
+                        <div class="input-group">
+                            <input type="text" id="maCode" class="form-control form-control-sm rounded-0"
+                                   placeholder="Nhập mã giảm giá..." maxlength="50" style="text-transform:uppercase">
+                            <button type="button" class="btn btn-sm rounded-0 text-white fw-semibold"
+                                    style="background:#1a5276" onclick="apMaGiamGia()">
+                                <i class="fas fa-check me-1"></i>Áp dụng
+                            </button>
+                        </div>
+                        <div class="voucher-result mt-2" id="voucherResult"></div>
+                    </div>
+                </div>
+
+                {{-- Ghi chú --}}
+                <div class="border bg-white">
+                    <div class="block-title d-flex align-items-center gap-2">
+                        <i class="fas fa-pen"></i> Ghi chú đơn hàng
+                    </div>
+                    <div class="p-3">
+                        <textarea name="ghi_chu_khach" class="form-control form-control-sm rounded-0"
+                                  placeholder="Ghi chú thêm về đơn hàng, ví dụ: giao giờ hành chính...">{{ old('ghi_chu_khach') }}</textarea>
                     </div>
                 </div>
 
             </div>
-        </form>
-    </div>
+
+            {{-- ===== CỘT PHẢI: ĐƠN HÀNG ===== --}}
+            <div class="col-lg-5">
+                <div class="border bg-white">
+                    <div class="block-title d-flex align-items-center gap-2">
+                        <i class="fas fa-receipt"></i>Đơn hàng ({{ $giohang->chitiets->count() }} sản phẩm)
+                    </div>
+                    <div class="p-3">
+
+                        @foreach($giohang->chitiets as $ct)
+                        <div class="d-flex align-items-center gap-2 py-2 border-bottom">
+                            <img src="{{ asset($ct->sanpham->anhChinh?->duong_dan_anh ?? 'images/no-image.png') }}"
+                                 alt="{{ $ct->sanpham->ten_san_pham }}"
+                                 style="width:54px;height:54px;object-fit:cover;border:1px solid #ddd;flex-shrink:0">
+                            <div class="flex-grow-1">
+                                <div class="fw-semibold lh-sm" style="font-size:.8rem">{{ $ct->sanpham->ten_san_pham }}</div>
+                                @if($ct->bienthe)
+                                    <div class="text-muted" style="font-size:.72rem">{{ $ct->bienthe->ten_bienthe }}</div>
+                                @endif
+                                <div class="text-muted" style="font-size:.75rem">x{{ $ct->so_luong }}</div>
+                            </div>
+                            <div class="fw-bold text-danger text-nowrap" style="font-size:.82rem">
+                                {{ number_format($ct->thanh_tien) }}đ
+                            </div>
+                        </div>
+                        @endforeach
+
+                        <div class="mt-3">
+                            <div class="d-flex justify-content-between py-2 border-bottom small">
+                                <span>Tạm tính:</span>
+                                <span>{{ number_format($giohang->tong_tien) }}đ</span>
+                            </div>
+                            <div class="d-flex justify-content-between py-2 border-bottom small">
+                                <span>Phí vận chuyển:</span>
+                                <span class="text-success fw-semibold">Miễn phí</span>
+                            </div>
+                            <div class="d-flex justify-content-between py-2 border-bottom small text-success" id="rowGiam" style="display:none!important">
+                                <span id="tenMaHienThi">Giảm giá:</span>
+                                <span id="soTienGiamHienThi">-0đ</span>
+                            </div>
+                            <div class="summary-total d-flex justify-content-between pt-2 mt-1">
+                                <span>Tổng thanh toán:</span>
+                                <span id="tongThanhToan">{{ number_format($giohang->tong_tien) }}đ</span>
+                            </div>
+                        </div>
+
+                        <button type="submit" id="btnDatHang"
+                                class="btn btn-danger w-100 rounded-0 py-2 mt-3 fw-bold text-uppercase">
+                            <i class="fas fa-check-circle me-2"></i>Đặt hàng ngay
+                        </button>
+
+                        <a href="{{ route('gio-hang') }}"
+                           class="d-block text-center text-muted mt-2 small text-decoration-none">
+                            <i class="fas fa-arrow-left me-1"></i>Quay lại giỏ hàng
+                        </a>
+                    </div>
+                </div>
+
+                <div class="border bg-white p-3 mt-3 small text-muted">
+                    <div class="mb-2"><i class="fas fa-shield-alt text-danger me-2"></i>Thông tin được bảo mật tuyệt đối</div>
+                    <div class="mb-2"><i class="fas fa-truck text-danger me-2"></i>Miễn phí ship toàn quốc</div>
+                    <div><i class="fas fa-undo text-danger me-2"></i>Đổi trả trong 7 ngày nếu lỗi nhà sản xuất</div>
+                </div>
+            </div>
+
+        </div>
+    </form>
 </div>
 
 @endsection
@@ -394,7 +301,6 @@ const CSRF = document.querySelector('meta[name="csrf-token"]').content;
 const tongTienHang = {{ $giohang->tong_tien }};
 const diaChiData = @json($diaChis->keyBy('id'));
 
-// Click vào địa chỉ đã lưu → tự điền form
 function chonDiaChi(el, id) {
     document.querySelectorAll('.dia-chi-item').forEach(i => i.classList.remove('selected'));
     el.classList.add('selected');
@@ -412,26 +318,20 @@ function chonDiaChi(el, id) {
     document.getElementById('tinh_thanh').value       = dc.tinh_thanh;
 }
 
-// Nút "Giao đến địa chỉ khác" → bỏ chọn + xóa form
 function toggleFormMoi() {
     document.querySelectorAll('.dia-chi-item').forEach(i => {
         i.classList.remove('selected');
         i.querySelector('input[type="radio"]').checked = false;
     });
-    const form = document.getElementById('formDiaChiMoi');
-    form.classList.add('show');
+    document.getElementById('formDiaChiMoi').classList.add('show');
     ['ten_nguoi_nhan','so_dien_thoai','dia_chi_chi_tiet','phuong_xa','quan_huyen','tinh_thanh']
-        .forEach(id => document.getElementById(id).value = '');
+        .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
     document.getElementById('ten_nguoi_nhan').focus();
 }
 
-// Tự động click địa chỉ mặc định khi load trang
 document.addEventListener('DOMContentLoaded', function () {
     const macDinh = document.querySelector('.dia-chi-item.selected');
-    if (macDinh) {
-        const id = macDinh.querySelector('input[type="radio"]').value;
-        chonDiaChi(macDinh, id);
-    }
+    if (macDinh) chonDiaChi(macDinh, macDinh.querySelector('input[type="radio"]').value);
 });
 
 function chonThanhToan(el) {
@@ -444,8 +344,8 @@ function apMaGiamGia() {
     const resultEl = document.getElementById('voucherResult');
 
     if (!maCode) {
-        resultEl.textContent = 'Vui lòng nhập mã giảm giá.';
-        resultEl.className = 'voucher-result error';
+        resultEl.innerHTML = '<i class="fas fa-times-circle me-1"></i>Vui lòng nhập mã giảm giá.';
+        resultEl.className = 'voucher-result text-danger';
         resultEl.style.display = 'block';
         return;
     }
@@ -464,13 +364,13 @@ function apMaGiamGia() {
             document.getElementById('soTienGiamHienThi').textContent = '-' + data.so_tien_giam;
             document.getElementById('tongThanhToan').textContent = data.tong_thanh_toan;
             resultEl.innerHTML = '<i class="fas fa-check-circle me-1"></i>' + data.message;
-            resultEl.className = 'voucher-result success';
+            resultEl.className = 'voucher-result text-success';
         } else {
             document.getElementById('magiamgiaId').value = '';
             document.getElementById('rowGiam').style.display = 'none';
             document.getElementById('tongThanhToan').textContent = new Intl.NumberFormat('vi-VN').format(tongTienHang) + 'đ';
             resultEl.innerHTML = '<i class="fas fa-times-circle me-1"></i>' + data.message;
-            resultEl.className = 'voucher-result error';
+            resultEl.className = 'voucher-result text-danger';
         }
         resultEl.style.display = 'block';
     });

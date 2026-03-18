@@ -3,7 +3,6 @@
 
 @section('extra-css')
 <style>
-/* Product card */
 .product-card { background:#fff; border:1px solid #ddd; transition:box-shadow 0.2s; height:100%; }
 .product-card:hover { box-shadow:0 4px 15px rgba(0,0,0,0.1); }
 .product-card-img { position:relative; overflow:hidden; padding-top:75%; background:#f9f9f9; }
@@ -34,9 +33,13 @@
             <i class="fas fa-home me-1"></i>Trang chủ
         </a>
         <span class="mx-2 text-muted">›</span>
-        <a href="{{ url('/san-pham') }}" class="text-decoration-none" style="color:#1a5276">Sản phẩm</a>
-        <span class="mx-2 text-muted">›</span>
-        <span class="text-muted">{{ $danhMuc->ten_loai }}</span>
+        @if(is_null($danhMuc->slug))
+            <span class="text-muted">Tất Cả Sản Phẩm</span>
+        @else
+            <a href="{{ url('/san-pham') }}" class="text-decoration-none" style="color:#1a5276">Sản phẩm</a>
+            <span class="mx-2 text-muted">›</span>
+            <span class="text-muted">{{ $danhMuc->ten_loai }}</span>
+        @endif
     </div>
 </div>
 
@@ -50,6 +53,21 @@
                     <i class="fas fa-bars me-2"></i>DANH MỤC SẢN PHẨM
                 </div>
                 <div class="list-group list-group-flush">
+
+                    {{-- Tất cả sản phẩm --}}
+                    <a href="{{ url('/san-pham') }}"
+                       class="list-group-item list-group-item-action d-flex justify-content-between align-items-center small
+                              {{ is_null($danhMuc->slug) ? 'active' : '' }}"
+                       style="{{ is_null($danhMuc->slug) ? 'background:#1a5276;border-color:#1a5276;color:#fff;' : '' }}">
+                        <span>
+                            <i class="fas fa-th me-1" style="font-size:0.65rem"></i>
+                            Tất Cả Sản Phẩm
+                        </span>
+                        <span class="badge {{ is_null($danhMuc->slug) ? 'bg-danger' : 'bg-secondary' }}">
+                            {{ $danhMucs->sum('sanphams_count') }}
+                        </span>
+                    </a>
+
                     @foreach($danhMucs as $dm)
                     <a href="{{ url('/danh-muc/' . $dm->slug) }}"
                        class="list-group-item list-group-item-action d-flex justify-content-between align-items-center small
@@ -64,6 +82,7 @@
                         </span>
                     </a>
                     @endforeach
+
                 </div>
             </div>
         </div>

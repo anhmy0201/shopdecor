@@ -4,7 +4,6 @@
 
 @section('extra-css')
 <style>
-    /* Chỉ giữ lại những gì Bootstrap không có sẵn */
     .nav-account .nav-link.active {
         background: #1a5276;
         color: #fff !important;

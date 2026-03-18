@@ -7,29 +7,43 @@ use App\Models\Sanpham;
 
 class DanhMucController extends Controller
 {
-    public function show($slug)
+    // Tất cả sản phẩm
+    public function index()
     {
-        // Lấy danh mục theo slug
-        $danhMuc = LoaiSanpham::where('slug', $slug)->firstOrFail();
+        $sapXep = request('sort', 'moi-nhat');
 
-        // Sản phẩm trong danh mục, phân trang 12 SP/trang
-        $sanphams = Sanpham::with(['anhChinh'])
+        $query = Sanpham::with(['anhChinh'])
             ->withCount('binhluans')
-            ->where('loai_id', $danhMuc->id)
             ->where(function ($q) {
                 $q->where('co_bien_the', false)
                   ->orWhereHas('bienthesActive');
-            })
-            ->latest()
-            ->paginate(12);
+            });
 
-        // Tất cả danh mục cho sidebar
+        switch ($sapXep) {
+            case 'gia-tang':  $query->orderBy('gia', 'asc'); break;
+            case 'gia-giam':  $query->orderBy('gia', 'desc'); break;
+            case 'ban-chay':  $query->orderByDesc('luot_mua'); break;
+            default:          $query->latest();
+        }
+
+        $sanphams = $query->paginate(12)->withQueryString();
         $danhMucs = LoaiSanpham::withCount('sanphams')->get();
 
-        // Sắp xếp
+        $danhMuc = (object)[
+            'ten_loai' => 'Tất Cả Sản Phẩm',
+            'slug'     => null,
+        ];
+
+        return view('pages.danh-muc', compact('danhMuc', 'sanphams', 'danhMucs', 'sapXep'));
+    }
+
+    // Theo danh mục
+    public function show($slug)
+    {
+        $danhMuc = LoaiSanpham::where('slug', $slug)->firstOrFail();
+
         $sapXep = request('sort', 'moi-nhat');
 
-        // Lấy lại với sort
         $query = Sanpham::with(['anhChinh'])
             ->withCount('binhluans')
             ->where('loai_id', $danhMuc->id)
@@ -39,20 +53,14 @@ class DanhMucController extends Controller
             });
 
         switch ($sapXep) {
-            case 'gia-tang':
-                $query->orderBy('gia', 'asc');
-                break;
-            case 'gia-giam':
-                $query->orderBy('gia', 'desc');
-                break;
-            case 'ban-chay':
-                $query->orderByDesc('luot_mua');
-                break;
-            default:
-                $query->latest();
+            case 'gia-tang':  $query->orderBy('gia', 'asc'); break;
+            case 'gia-giam':  $query->orderBy('gia', 'desc'); break;
+            case 'ban-chay':  $query->orderByDesc('luot_mua'); break;
+            default:          $query->latest();
         }
 
         $sanphams = $query->paginate(12)->withQueryString();
+        $danhMucs = LoaiSanpham::withCount('sanphams')->get();
 
         return view('pages.danh-muc', compact('danhMuc', 'sanphams', 'danhMucs', 'sapXep'));
     }
