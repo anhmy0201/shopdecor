@@ -7,6 +7,9 @@ use App\Models\Magiamgia;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use App\Imports\MagiamgiaImport;
+use App\Exports\MagiamgiaExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class MagiamgiaController extends Controller
 {
@@ -106,5 +109,21 @@ class MagiamgiaController extends Controller
 
         $trangThai = $magiamgia->kich_hoat ? 'kích hoạt' : 'vô hiệu hóa';
         return back()->with('success', "Đã {$trangThai} mã {$magiamgia->ma_code}!");
+    }
+    public function postNhap(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'file_excel' => 'required|mimes:xlsx,xls,csv|max:5120',
+        ]);
+
+        Excel::import(new MagiamgiaImport, $request->file('file_excel'));
+
+        return redirect()->route('admin.magiamgia.index')
+            ->with('success', 'Nhập mã giảm giá thành công!');
+    }
+
+    public function getXuat(): \Symfony\Component\HttpFoundation\BinaryFileResponse
+    {
+        return Excel::download(new MagiamgiaExport, 'danh-sach-ma-giam-gia.xlsx');
     }
 }

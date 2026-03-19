@@ -13,6 +13,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
+use App\Imports\SanphamImport;
+use App\Exports\SanphamExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class SanphamController extends Controller
 {
@@ -267,5 +270,21 @@ class SanphamController extends Controller
         }
 
         return $slug;
+    }
+    public function postNhap(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'file_excel' => 'required|mimes:xlsx,xls,csv|max:5120',
+        ]);
+
+        Excel::import(new SanphamImport, $request->file('file_excel'));
+
+        return redirect()->route('admin.sanpham.index')
+            ->with('success', 'Nhập sản phẩm thành công!');
+    }
+
+    public function getXuat(): \Symfony\Component\HttpFoundation\BinaryFileResponse
+    {
+        return Excel::download(new SanphamExport, 'danh-sach-san-pham.xlsx');
     }
 }

@@ -7,6 +7,8 @@ use App\Models\Donhang;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use App\Exports\DonhangExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class DonhangController extends Controller
 {
@@ -90,5 +92,9 @@ class DonhangController extends Controller
         $donhang->update($data);
 
         return back()->with('success', 'Cập nhật đơn hàng thành công!');
+    }
+    public function getXuat(): \Symfony\Component\HttpFoundation\BinaryFileResponse
+    {
+        return Excel::download(new DonhangExport, 'danh-sach-don-hang.xlsx');
     }
 }

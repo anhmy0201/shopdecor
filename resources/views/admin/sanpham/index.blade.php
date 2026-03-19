@@ -8,9 +8,17 @@
         <h5 class="mb-0 fw-bold">Sản Phẩm</h5>
         <small class="text-muted">Quản lý toàn bộ sản phẩm</small>
     </div>
-    <a href="{{ route('admin.sanpham.create') }}" class="btn btn-primary btn-sm">
-        <i class="fas fa-plus me-1"></i> Thêm Sản Phẩm
-    </a>
+    <div class="d-flex gap-2">
+        <a href="{{ route('admin.sanpham.xuat') }}" class="btn btn-success btn-sm">
+            <i class="fas fa-download me-1"></i>Xuất Excel
+        </a>
+        <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#modalNhapExcel">
+            <i class="fas fa-upload me-1"></i>Nhập Excel
+        </button>
+        <a href="{{ route('admin.sanpham.create') }}" class="btn btn-primary btn-sm">
+            <i class="fas fa-plus me-1"></i>Thêm Sản Phẩm
+        </a>
+    </div>
 </div>
 
 {{-- BỘ LỌC --}}
@@ -158,6 +166,42 @@
         {{ $sanphams->links() }}
     </div>
     @endif
+</div>
+
+{{-- MODAL NHẬP EXCEL --}}
+<div class="modal fade" id="modalNhapExcel" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="{{ route('admin.sanpham.nhap') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-upload me-2"></i>Nhập Sản Phẩm Từ Excel</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Chọn file Excel</label>
+                        <input type="file" class="form-control" name="file_excel"
+                               accept=".xlsx,.xls,.csv" required>
+                        <div class="form-text mt-1">
+                            Định dạng: .xlsx, .xls, .csv — tối đa 5MB
+                        </div>
+                    </div>
+                    <div class="alert alert-info small mb-0">
+                        <strong>Cấu trúc file Excel:</strong><br>
+                        Hàng 1 là tiêu đề:
+                        <code>Mã loại | Tên sản phẩm | Giá | Giá cũ | Mô tả | Số lượng</code>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-upload me-1"></i>Nhập dữ liệu
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
 @endsection

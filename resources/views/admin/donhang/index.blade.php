@@ -8,6 +8,9 @@
         <h5 class="mb-0 fw-bold">Đơn Hàng</h5>
         <small class="text-muted">Quản lý tất cả đơn hàng</small>
     </div>
+    <a href="{{ route('admin.donhang.xuat') }}" class="btn btn-success btn-sm">
+        <i class="fas fa-download me-1"></i>Xuất Excel
+    </a>
 </div>
 
 {{-- TABS TRẠNG THÁI --}}

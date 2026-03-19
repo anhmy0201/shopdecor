@@ -95,19 +95,24 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'check.admin:staff']
     Route::resource('loai-sanpham', AdminLoaiSanphamController::class)
          ->except(['show']);
 
-    // Sản phẩm
+    // Sản phẩm — nhập/xuất phải đặt TRƯỚC resource
+    Route::post('sanpham/nhap', [AdminSanphamController::class, 'postNhap'])->name('sanpham.nhap');
+    Route::get('sanpham/xuat',  [AdminSanphamController::class, 'getXuat'])->name('sanpham.xuat');
     Route::resource('sanpham', AdminSanphamController::class);
 
-    // Đơn hàng
+    // Đơn hàng — chỉ xuất, đặt TRƯỚC resource
+    Route::get('donhang/xuat', [AdminDonhangController::class, 'getXuat'])->name('donhang.xuat');
     Route::resource('donhang', AdminDonhangController::class)
          ->only(['index', 'show']);
     Route::patch('donhang/{donhang}/cap-nhat-trang-thai',
         [AdminDonhangController::class, 'capNhatTrangThai'])
         ->name('donhang.cap-nhat-trang-thai');
 
-    // Mã giảm giá
+    // Mã giảm giá — nhập/xuất phải đặt TRƯỚC resource
+    Route::post('magiamgia/nhap', [MagiamgiaController::class, 'postNhap'])->name('magiamgia.nhap');
+    Route::get('magiamgia/xuat',  [MagiamgiaController::class, 'getXuat'])->name('magiamgia.xuat');
     Route::resource('magiamgia', MagiamgiaController::class)
-     ->parameters(['magiamgia' => 'magiamgia']); 
+     ->parameters(['magiamgia' => 'magiamgia']);
     Route::patch('magiamgia/{magiamgia}/toggle',
         [MagiamgiaController::class, 'toggleKichHoat'])
         ->name('magiamgia.toggle');
@@ -140,7 +145,4 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'check.admin:staff']
     [AdminTinTucController::class, 'toggleKichHoat'])
     ->name('tin-tuc.toggle');
 
-    
-
-    
 });
