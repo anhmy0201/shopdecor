@@ -12,7 +12,8 @@ use App\Http\Controllers\DonhangController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\TinTucController;
 use App\Http\Controllers\KhuyenMaiController;
-
+use App\Http\Controllers\TimKiemController;
+use App\Http\Controllers\LienHeController;
 // Admin controllers — dùng alias để tránh trùng tên với controller frontend
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\BaocaoController;
@@ -84,6 +85,12 @@ Route::get('/tin-tuc',              [TinTucController::class, 'index'])->name('t
 Route::get('/tin-tuc/{slug}',       [TinTucController::class, 'show'])->name('tin-tuc.show');
 Route::get('/khuyen-mai', [KhuyenMaiController::class, 'index'])->name('khuyen-mai');
 Route::view('/gioi-thieu', 'pages.gioi-thieu')->name('gioi-thieu');
+
+Route::get('/tim-kiem', [TimKiemController::class, 'index'])->name('tim-kiem');
+
+Route::get('/lien-he', [LienHeController::class, 'index']);
+Route::post('/lien-he/gui', [LienHeController::class, 'gui']);
+
 // ===== ADMIN =====
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'check.admin:staff'])->group(function () {
 

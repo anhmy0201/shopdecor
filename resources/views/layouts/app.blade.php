@@ -212,7 +212,7 @@
                     href="{{ route('tin-tuc.index') }}">TIN TỨC</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">LIÊN HỆ</a>
+                <a class="nav-link" href="{{ url('/lien-he') }}">LIÊN HỆ</a>
             </li>
         </ul>
     </div>
