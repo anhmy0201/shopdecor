@@ -14,6 +14,7 @@ use App\Http\Controllers\TinTucController;
 use App\Http\Controllers\KhuyenMaiController;
 use App\Http\Controllers\TimKiemController;
 use App\Http\Controllers\LienHeController;
+use App\Http\Controllers\TraCuuDonHangController;
 // Admin controllers — dùng alias để tránh trùng tên với controller frontend
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\BaocaoController;
@@ -88,9 +89,14 @@ Route::view('/gioi-thieu', 'pages.gioi-thieu')->name('gioi-thieu');
 
 Route::get('/tim-kiem', [TimKiemController::class, 'index'])->name('tim-kiem');
 
-Route::get('/lien-he', [LienHeController::class, 'index']);
-Route::post('/lien-he/gui', [LienHeController::class, 'gui']);
-
+Route::get('/lien-he', [LienHeController::class, 'index'])->name('lien-he');
+Route::post('/lien-he/gui', [LienHeController::class, 'gui'])->name('lien-he.gui');
+ 
+Route::get('/tra-cuu-don-hang', [TraCuuDonHangController::class, 'index'])
+    ->name('tra-cuu-don-hang');
+ 
+Route::post('/tra-cuu-don-hang', [TraCuuDonHangController::class, 'traCuu'])
+    ->name('tra-cuu-don-hang.ket-qua');
 // ===== ADMIN =====
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'check.admin:staff'])->group(function () {
 

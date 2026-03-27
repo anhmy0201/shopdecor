@@ -99,30 +99,32 @@ text-decoration:none;
 color:#333;
 display:block
 }
-.quick-cat-item:hover{color:#e74c3c}
+.quick-cat-item:hover{color:#f07b05}
 
-/* ===== SECTION TITLE ===== */
+/* ===== SECTION TITLE – DecoPro style (clip-path góc chéo) ===== */
 .section-title{
 background:#1a5276;
 color:#fff;
-padding:8px 12px;
+padding:8px 36px 8px 12px;
 margin-bottom:15px;
 display:flex;
 align-items:center;
 gap:8px;
-font-weight:700
+font-weight:700;
+clip-path:polygon(0 0,calc(100% - 20px) 0,100% 50%,calc(100% - 20px) 100%,0 100%)
 }
 .section-title a{
 margin-left:auto;
-color:#eee;
+color:#cde;
 font-size:.8rem;
 text-decoration:none
 }
+.section-title a:hover{color:#fff}
 
 /* ===== PRODUCT CARD ===== */
 .product-card-img{
 position:relative;
-padding-top:75%;
+padding-top:100%;
 background:#f9f9f9;
 overflow:hidden
 }
@@ -131,34 +133,68 @@ position:absolute;
 inset:0;
 width:100%;
 height:100%;
-object-fit:cover
+object-fit:cover;
+transition:transform .35s
 }
+/* hover card */
+.border.bg-white{transition:box-shadow .2s,transform .2s}
+.border.bg-white:hover{box-shadow:0 4px 16px rgba(0,0,0,.12);transform:translateY(-2px)}
+.border.bg-white:hover .product-card-img img{transform:scale(1.05)}
+
+/* badge MỚI – DecoPro: xanh lá, góc trái, sát viền */
+.badge-moi{
+position:absolute;
+top:0;
+left:0;
+background:#27ae60;
+color:#fff;
+font-size:.68rem;
+font-weight:700;
+padding:3px 8px;
+letter-spacing:.5px;
+z-index:2
+}
+
+/* action buttons – hiện khi hover */
 .product-card-actions{
 position:absolute;
 bottom:0;
 left:0;
 right:0;
 display:flex;
-gap:4px;
-padding:6px;
-background:rgba(0,0,0,.5)
+gap:2px;
+padding:0;
+opacity:0;
+transform:translateY(6px);
+transition:opacity .25s,transform .25s
+}
+.border.bg-white:hover .product-card-actions{
+opacity:1;
+transform:translateY(0)
 }
 .btn-chitiet,
 .btn-giohang{
 flex:1;
 border:none;
 font-size:.75rem;
-font-weight:600;
-padding:6px;
+font-weight:700;
+padding:8px 4px;
 cursor:pointer;
 text-align:center;
 text-decoration:none;
-color:#fff
+color:#fff;
+display:flex;
+align-items:center;
+justify-content:center;
+gap:4px
 }
-.btn-chitiet{background:#f0a500}
+/* cam = Chi tiết, navy = Thêm giỏ – giống DecoPro */
+.btn-chitiet{background:#f07b05}
+.btn-chitiet:hover{background:#d96e00;color:#fff}
 .btn-giohang{background:#1a5276}
+.btn-giohang:hover{background:#154360;color:#fff}
 </style>
-@endsection
+@endsectionf
 
 @section('content')
 
@@ -311,13 +347,13 @@ color:#fff
                                     <img src="{{ asset($sp->anhChinh?->duong_dan_anh ?? 'images/no-image.png') }}"
                                          alt="{{ $sp->ten_san_pham }}"
                                          loading="lazy">
-                                    <span class="badge bg-success position-absolute top-0 start-0 m-1">MỚI</span>
+                                    <span class="badge-moi">MỚI</span>
                                     <div class="product-card-actions">
                                         <a href="{{ url('/san-pham/'.$sp->slug) }}" class="btn-chitiet">
-                                            <i class="fas fa-eye me-1"></i>Chi tiết
+                                            <i class="fas fa-eye"></i>Chi tiết
                                         </a>
                                         <button class="btn-giohang" onclick="themGioHang({{ $sp->id }})">
-                                            <i class="fas fa-cart-plus me-1"></i>Thêm giỏ
+                                            <i class="fas fa-cart-plus"></i>Thêm giỏ
                                         </button>
                                     </div>
                                 </div>
@@ -352,10 +388,10 @@ color:#fff
                                          loading="lazy">
                                     <div class="product-card-actions">
                                         <a href="{{ url('/san-pham/'.$sp->slug) }}" class="btn-chitiet">
-                                            <i class="fas fa-eye me-1"></i>Chi tiết
+                                            <i class="fas fa-eye"></i>Chi tiết
                                         </a>
                                         <button class="btn-giohang" onclick="themGioHang({{ $sp->id }})">
-                                            <i class="fas fa-cart-plus me-1"></i>Thêm giỏ
+                                            <i class="fas fa-cart-plus"></i>Thêm giỏ
                                         </button>
                                     </div>
                                 </div>
@@ -406,6 +442,7 @@ color:#fff
 </div>
 
 @endsection
+
 @section('extra-js')
 <script>
 (function () {

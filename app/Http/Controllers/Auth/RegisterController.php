@@ -3,14 +3,16 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\Giohang;
 use App\Models\User;
+use App\Traits\MergesGioHang;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class RegisterController extends Controller
 {
+    use MergesGioHang;
+
     public function showRegistrationForm()
     {
         return view('auth.register');
@@ -46,45 +48,10 @@ class RegisterController extends Controller
             'kich_hoat'     => true,
         ]);
 
-        // Tự động đăng nhập sau khi đăng ký
         Auth::login($user);
 
-        // Merge giỏ hàng session vào giỏ user
         $this->mergeGioHang(session()->getId());
 
         return redirect('/')->with('success', 'Chào mừng ' . $user->ho_ten . '! Đăng ký thành công.');
-    }
-
-    /**
-     * Merge giỏ hàng session vào giỏ hàng user sau khi đăng ký
-     */
-    private function mergeGioHang(string $sessionId)
-    {
-        $gioHangSession = Giohang::where('session_id', $sessionId)->first();
-        if (!$gioHangSession || $gioHangSession->chitiets()->count() === 0) return;
-
-        $gioHangUser = Giohang::firstOrCreate(['user_id' => Auth::id()]);
-
-        foreach ($gioHangSession->chitiets as $ct) {
-            $existing = $gioHangUser->chitiets()
-                ->where('sanpham_id', $ct->sanpham_id)
-                ->when(
-                    $ct->bienthe_id === null,
-                    fn($q) => $q->whereNull('bienthe_id'),
-                    fn($q) => $q->where('bienthe_id', $ct->bienthe_id)
-                )
-                ->first();
-
-            if ($existing) {
-                $existing->increment('so_luong', $ct->so_luong);
-            } else {
-                $gioHangUser->chitiets()->create(
-                    $ct->only(['sanpham_id', 'bienthe_id', 'so_luong', 'gia'])
-                );
-            }
-        }
-
-        $gioHangSession->chitiets()->delete();
-        $gioHangSession->delete();
     }
 }

@@ -170,8 +170,23 @@
                         </ul>
                     </div>
                 @else
-                    <a href="{{ route('login') }}" class="btn btn-sm btn-outline-primary">Đăng Nhập</a>
-                    <a href="{{ route('register') }}" class="btn btn-sm btn-primary">Đăng Ký</a>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-primary dropdown-toggle" data-bs-toggle="dropdown">
+                            <i class="fas fa-user me-1"></i>Tài khoản
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{{ route('login') }}">
+                                <i class="fas fa-sign-in-alt me-2"></i>Đăng Nhập
+                            </a></li>
+                            <li><a class="dropdown-item" href="{{ route('register') }}">
+                                <i class="fas fa-user-plus me-2"></i>Đăng Ký
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ route('tra-cuu-don-hang') }}">
+                                <i class="fas fa-search me-2"></i>Tra cứu đơn hàng
+                            </a></li>
+                        </ul>
+                    </div>
                 @endauth
             </div>
 
@@ -201,9 +216,6 @@
                 </ul>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{ url('/san-pham-ban-chay') }}">SẢN PHẨM BÁN CHẠY</a>
-            </li>
-            <li class="nav-item">
                 <a class="nav-link {{ request()->is('khuyen-mai') ? 'active' : '' }}"
                    href="{{ route('khuyen-mai') }}">KHUYẾN MÃI</a>
             </li>
@@ -214,6 +226,14 @@
             <li class="nav-item">
                 <a class="nav-link" href="{{ url('/lien-he') }}">LIÊN HỆ</a>
             </li>
+            @guest
+            <li class="nav-item">
+                <a class="nav-link {{ request()->is('tra-cuu-don-hang') ? 'active' : '' }}"
+                   href="{{ route('tra-cuu-don-hang') }}">
+                    <i class="fas fa-search me-1"></i>TRA CỨU ĐƠN
+                </a>
+            </li>
+            @endguest
         </ul>
     </div>
 </nav>
