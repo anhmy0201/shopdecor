@@ -6,9 +6,9 @@ use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\DanhMucController;
 use App\Http\Controllers\SanphamController;
-use App\Http\Controllers\GiohangController;
+use App\Http\Controllers\GioHangController;
 use App\Http\Controllers\ThanhToanController;
-use App\Http\Controllers\DonhangController;
+use App\Http\Controllers\DonHangController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\TinTucController;
 use App\Http\Controllers\KhuyenMaiController;
@@ -53,18 +53,26 @@ Route::get('/danh-muc/{slug}', [DanhMucController::class, 'show']);
 Route::get('/san-pham/{slug}', [SanphamController::class, 'show']);
 
 // ===== GIỎ HÀNG =====
-Route::get('/gio-hang',                  [GiohangController::class, 'index'])->name('gio-hang');
-Route::post('/gio-hang/them',            [GiohangController::class, 'them']);
-Route::patch('/gio-hang/cap-nhat/{id}', [GiohangController::class, 'capNhat']);
-Route::delete('/gio-hang/xoa/{id}',     [GiohangController::class, 'xoa']);
-Route::delete('/gio-hang/xoa-tat',      [GiohangController::class, 'xoaTat']);
+Route::get('/gio-hang',                  [GioHangController::class, 'index'])->name('gio-hang');
+Route::post('/gio-hang/them',            [GioHangController::class, 'them']);
+Route::patch('/gio-hang/cap-nhat/{id}', [GioHangController::class, 'capNhat']);
+Route::post('/gio-hang/cap-nhat/{id}',  [GioHangController::class, 'capNhat']); 
+Route::delete('/gio-hang/xoa/{id}',     [GioHangController::class, 'xoa']);
+Route::post('/gio-hang/xoa/{id}',       [GioHangController::class, 'xoa']);      
+Route::delete('/gio-hang/xoa-tat',      [GioHangController::class, 'xoaTat']);
 
 // ===== THANH TOÁN =====
 Route::get('/thanh-toan',             [ThanhToanController::class, 'index'])->name('thanh-toan');
 Route::post('/thanh-toan',            [ThanhToanController::class, 'store']);
 Route::post('/thanh-toan/ap-ma',      [ThanhToanController::class, 'apMa']);
 Route::get('/xac-nhan-don-hang/{id}', [ThanhToanController::class, 'xacNhan'])->name('xac-nhan-don-hang');
-
+// PayOS
+Route::get('/payos/checkout/{id}', [ThanhToanController::class, 'payosCheckout'])->name('payos.checkout');
+Route::get('/payos/success',       [ThanhToanController::class, 'payosSuccess'])->name('payos.success');
+Route::get('/payos/cancel',        [ThanhToanController::class, 'payosCancel'])->name('payos.cancel');
+Route::post('/payos/webhook',      [ThanhToanController::class, 'payosWebhook'])
+    ->name('payos.webhook')
+    ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
 // ===== ĐƠN HÀNG — cần đăng nhập =====
 Route::middleware('auth')->group(function () {
     Route::get('/don-hang',                       [DonhangController::class, 'index'])->name('don-hang');

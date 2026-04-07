@@ -32,6 +32,13 @@
 
 <div class="container py-4">
 
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+
     @if($giohang->chitiets->count() > 0)
     <div class="row align-items-start g-4">
 
@@ -90,9 +97,15 @@
                                 {{ number_format($ct->thanh_tien) }}đ
                             </td>
                             <td class="text-center">
-                                <button class="btn btn-link text-danger p-1" onclick="xoaSanPham({{ $ct->id }})" title="Xóa">
-                                    <i class="fas fa-trash-alt"></i>
-                                </button>
+                                {{-- Dùng form thay vì JS fetch để tránh lỗi 405/404 trên XAMPP --}}
+                                <form action="{{ url('/gio-hang/xoa/' . $ct->id) }}" method="POST"
+                                      onsubmit="return confirm('Xóa sản phẩm này khỏi giỏ hàng?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-link text-danger p-1" title="Xóa">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </form>
                             </td>
                         </tr>
                         @endforeach
@@ -185,9 +198,9 @@ function capNhatSoLuong(id) {
     const soLuong = parseInt(document.getElementById('qty-' + id).value);
     if (soLuong < 1) return;
     fetch(`/gio-hang/cap-nhat/${id}`, {
-        method: 'PATCH',
+        method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF },
-        body: JSON.stringify({ so_luong: soLuong })
+        body: JSON.stringify({ so_luong: soLuong, _method: 'PATCH' })
     })
     .then(r => r.json())
     .then(data => {
@@ -196,22 +209,8 @@ function capNhatSoLuong(id) {
             document.getElementById('tamTinh').textContent = data.tong_tien;
             document.getElementById('tongCong').textContent = data.tong_tien;
         }
-    });
-}
-
-function xoaSanPham(id) {
-    if (!confirm('Xóa sản phẩm này khỏi giỏ hàng?')) return;
-    fetch(`/gio-hang/xoa/${id}`, {
-        method: 'DELETE',
-        headers: { 'X-CSRF-TOKEN': CSRF }
     })
-    .then(r => r.json())
-    .then(data => {
-        if (data.success) {
-            document.getElementById('row-' + id).remove();
-            if (document.querySelectorAll('#cartBody tr').length === 0) location.reload();
-        }
-    });
+    .catch(err => console.error('Lỗi cập nhật:', err));
 }
 </script>
 @endsection

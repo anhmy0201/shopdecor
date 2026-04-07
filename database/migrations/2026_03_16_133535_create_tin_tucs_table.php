@@ -13,15 +13,15 @@ return new class extends Migration
             $table->foreignId('user_id')
                   ->nullable()
                   ->constrained('users')
-                  ->nullOnDelete();             // tác giả — xoá user không mất bài
+                  ->nullOnDelete();
             $table->string('tieu_de');
             $table->string('slug')->unique();
-            $table->string('mo_ta_ngan')->nullable();   // tóm tắt hiển thị ngoài danh sách
-            $table->longText('noi_dung')->nullable();   // nội dung HTML đầy đủ
-            $table->string('anh_dai_dien')->nullable(); // ảnh thumbnail chính
+            $table->string('mo_ta_ngan')->nullable();
+            $table->longText('noi_dung')->nullable();
+            $table->string('anh_dai_dien')->nullable();
             $table->unsignedInteger('luot_xem')->default(0);
-            $table->boolean('kich_hoat')->default(true); // ẩn/hiện
-            $table->timestamp('ngay_dang')->nullable();  // null = chưa publish
+            $table->boolean('kich_hoat')->default(true); 
+            $table->timestamp('ngay_dang')->nullable();  
             $table->softDeletes();
             $table->timestamps();
             $table->index('kich_hoat');

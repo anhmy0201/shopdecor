@@ -24,17 +24,14 @@ class SanphamController extends Controller
         $query = Sanpham::with(['loai', 'anhChinh'])
             ->withCount('bienthes');
 
-        // Filter theo loại
         if ($request->filled('loai_id')) {
             $query->where('loai_id', $request->loai_id);
         }
 
-        // Filter theo tồn kho
         if ($request->ton_kho === 'het_hang') {
             $query->where('co_bien_the', false)->where('so_luong', 0);
         }
 
-        // Tìm kiếm
         if ($request->filled('q')) {
             $query->where('ten_san_pham', 'like', '%' . $request->q . '%');
         }
@@ -54,14 +51,13 @@ class SanphamController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'ten_san_pham'  => 'required|string|max:255',
-            'loai_id'       => 'required|exists:loai_sanpham,id',
-            'gia'           => 'required|numeric|min:0',
-            'gia_cu'        => 'nullable|numeric|min:0',
-            'mo_ta'         => 'nullable|string',
-            'so_luong'      => 'required_if:co_bien_the,0|nullable|integer|min:0',
-            'hinhanh.*'     => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
-            // Biến thể
+            'ten_san_pham'          => 'required|string|max:255',
+            'loai_id'               => 'required|exists:loai_sanpham,id',
+            'gia'                   => 'required|numeric|min:0',
+            'gia_cu'                => 'nullable|numeric|min:0',
+            'mo_ta'                 => 'nullable|string',
+            'so_luong'              => 'required_if:co_bien_the,0|nullable|integer|min:0',
+            'hinhanh.*'             => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
             'bienthe.*.ten_bienthe' => 'required_with:bienthe|string|max:100',
             'bienthe.*.ma_sku'      => 'required_with:bienthe|string|max:50',
             'bienthe.*.gia'         => 'required_with:bienthe|numeric|min:0',
@@ -86,7 +82,6 @@ class SanphamController extends Controller
                 'co_bien_the'  => $coBienThe,
             ]);
 
-            // Upload ảnh
             if ($request->hasFile('hinhanh')) {
                 foreach ($request->file('hinhanh') as $i => $file) {
                     $path = $file->store('sanpham/' . $sanpham->slug . '/gallery', 'public');
@@ -99,20 +94,19 @@ class SanphamController extends Controller
                 }
             }
 
-            // Thêm biến thể
             if ($coBienThe && $request->filled('bienthe')) {
                 $bientheDir = 'sanpham/' . $sanpham->slug . '/bienthe';
-                foreach ($request->bienthe as $i => $bt) {
+                $thuTu = 0;
+                foreach ($request->bienthe as $bt) {
                     $data = [
                         'sanpham_id'  => $sanpham->id,
                         'ma_sku'      => $bt['ma_sku'],
                         'ten_bienthe' => $bt['ten_bienthe'],
                         'gia'         => $bt['gia'],
                         'so_luong'    => $bt['so_luong'],
-                        'thu_tu'      => $i,
+                        'thu_tu'      => $thuTu++,
                         'kich_hoat'   => isset($bt['kich_hoat']),
                     ];
-                    // Upload ảnh biến thể nếu có
                     if (isset($bt['hinh_anh']) && $bt['hinh_anh'] instanceof \Illuminate\Http\UploadedFile) {
                         $data['hinh_anh'] = 'storage/' . $bt['hinh_anh']->store($bientheDir, 'public');
                     }
@@ -141,13 +135,13 @@ class SanphamController extends Controller
     public function update(Request $request, Sanpham $sanpham): RedirectResponse
     {
         $request->validate([
-            'ten_san_pham'  => 'required|string|max:255',
-            'loai_id'       => 'required|exists:loai_sanpham,id',
-            'gia'           => 'required|numeric|min:0',
-            'gia_cu'        => 'nullable|numeric|min:0',
-            'mo_ta'         => 'nullable|string',
-            'so_luong'      => 'nullable|integer|min:0',
-            'hinhanh.*'     => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'ten_san_pham'          => 'required|string|max:255',
+            'loai_id'               => 'required|exists:loai_sanpham,id',
+            'gia'                   => 'required|numeric|min:0',
+            'gia_cu'                => 'nullable|numeric|min:0',
+            'mo_ta'                 => 'nullable|string',
+            'so_luong'              => 'nullable|integer|min:0',
+            'hinhanh.*'             => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'bienthe.*.ten_bienthe' => 'required_with:bienthe|string|max:100',
             'bienthe.*.ma_sku'      => 'required_with:bienthe|string|max:50',
             'bienthe.*.gia'         => 'required_with:bienthe|numeric|min:0',
@@ -157,7 +151,6 @@ class SanphamController extends Controller
         DB::transaction(function () use ($request, $sanpham) {
             $coBienThe = $request->boolean('co_bien_the');
 
-            // Cập nhật slug nếu tên đổi
             $slug = $sanpham->ten_san_pham !== $request->ten_san_pham
                 ? $this->taoSlug($request->ten_san_pham, $sanpham->id)
                 : $sanpham->slug;
@@ -173,7 +166,6 @@ class SanphamController extends Controller
                 'co_bien_the'  => $coBienThe,
             ]);
 
-            // Upload ảnh mới (nếu có)
             if ($request->hasFile('hinhanh')) {
                 $coAnhChinh = $sanpham->hinhanhs()->where('la_anh_chinh', true)->exists();
                 foreach ($request->file('hinhanh') as $i => $file) {
@@ -187,7 +179,6 @@ class SanphamController extends Controller
                 }
             }
 
-            // Xoá ảnh được chọn xoá
             if ($request->filled('xoa_anh')) {
                 foreach ($request->xoa_anh as $anhId) {
                     $anh = SanphamHinhanh::find($anhId);
@@ -198,44 +189,46 @@ class SanphamController extends Controller
                         $anh->delete();
                     }
                 }
-                // Đảm bảo còn ảnh chính
                 if (!$sanpham->fresh()->anhChinh && $sanpham->hinhanhs()->count() > 0) {
                     $sanpham->hinhanhs()->first()->update(['la_anh_chinh' => true]);
                 }
             }
 
-            // Cập nhật biến thể
             if ($coBienThe && $request->filled('bienthe')) {
                 $bientheDir = 'sanpham/' . $sanpham->slug . '/bienthe';
-                $ids = [];
-                foreach ($request->bienthe as $i => $bt) {
+                $ids   = [];
+                $thuTu = 0;
+
+                foreach ($request->bienthe as $bt) {
                     $data = [
                         'ma_sku'      => $bt['ma_sku'],
                         'ten_bienthe' => $bt['ten_bienthe'],
                         'gia'         => $bt['gia'],
                         'so_luong'    => $bt['so_luong'],
-                        'thu_tu'      => $i,
+                        'thu_tu'      => $thuTu++,
                         'kich_hoat'   => isset($bt['kich_hoat']),
                     ];
-                    // Upload ảnh biến thể mới nếu có
+
                     if (isset($bt['hinh_anh']) && $bt['hinh_anh'] instanceof \Illuminate\Http\UploadedFile) {
                         $data['hinh_anh'] = 'storage/' . $bt['hinh_anh']->store($bientheDir, 'public');
                     }
 
                     if (!empty($bt['id'])) {
-                        // Cập nhật biến thể cũ
-                        SanphamBienthe::where('id', $bt['id'])
+                        $realId = (int) str_replace('existing-', '', $bt['id']);
+
+                        SanphamBienthe::where('id', $realId)
                             ->where('sanpham_id', $sanpham->id)
                             ->update($data);
-                        $ids[] = $bt['id'];
+
+                        $ids[] = $realId;
                     } else {
-                        // Thêm biến thể mới
-                        $new = SanphamBienthe::create(array_merge($data, ['sanpham_id' => $sanpham->id]));
+                        $new   = SanphamBienthe::create(array_merge($data, ['sanpham_id' => $sanpham->id]));
                         $ids[] = $new->id;
                     }
                 }
-                // Xoá biến thể không còn trong form
+
                 $sanpham->bienthes()->whereNotIn('id', $ids)->delete();
+
             } elseif (!$coBienThe) {
                 $sanpham->bienthes()->delete();
             }
@@ -247,30 +240,30 @@ class SanphamController extends Controller
 
     public function destroy(Sanpham $sanpham): RedirectResponse
     {
-        $sanpham->delete(); // soft delete
+        $sanpham->delete();
 
         return redirect()->route('admin.sanpham.index')
             ->with('success', 'Đã xóa sản phẩm!');
     }
 
-    // ===== HELPER =====
     private function taoSlug(string $ten, ?int $boQuaId = null): string
     {
-        $slug = Str::slug($ten);
+        $slug     = Str::slug($ten);
         $original = $slug;
-        $count = 1;
+        $count    = 1;
 
         $query = Sanpham::where('slug', $slug);
         if ($boQuaId) $query->where('id', '!=', $boQuaId);
 
         while ($query->exists()) {
-            $slug = $original . '-' . $count++;
+            $slug  = $original . '-' . $count++;
             $query = Sanpham::where('slug', $slug);
             if ($boQuaId) $query->where('id', '!=', $boQuaId);
         }
 
         return $slug;
     }
+
     public function postNhap(Request $request): RedirectResponse
     {
         $request->validate([

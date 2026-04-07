@@ -4,9 +4,6 @@
 
 @section('extra-css')
 <style>
-/* ===== CHỈ GIỮ NHỮNG GÌ BOOTSTRAP KHÔNG CÓ ===== */
-
-/* Icon tròn đỏ */
 .info-icon{
 width:38px;
 height:38px;

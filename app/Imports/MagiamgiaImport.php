@@ -13,7 +13,7 @@ class MagiamgiaImport implements ToModel, WithHeadingRow
         return new Magiamgia([
             'ma_code'             => strtoupper($row['ma_code']),
             'mo_ta'               => $row['mo_ta'] ?? null,
-            'kieu_giam'           => $row['kieu_giam'],        // phan_tram hoặc co_dinh
+            'kieu_giam'           => $row['kieu_giam'],       
             'gia_tri'             => $row['gia_tri'],
             'don_hang_toi_thieu'  => $row['don_hang_toi_thieu'] ?? 0,
             'giam_toi_da'         => $row['giam_toi_da'] ?? null,

@@ -9,9 +9,8 @@ use App\Models\SanphamBienthe;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class GiohangController extends Controller
+class GioHangController extends Controller
 {
-    // Lấy hoặc tạo giỏ hàng cho user/session
     private function layGioHang()
     {
         if (Auth::check()) {
@@ -54,7 +53,6 @@ class GiohangController extends Controller
         $giohang = $this->layGioHang();
 
         // Kiểm tra đã có chưa
-        // Dùng whereNull khi bienthe_id = null vì MySQL không match NULL bằng WHERE = NULL
         $existing = ChitietGiohang::where('giohang_id', $giohang->id)
             ->where('sanpham_id', $sanpham->id)
             ->when(
@@ -79,8 +77,8 @@ class GiohangController extends Controller
         $tongSoLuong = $giohang->chitiets()->sum('so_luong');
 
         return response()->json([
-            'success'      => true,
-            'message'      => 'Đã thêm vào giỏ hàng!',
+            'success'       => true,
+            'message'       => 'Đã thêm vào giỏ hàng!',
             'tong_so_luong' => $tongSoLuong,
         ]);
     }
@@ -104,7 +102,6 @@ class GiohangController extends Controller
         ]);
     }
 
-    // Xóa 1 sản phẩm
     public function xoa($id)
     {
         $giohang = $this->layGioHang();
@@ -112,7 +109,7 @@ class GiohangController extends Controller
             ->where('giohang_id', $giohang->id)
             ->delete();
 
-        return response()->json(['success' => true]);
+        return redirect()->route('gio-hang')->with('success', 'Đã xóa sản phẩm khỏi giỏ hàng!');
     }
 
     // Xóa toàn bộ giỏ

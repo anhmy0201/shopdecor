@@ -12,9 +12,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('tintuc_id')
                   ->constrained('tintuc')
-                  ->onDelete('cascade');        // xoá bài → xoá ảnh
+                  ->onDelete('cascade');
             $table->string('duong_dan_anh');
-            $table->string('chu_thich')->nullable(); // mô tả ảnh (optional)
+            $table->string('chu_thich')->nullable();
             $table->unsignedTinyInteger('thu_tu')->default(0);
             $table->timestamps();
  

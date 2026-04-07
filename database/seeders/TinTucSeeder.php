@@ -12,7 +12,6 @@ class TinTucSeeder extends Seeder
 {
     public function run(): void
     {
-        // Lấy admin để làm tác giả
         $admin = User::where('quyen_han', User::ADMIN)->first();
 
         $baiViet = [

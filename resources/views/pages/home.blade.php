@@ -9,7 +9,8 @@
 position:relative;
 height:400px;
 overflow:hidden;
-background:#1a5276
+background:#1a5276;
+width:100%
 }
 .hero-slide{
 position:absolute;
@@ -194,7 +195,7 @@ gap:4px
 .btn-giohang{background:#1a5276}
 .btn-giohang:hover{background:#154360;color:#fff}
 </style>
-@endsectionf
+@endsection
 
 @section('content')
 
@@ -217,9 +218,7 @@ gap:4px
     ];
 @endphp
 
-<div class="bg-light py-3 border-bottom">
-    <div class="container">
-        <div class="hero-slider" id="heroSlider">
+<div class="hero-slider" id="heroSlider">
             @foreach($banners as $i => $file)
             @php $t = $slideTexts[$i] ?? $slideTexts[0]; @endphp
             <div class="hero-slide {{ $i===0?'active':'' }}">
@@ -247,7 +246,6 @@ gap:4px
             <div class="slider-progress" id="sliderProgress"></div>
             @endif
         </div>
-    </div>
 </div>
 
 {{-- ===== DANH MỤC NHANH ===== --}}

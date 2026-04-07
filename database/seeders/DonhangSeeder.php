@@ -29,7 +29,6 @@ class DonhangSeeder extends Seeder
             ['ten' => 'Võ Quốc Toàn',   'sdt' => '0955555555', 'dc' => '56 Điện Biên Phủ','px' => 'Phường Đa Kao',   'qh' => 'Quận 1',        'tt' => 'TP. Hồ Chí Minh'],
         ];
 
-        // Tạo 8 đơn hàng mẫu với các trạng thái khác nhau
         $donhangMaus = [
             ['trang_thai' => Donhang::TRANG_THAI_HOAN_TAT, 'tt_tt' => 'da_thanh_toan',   'tt_vc' => 'da_giao',          'pttt' => 'cod'],
             ['trang_thai' => Donhang::TRANG_THAI_HOAN_TAT, 'tt_tt' => 'da_thanh_toan',   'tt_vc' => 'da_giao',          'pttt' => 'momo'],
@@ -88,7 +87,6 @@ class DonhangSeeder extends Seeder
                 'ghi_chu_admin'         => null,
             ]);
 
-            // Tạo chi tiết đơn hàng — snapshot
             foreach ($chonBienthes as $bt) {
                 $soLuong = rand(1, 2);
                 ChitietDonhang::create([

@@ -16,7 +16,6 @@ class BinhluanSeeder extends Seeder
 
         if ($users->isEmpty() || $sanphams->isEmpty()) return;
 
-        // Kho nội dung bình luận thật
         $noiDungs = [
             5 => [
                 'Sản phẩm đẹp hơn ảnh, đóng gói cẩn thận. Shop giao hàng nhanh, rất hài lòng!',
@@ -37,9 +36,8 @@ class BinhluanSeeder extends Seeder
             ],
         ];
 
-        $daDanhGia = []; // tránh trùng user + sanpham
+        $daDanhGia = [];
 
-        // Mỗi sản phẩm có 3-5 bình luận
         foreach ($sanphams as $sanpham) {
             $soLuongBL = rand(3, 5);
             $shuffled  = $users->shuffle()->take($soLuongBL);
@@ -48,8 +46,6 @@ class BinhluanSeeder extends Seeder
                 $key = "{$user->id}_{$sanpham->id}";
                 if (isset($daDanhGia[$key])) continue;
                 $daDanhGia[$key] = true;
-
-                // Phân bổ sao: 70% = 5 sao, 20% = 4 sao, 10% = 3 sao
                 $rand = rand(1, 10);
                 $sao  = $rand <= 7 ? 5 : ($rand <= 9 ? 4 : 3);
 

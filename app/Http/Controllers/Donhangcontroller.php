@@ -10,10 +10,6 @@ use Illuminate\Support\Facades\Auth;
 class DonhangController extends Controller
 {
    
-
-    // =========================================================
-    // Danh sách đơn hàng
-    // =========================================================
     public function index(Request $request)
     {
         $trangThai = $request->get('trang_thai', 'tat-ca');
@@ -51,9 +47,6 @@ class DonhangController extends Controller
         return view('pages.don-hang', compact('donhangs', 'trangThai', 'dem'));
     }
 
-    // =========================================================
-    // Chi tiết đơn hàng
-    // =========================================================
     public function chiTiet($id)
     {
         $donhang = Donhang::where('id', $id)
@@ -93,9 +86,6 @@ class DonhangController extends Controller
         ));
     }
 
-    // =========================================================
-    // Hủy đơn hàng
-    // =========================================================
     public function huy($id)
     {
         $donhang = Donhang::where('id', $id)
@@ -111,9 +101,6 @@ class DonhangController extends Controller
         return back()->with('success', 'Đã hủy đơn hàng #DH' . str_pad($donhang->id, 6, '0', STR_PAD_LEFT) . '.');
     }
 
-    // =========================================================
-    // Gửi đánh giá từ trang chi tiết đơn hàng
-    // =========================================================
     public function danhGia(Request $request, $donhangId)
     {
         $request->validate([

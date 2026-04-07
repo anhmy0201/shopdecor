@@ -174,7 +174,7 @@ class TinTucController extends Controller
             );
         }
  
-        $tinTuc->delete(); // soft delete
+        $tinTuc->delete(); 
  
         return redirect()->route('admin.tin-tuc.index')
             ->with('success', 'Đã xoá tin tức!');

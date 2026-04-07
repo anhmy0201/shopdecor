@@ -8,9 +8,6 @@ use Illuminate\Support\Facades\Auth;
 
 class TraCuuDonHangController extends Controller
 {
-    // =====================================================
-    // Hiển thị form tra cứu
-    // =====================================================
     public function index()
     {
         // User đã đăng nhập → chuyển thẳng sang trang đơn hàng
@@ -22,9 +19,6 @@ class TraCuuDonHangController extends Controller
         return view('pages.tra-cuu-don-hang');
     }
 
-    // =====================================================
-    // Xử lý tra cứu — SĐT + mã đơn
-    // =====================================================
     public function traCuu(Request $request)
     {
         $request->validate([
@@ -34,8 +28,6 @@ class TraCuuDonHangController extends Controller
             'so_dien_thoai.required' => 'Vui lòng nhập số điện thoại.',
             'ma_don_hang.required'   => 'Vui lòng nhập mã đơn hàng.',
         ]);
-
-        // Mã đơn dạng "DH000123" → lấy số nguyên
         $maDon = strtoupper(trim($request->ma_don_hang));
         $id    = (int) preg_replace('/[^0-9]/', '', $maDon);
 

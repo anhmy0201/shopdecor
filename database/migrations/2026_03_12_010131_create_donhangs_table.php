@@ -24,6 +24,7 @@ return new class extends Migration
             $table->enum('phuong_thuc_thanhtoan', ['cod', 'chuyen_khoan', 'momo'])->default('cod');
             $table->enum('trang_thai_thanhtoan', ['chua_thanh_toan', 'da_thanh_toan', 'hoan_tien'])->default('chua_thanh_toan');
             $table->string('ma_giao_dich')->nullable();
+            $table->string('payos_order_code')->nullable();
 
             $table->string('ma_van_don')->nullable();
             $table->decimal('phi_ship', 10, 2)->default(0);

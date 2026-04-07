@@ -19,7 +19,7 @@ class AdminDashboardController extends Controller
             'tong_nguoi_dung'     => User::where('quyen_han', User::USER)->count(),
             'tong_binh_luan'      => Binhluan::count(),
 
-            // trang_thai = 2 (integer) là hoàn tất, cột tong_thanh_toan
+            // trang_thai = 2  hoàn tất, cột tong_thanh_toan
             'doanh_thu_thang'     => Donhang::where('trang_thai', Donhang::TRANG_THAI_HOAN_TAT)
                                         ->whereMonth('created_at', now()->month)
                                         ->whereYear('created_at', now()->year)

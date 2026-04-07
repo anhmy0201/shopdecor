@@ -15,14 +15,8 @@ class SanphamSeeder extends Seeder
         // Lấy id các danh mục
         $loaiTuong   = LoaiSanpham::where('slug', 'tuong-figurine')->first()->id;
         $loaiVPP     = LoaiSanpham::where('slug', 'van-phong-pham')->first()->id;
-
-        // =====================================================================
-        // DỮ LIỆU SẢN PHẨM THẬT — từ file cấu trúc ảnh của shop
-        // Đường dẫn ảnh: public/sanpham/{slug}/gallery/ và /bienthe/
-        // =====================================================================
         $sanphams = [
 
-            // ----- NHÓM TƯỢNG & FIGURINE -----
 
             [
                 'loai_id'      => $loaiTuong,
@@ -305,9 +299,6 @@ class SanphamSeeder extends Seeder
 
         ];
 
-        // =====================================================================
-        // TẠO SẢN PHẨM, ẢNH, BIẾN THỂ
-        // =====================================================================
         foreach ($sanphams as $data) {
             // 1. Tạo sản phẩm
             $sanpham = Sanpham::create([

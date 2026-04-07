@@ -44,7 +44,7 @@ class BaocaoController extends Controller
 
         $topKhach = User::where('quyen_han', User::USER)
             ->withCount('donhangs')
-            ->withSum('donhangs', 'tong_thanh_toan')   // cột đúng
+            ->withSum('donhangs', 'tong_thanh_toan') 
             ->orderByDesc('donhangs_sum_tong_thanh_toan')
             ->take(5)
             ->get();

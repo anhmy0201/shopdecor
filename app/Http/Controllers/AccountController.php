@@ -16,8 +16,6 @@ class AccountController extends Controller
 {
     
 
-    // ─── Trang chính ───────────────────────────────────────────────────────────
-
     public function index(): View
     {
         $user = Auth::user()->load([
@@ -28,7 +26,6 @@ class AccountController extends Controller
         return view('pages.account', compact('user'));
     }
 
-    // ─── Cập nhật thông tin cá nhân ────────────────────────────────────────────
 
     public function capNhatThongTin(Request $request): RedirectResponse
     {
@@ -64,7 +61,6 @@ class AccountController extends Controller
         return back()->with('success', 'Cập nhật thông tin thành công!');
     }
 
-    // ─── Đổi mật khẩu ──────────────────────────────────────────────────────────
 
     public function doiMatKhau(Request $request): RedirectResponse
     {
@@ -91,8 +87,6 @@ class AccountController extends Controller
 
         return back()->with('success', 'Đổi mật khẩu thành công!');
     }
-
-    // ─── Địa chỉ giao hàng ─────────────────────────────────────────────────────
 
     public function themDiaChi(Request $request): RedirectResponse
     {

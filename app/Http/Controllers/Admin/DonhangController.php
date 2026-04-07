@@ -15,18 +15,12 @@ class DonhangController extends Controller
     public function index(Request $request): View
     {
         $query = Donhang::with('user')->latest('ngay_dat');
-
-        // Filter trạng thái đơn
         if ($request->filled('trang_thai')) {
             $query->where('trang_thai', $request->trang_thai);
         }
-
-        // Filter thanh toán
         if ($request->filled('trang_thai_thanhtoan')) {
             $query->where('trang_thai_thanhtoan', $request->trang_thai_thanhtoan);
         }
-
-        // Filter vận chuyển
         if ($request->filled('trang_thai_van_chuyen')) {
             $query->where('trang_thai_van_chuyen', $request->trang_thai_van_chuyen);
         }
@@ -43,7 +37,6 @@ class DonhangController extends Controller
 
         $donhangs = $query->paginate(15)->withQueryString();
 
-        // Đếm theo từng trạng thái cho tab
         $demTrangThai = [
             'tat_ca'   => Donhang::count(),
             'moi'      => Donhang::where('trang_thai', Donhang::TRANG_THAI_MOI)->count(),

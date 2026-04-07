@@ -9,11 +9,11 @@ class HomeController extends Controller
 {
     public function index()
     {
-        // Sản phẩm nổi bật (6 SP có lượt mua cao nhất)
+        // Sản phẩm nổi bật (4 SP có lượt mua cao nhất)
         $noiBat = Sanpham::with(['anhChinh'])
             ->withCount('binhluans')
             ->orderByDesc('luot_mua')
-            ->take(6)
+            ->take(4)
             ->get();
 
         // Tất cả sản phẩm (8 SP mới nhất)

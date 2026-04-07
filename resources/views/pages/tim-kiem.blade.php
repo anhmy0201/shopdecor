@@ -387,11 +387,7 @@
 
                     {{-- Toolbar sắp xếp --}}
                     <div class="toolbar">
-                        <div style="color:#666;">
-                            Hiển thị <strong>{{ $sanphams->firstItem() }}–{{ $sanphams->lastItem() }}</strong>
-                            / {{ $sanphams->total() }} sản phẩm
-                        </div>
-                        <div class="d-flex align-items-center gap-2">
+                        <div class="ms-auto d-flex align-items-center gap-2">
                             <span style="color:#666;">Sắp xếp:</span>
                             <select class="sort-select" onchange="doiSapXep(this.value)">
                                 <option value="lien-quan" {{ $sapXep === 'lien-quan' ? 'selected' : '' }}>Liên quan nhất</option>

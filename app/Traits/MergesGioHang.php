@@ -7,10 +7,6 @@ use Illuminate\Support\Facades\Auth;
 
 trait MergesGioHang
 {
-    /**
-     * Merge giỏ hàng session (guest) vào giỏ hàng user vừa đăng nhập/đăng ký.
-     * Gọi sau khi Auth::login() đã chạy xong.
-     */
     protected function mergeGioHang(string $sessionId): void
     {
         $gioGuest = Giohang::where('session_id', $sessionId)
