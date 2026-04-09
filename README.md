@@ -1,59 +1,112 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# ShopDecor — Website Bán Đồ Trang Trí Nội Thất
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Đồ án tốt nghiệp — Website thương mại điện tử bán đồ trang trí nội thất, xây dựng bằng **Laravel 12**.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Tính năng nổi bật
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### Phía khách hàng
+- Xem sản phẩm theo danh mục, tìm kiếm, lọc
+- Sản phẩm có **biến thể** (màu sắc, kích thước) với giá riêng
+- Giỏ hàng cho cả **khách vãng lai** (session) và người đã đăng nhập — tự động merge khi login
+- Đăng nhập bằng **Google OAuth**
+- Thanh toán **COD** hoặc **chuyển khoản qua PayOS** (tích hợp thật)
+- Áp **mã giảm giá** (cố định / phần trăm, có ngày hết hạn, giới hạn số lượng)
+- Theo dõi đơn hàng, huỷ đơn, **tra cứu đơn hàng không cần đăng nhập**
+- Đánh giá sản phẩm sau khi mua
+- Quản lý sổ địa chỉ giao hàng
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Phía quản trị (Admin)
+- **Phân quyền 4 cấp**: Khách hàng → Nhân viên → Kế toán → Giám đốc
+- Dashboard thống kê: doanh thu, đơn hàng, sản phẩm bán chạy
+- Quản lý sản phẩm, danh mục, biến thể, hình ảnh
+- Quản lý đơn hàng, cập nhật trạng thái
+- Quản lý mã giảm giá
+- Báo cáo doanh thu theo tháng, top sản phẩm, top khách hàng
+- **Import / Export Excel** cho sản phẩm, đơn hàng, mã giảm giá
+- **Realtime notification** khi có đơn hàng mới (Laravel Reverb)
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## Tech stack
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+| Thành phần | Công nghệ |
+|---|---|
+| Backend | Laravel 12, PHP 8.2 |
+| Frontend | Blade, Bootstrap, Vite |
+| Database | MySQL |
+| Cache / Queue | Redis (Predis) |
+| Realtime | Laravel Reverb (WebSocket) |
+| Thanh toán | PayOS SDK |
+| Auth bên thứ 3 | Laravel Socialite (Google) |
+| Import/Export | Maatwebsite Excel |
 
-## Laravel Sponsors
+---
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## Cài đặt & chạy local
 
-### Premium Partners
+### Yêu cầu
+- PHP >= 8.2, Composer
+- Node.js >= 18
+- MySQL, Redis
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### Các bước
 
-## Contributing
+```bash
+git clone https://github.com/anhmy0201/shopdecor.git
+cd shopdecor
+composer install
+npm install
+cp .env.example .env
+php artisan key:generate
+# Cấu hình .env (xem bên dưới)
+php artisan migrate --seed
+npm run build
+composer run dev
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Cấu hình `.env` quan trọng
 
-## Code of Conduct
+```env
+DB_DATABASE=shopdecor
+DB_USERNAME=root
+DB_PASSWORD=
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+GOOGLE_REDIRECT_URI=http://localhost:8000/auth/google/callback
 
-## Security Vulnerabilities
+PAYOS_CLIENT_ID=
+PAYOS_API_KEY=
+PAYOS_CHECKSUM_KEY=
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+---
 
-## License
+## Tài khoản demo (sau khi seed)
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+| Vai trò | Email | Mật khẩu |
+|---|---|---|
+| Giám đốc / Admin | admin@shopdecor.vn | password |
+| Kế toán | ketoan@shopdecor.vn | password |
+| Nhân viên | nhanvien@shopdecor.vn | password |
+| Khách hàng | khach@shopdecor.vn | password |
+
+---
+
+## Chạy test
+
+```bash
+php artisan test
+```
+
+---
+
+## Một số quyết định kỹ thuật đáng chú ý
+
+**Race condition tồn kho:** Khi đặt hàng, dùng `DB::transaction()` kết hợp `lockForUpdate()` để đảm bảo hai người dùng đặt hàng cùng lúc không vượt quá tồn kho thực tế.
+
+**Bảo mật thanh toán:** Trạng thái thanh toán chỉ được cập nhật qua PayOS Webhook (xác thực chữ ký HMAC), không qua return URL — tránh giả mạo URL để đổi trạng thái đơn hàng.
+
+**Giỏ hàng guest:** Khách vãng lai có giỏ hàng lưu theo session. Khi đăng nhập, giỏ hàng được merge tự động, không mất dữ liệu.
