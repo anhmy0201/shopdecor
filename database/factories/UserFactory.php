@@ -25,21 +25,55 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->name(),
-            'email' => fake()->unique()->safeEmail(),
+            'ho_ten'            => fake()->name(),
+            'ten_dang_nhap'     => fake()->unique()->userName(),
+            'email'             => fake()->unique()->safeEmail(),
+            'so_dien_thoai'     => '09' . fake()->numerify('########'),
             'email_verified_at' => now(),
-            'password' => static::$password ??= Hash::make('password'),
-            'remember_token' => Str::random(10),
+            'mat_khau'          => static::$password ??= Hash::make('password'),
+            'quyen_han'         => User::USER,
+            'kich_hoat'         => true,
+            'remember_token'    => Str::random(10),
         ];
     }
 
-    /**
-     * Indicate that the model's email address should be unverified.
-     */
-    public function unverified(): static
+    /** Khách hàng thường (mặc định) */
+    public function user(): static
     {
         return $this->state(fn (array $attributes) => [
-            'email_verified_at' => null,
+            'quyen_han' => User::USER,
+        ]);
+    }
+
+    /** Nhân viên */
+    public function staff(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'quyen_han' => User::STAFF,
+        ]);
+    }
+
+    /** Kế toán */
+    public function ketoan(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'quyen_han' => User::KETOAN,
+        ]);
+    }
+
+    /** Giám đốc / Admin */
+    public function admin(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'quyen_han' => User::ADMIN,
+        ]);
+    }
+
+    /** Tài khoản bị khóa */
+    public function locked(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'kich_hoat' => false,
         ]);
     }
 }

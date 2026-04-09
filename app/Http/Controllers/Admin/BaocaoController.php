@@ -15,14 +15,27 @@ class BaocaoController extends Controller
     public function index(Request $request): View
     {
         // trang_thai = 2 (TRANG_THAI_HOAN_TAT), cột tong_thanh_toan
-        $doanhThuThang = Donhang::where('trang_thai', Donhang::TRANG_THAI_HOAN_TAT)
-            ->selectRaw('MONTH(created_at) as thang, YEAR(created_at) as nam, SUM(tong_thanh_toan) as tong')
-            ->groupByRaw('YEAR(created_at), MONTH(created_at)')
-            ->orderByRaw('YEAR(created_at) DESC, MONTH(created_at) DESC')
-            ->take(12)
-            ->get()
-            ->reverse()
-            ->values();
+        $driver = config('database.connections.' . config('database.default') . '.driver');
+
+        if ($driver === 'sqlite') {
+            $doanhThuThang = Donhang::where('trang_thai', Donhang::TRANG_THAI_HOAN_TAT)
+                ->selectRaw("CAST(strftime('%m', created_at) AS INTEGER) as thang, CAST(strftime('%Y', created_at) AS INTEGER) as nam, SUM(tong_thanh_toan) as tong")
+                ->groupByRaw("strftime('%Y', created_at), strftime('%m', created_at)")
+                ->orderByRaw("strftime('%Y', created_at) DESC, strftime('%m', created_at) DESC")
+                ->take(12)
+                ->get()
+                ->reverse()
+                ->values();
+        } else {
+            $doanhThuThang = Donhang::where('trang_thai', Donhang::TRANG_THAI_HOAN_TAT)
+                ->selectRaw('MONTH(created_at) as thang, YEAR(created_at) as nam, SUM(tong_thanh_toan) as tong')
+                ->groupByRaw('YEAR(created_at), MONTH(created_at)')
+                ->orderByRaw('YEAR(created_at) DESC, MONTH(created_at) DESC')
+                ->take(12)
+                ->get()
+                ->reverse()
+                ->values();
+        }
 
         // trang_thai là integer: 0=mới, 1=xử lý, 2=hoàn tất, 3=hủy
         $trangThaiDon = [

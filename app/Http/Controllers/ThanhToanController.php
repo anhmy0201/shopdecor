@@ -165,7 +165,6 @@ class ThanhToanController extends Controller
             $request, $giohang, $tongTienHang, $soTienGiam,
             $tongThanhToan, $magiamgiaId, $magiamgia, $email, &$donhang
         ) {
-            // 1. Tạo đơn hàng
             $donhang = Donhang::create([
                 'user_id'               => Auth::id(),
                 'magiamgia_id'          => $magiamgiaId,
@@ -186,7 +185,6 @@ class ThanhToanController extends Controller
                 'ghi_chu_khach'         => $request->ghi_chu_khach,
             ]);
 
-            // 2. Tạo chi tiết đơn hàng + trừ tồn kho atomic
             foreach ($giohang->chitiets as $ct) {
                 ChitietDonhang::create([
                     'donhang_id'   => $donhang->id,
@@ -209,15 +207,12 @@ class ThanhToanController extends Controller
                 }
             }
 
-            // 3. Tăng lượt dùng mã giảm giá
             if ($magiamgia) {
                 $magiamgia->tangDaSuDung();
             }
 
-            // 4. Xóa giỏ hàng
             $giohang->chitiets()->delete();
 
-            // 5. Lưu địa chỉ vào dia_chi_user — chỉ khi đã đăng nhập
             if (Auth::check()) {
                 $diaChiTonTai = DiaChiUser::where('user_id', Auth::id())
                     ->where('dia_chi_chi_tiet', $request->dia_chi_chi_tiet)
@@ -322,16 +317,16 @@ class ThanhToanController extends Controller
         return redirect($response['checkoutUrl']);
     }
 
+    /**
+     * Return URL sau khi PayOS redirect về — CHỈ redirect, KHÔNG cập nhật DB.
+     * Việc cập nhật trang_thai_thanhtoan phải do webhook (đã xác thực chữ ký) xử lý.
+     * Nếu để URL này cập nhật DB, kẻ tấn công có thể gọi URL bất kỳ lúc nào
+     * để giả vờ thanh toán thành công mà không cần chuyển tiền thật.
+     */
     public function payosSuccess(Request $request)
     {
-        $donhang = Donhang::find($request->donhang_id);
-
-        if ($donhang && $donhang->trang_thai_thanhtoan !== 'da_thanh_toan') {
-            $donhang->update(['trang_thai_thanhtoan' => 'da_thanh_toan']);
-        }
-
         return redirect()->route('xac-nhan-don-hang', $request->donhang_id)
-            ->with('success', 'Thanh toán thành công! Đơn hàng đang được xử lý.');
+            ->with('success', 'Cảm ơn! Đơn hàng đang chờ xác nhận thanh toán.');
     }
 
     public function payosCancel(Request $request)
@@ -340,6 +335,10 @@ class ThanhToanController extends Controller
             ->with('warning', 'Bạn đã hủy thanh toán. Đơn hàng vẫn được giữ, có thể thanh toán lại sau.');
     }
 
+    /**
+     * Webhook từ PayOS — có xác thực chữ ký checksum.
+     * Đây là nơi DUY NHẤT được phép cập nhật trang_thai_thanhtoan = 'da_thanh_toan'.
+     */
     public function payosWebhook(Request $request)
     {
         $payos = new PayOS(
