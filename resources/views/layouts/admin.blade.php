@@ -106,10 +106,76 @@
             min-width: 300px;
         }
 
+        /* ── BADGE QUYỀN HẠN ── */
+        .badge-role-admin  { background: #c0392b; }
+        .badge-role-ketoan { background: #2980b9; }
+        .badge-role-staff  { background: #27ae60; }
+
         @media(max-width:768px){
             .sidebar { width:100%; height:auto; position:relative; }
             .main-content { margin-left:0; }
         }
+
+        /* ── REALTIME TOAST ── */
+        @keyframes rtSlideIn {
+            from { opacity:0; transform:translateX(40px); }
+            to   { opacity:1; transform:translateX(0); }
+        }
+        @keyframes rtFadeOut {
+            from { opacity:1; }
+            to   { opacity:0; transform:translateX(40px); }
+        }
+        #rt-toast-wrap {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 99999;
+            display: flex;
+            flex-direction: column-reverse;
+            gap: 10px;
+            pointer-events: none;
+        }
+        .rt-toast {
+            background: #fff;
+            border-left: 4px solid #e74c3c;
+            border-radius: 6px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+            padding: 14px 16px;
+            min-width: 300px;
+            max-width: 360px;
+            pointer-events: all;
+            animation: rtSlideIn .3s ease;
+            cursor: pointer;
+        }
+        .rt-toast:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.2); }
+        .rt-toast .rt-title {
+            font-weight: 700;
+            font-size: 0.88rem;
+            color: #1a5276;
+            margin-bottom: 4px;
+        }
+        .rt-toast .rt-body { font-size: 0.82rem; color: #333; line-height: 1.6; }
+        .rt-toast .rt-meta { font-size: 0.75rem; color: #888; margin-top: 6px; }
+        .rt-toast .rt-close {
+            float: right;
+            background: none;
+            border: none;
+            font-size: 1.1rem;
+            color: #aaa;
+            cursor: pointer;
+            line-height: 1;
+            padding: 0;
+            margin-left: 8px;
+        }
+        .rt-toast .rt-close:hover { color: #e74c3c; }
+        .rt-toast .rt-link {
+            float: right;
+            color: #1a5276;
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-decoration: none;
+        }
+        .rt-toast .rt-link:hover { color: #e74c3c; }
     </style>
     @yield('extra-css')
 </head>
@@ -124,6 +190,7 @@
 
     <ul class="sidebar-menu">
 
+        {{-- Dashboard — tất cả --}}
         <li>
             <a href="{{ route('admin.dashboard') }}"
                class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
@@ -131,6 +198,7 @@
             </a>
         </li>
 
+        {{-- ── SẢN PHẨM ── --}}
         <li><div class="sidebar-section">Sản Phẩm</div></li>
         <li>
             <a href="{{ route('admin.loai-sanpham.index') }}"
@@ -145,14 +213,18 @@
             </a>
         </li>
 
+        {{-- ── BÁN HÀNG ── --}}
         <li><div class="sidebar-section">Bán Hàng</div></li>
         <li>
             <a href="{{ route('admin.donhang.index') }}"
-               class="{{ request()->routeIs('admin.donhang.*') ? 'active' : '' }}">
+               class="{{ request()->routeIs('admin.donhang.*') ? 'active' : '' }}"
+               id="sidebar-don-hang-link">
                 <i class="fas fa-shopping-bag fa-fw"></i> Đơn Hàng
                 @php $choXacNhan = \App\Models\Donhang::where('trang_thai', \App\Models\Donhang::TRANG_THAI_MOI)->count(); @endphp
                 @if($choXacNhan > 0)
-                    <span class="badge bg-danger ms-auto" style="font-size:0.65rem">{{ $choXacNhan }}</span>
+                    <span class="badge bg-danger ms-auto" id="rt-badge-don" style="font-size:0.65rem">{{ $choXacNhan }}</span>
+                @else
+                    <span class="badge bg-danger ms-auto" id="rt-badge-don" style="font-size:0.65rem;display:none">0</span>
                 @endif
             </a>
         </li>
@@ -163,6 +235,8 @@
             </a>
         </li>
 
+        {{-- ── NGƯỜI DÙNG — chỉ admin ── --}}
+        @if(Auth::user()->isAdmin())
         <li><div class="sidebar-section">Người Dùng</div></li>
         <li>
             <a href="{{ route('admin.nguoidung.index') }}"
@@ -170,6 +244,9 @@
                 <i class="fas fa-users fa-fw"></i> Người Dùng
             </a>
         </li>
+        @endif
+
+        {{-- Bình luận & Tin tức --}}
         <li>
             <a href="{{ route('admin.binhluan.index') }}"
                class="{{ request()->routeIs('admin.binhluan.*') ? 'active' : '' }}">
@@ -180,15 +257,15 @@
                 @endif
             </a>
         </li>
-
         <li>
             <a href="{{ route('admin.tin-tuc.index') }}"
-            class="{{ request()->routeIs('admin.tin-tuc.*') ? 'active' : '' }}">
+               class="{{ request()->routeIs('admin.tin-tuc.*') ? 'active' : '' }}">
                 <i class="fas fa-newspaper fa-fw"></i> Tin Tức
             </a>
         </li>
 
-
+        {{-- ── BÁO CÁO & HỆ THỐNG — kế toán trở lên ── --}}
+        @if(Auth::user()->quyen_han >= \App\Models\User::KETOAN)
         <li><div class="sidebar-section">Báo Cáo & Hệ Thống</div></li>
         <li>
             <a href="{{ route('admin.baocao.index') }}"
@@ -202,6 +279,10 @@
                 <i class="fas fa-cog fa-fw"></i> Cài Đặt
             </a>
         </li>
+        @endif
+
+        {{-- Hồ sơ & Khác --}}
+        <li><div class="sidebar-section">Tài Khoản</div></li>
         <li>
             <a href="{{ route('admin.profile') }}"
                class="{{ request()->routeIs('admin.profile') ? 'active' : '' }}">
@@ -246,10 +327,16 @@
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end">
                     <li>
-                        <span class="dropdown-item-text small text-muted">
-                            @if(Auth::user()->isAdmin()) Admin
-                            @elseif(Auth::user()->isStaff()) Nhân viên
+                        <span class="dropdown-item-text small text-muted d-flex align-items-center gap-2">
+                            @php $u = Auth::user(); @endphp
+                            @if($u->isAdmin())
+                                <span class="badge badge-role-admin">Giám đốc</span>
+                            @elseif($u->isKetoan())
+                                <span class="badge badge-role-ketoan">Kế toán</span>
+                            @elseif($u->isNhanVien())
+                                <span class="badge badge-role-staff">Nhân viên</span>
                             @endif
+                            {{ $u->email }}
                         </span>
                     </li>
                     <li><hr class="dropdown-divider m-0"></li>
@@ -306,7 +393,83 @@
 
 </div>
 
+{{-- ── REALTIME TOAST CONTAINER ── --}}
+<div id="rt-toast-wrap"></div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+@vite(['resources/js/app.js'])
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    if (typeof window.Echo === 'undefined') return;
+
+    window.Echo.channel('admin-notifications')
+        .listen('.don-hang-moi', function (data) {
+            hienToast(data);
+            capNhatBadge();
+            phatAmThanh();
+        });
+
+    function hienToast(data) {
+        const wrap = document.getElementById('rt-toast-wrap');
+        const tien = Number(data.tong_tien).toLocaleString('vi-VN');
+
+        const toast = document.createElement('div');
+        toast.className = 'rt-toast';
+        toast.innerHTML = `
+            <button class="rt-close" onclick="event.stopPropagation();this.closest('.rt-toast').remove()">×</button>
+            <div class="rt-title">
+                <i class="fas fa-shopping-bag me-1" style="color:#e74c3c"></i>
+                Đơn hàng mới!
+            </div>
+            <div class="rt-body">
+                <strong>${data.ten_khach}</strong> &middot; ${data.so_dt}<br>
+                <span style="color:#e74c3c;font-weight:700">${tien}đ</span>
+                &middot; <span style="color:#888">${data.phuong_thuc}</span>
+            </div>
+            <div class="rt-meta">
+                ${data.ma_don} &middot; ${data.thoi_gian}
+                <a href="${data.url}" class="rt-link" onclick="event.stopPropagation()">Xem →</a>
+            </div>
+        `;
+
+        toast.addEventListener('click', function () {
+            window.location.href = data.url;
+        });
+
+        wrap.prepend(toast);
+        setTimeout(function () {
+            toast.style.animation = 'rtFadeOut .4s ease forwards';
+            setTimeout(() => toast.remove(), 400);
+        }, 8000);
+    }
+
+    function capNhatBadge() {
+        const badge = document.getElementById('rt-badge-don');
+        if (!badge) return;
+        const soHienTai = parseInt(badge.textContent) || 0;
+        badge.textContent = soHienTai + 1;
+        badge.style.display = 'inline-block';
+    }
+
+    function phatAmThanh() {
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc  = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.frequency.setValueAtTime(880, ctx.currentTime);
+            osc.frequency.setValueAtTime(660, ctx.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.3, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + 0.4);
+        } catch (e) { }
+    }
+});
+</script>
+
 @yield('extra-js')
 </body>
 </html>

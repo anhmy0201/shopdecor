@@ -43,6 +43,7 @@ class NguoidungController extends Controller
             'tat_ca' => User::count(),
             'user'   => User::where('quyen_han', User::USER)->count(),
             'staff'  => User::where('quyen_han', User::STAFF)->count(),
+            'ketoan' => User::where('quyen_han', User::KETOAN)->count(),
             'admin'  => User::where('quyen_han', User::ADMIN)->count(),
         ];
 
@@ -82,13 +83,13 @@ class NguoidungController extends Controller
             'ho_ten'       => 'required|string|max:100',
             'email'        => 'required|email|unique:users,email,' . $nguoidung->id,
             'so_dien_thoai'=> 'nullable|string|max:15',
-            'quyen_han'    => 'required|in:0,1,2',
+            'quyen_han'    => 'required|in:0,1,2,3',
             'kich_hoat'    => 'boolean',
             'mat_khau'     => 'nullable|string|min:6|confirmed',
         ], [
             'ho_ten.required'   => 'Vui lòng nhập họ tên.',
             'email.unique'      => 'Email này đã được dùng.',
-            'mat_khau.min'      => 'Mật khẩu tối thiểu 6 ký tự.',
+            'mat_khau.min'      => 'Mật khẩu tối thiểu 6 ký tự.',   
             'mat_khau.confirmed'=> 'Xác nhận mật khẩu không khớp.',
         ]);
 

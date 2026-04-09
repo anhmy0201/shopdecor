@@ -10,7 +10,6 @@
     </div>
 </div>
 
-{{-- TABS QUYỀN HẠN --}}
 <div class="card mb-3">
     <div class="card-body py-2 px-3">
         <div class="d-flex gap-2 flex-wrap">
@@ -27,14 +26,17 @@
                 Nhân Viên <span class="badge bg-info text-dark ms-1">{{ $demQuyen['staff'] }}</span>
             </a>
             <a href="{{ route('admin.nguoidung.index', ['quyen_han' => 2]) }}"
-               class="btn btn-sm {{ request('quyen_han') === '2' ? 'btn-danger' : 'btn-outline-danger' }}">
-                Admin <span class="badge bg-danger ms-1">{{ $demQuyen['admin'] }}</span>
+               class="btn btn-sm {{ request('quyen_han') === '2' ? 'btn-warning' : 'btn-outline-warning' }}">
+                Kế Toán <span class="badge bg-warning text-dark ms-1">{{ $demQuyen['ketoan'] }}</span>
+            </a>
+            <a href="{{ route('admin.nguoidung.index', ['quyen_han' => 3]) }}"
+               class="btn btn-sm {{ request('quyen_han') === '3' ? 'btn-danger' : 'btn-outline-danger' }}">
+                Giám Đốc <span class="badge bg-danger ms-1">{{ $demQuyen['admin'] }}</span>
             </a>
         </div>
     </div>
 </div>
 
-{{-- BỘ LỌC --}}
 <div class="card mb-3">
     <div class="card-body py-2">
         <form method="GET" class="row g-2 align-items-center">
@@ -61,7 +63,6 @@
     </div>
 </div>
 
-{{-- BẢNG --}}
 <div class="card">
     <div class="card-header">
         <i class="fas fa-users me-2"></i>Danh Sách Người Dùng
@@ -105,8 +106,10 @@
                     </td>
                     <td class="text-center">
                         @if($user->isAdmin())
-                            <span class="badge bg-danger">Admin</span>
-                        @elseif($user->isStaff())
+                            <span class="badge bg-danger">Giám đốc</span>
+                        @elseif($user->isKetoan())
+                            <span class="badge bg-warning text-dark">Kế toán</span>
+                        @elseif($user->isNhanVien())
                             <span class="badge bg-info text-dark">Nhân viên</span>
                         @else
                             <span class="badge bg-primary">Khách hàng</span>

@@ -30,10 +30,8 @@
 
 <div class="row g-3">
 
-    {{-- CỘT TRÁI --}}
     <div class="col-lg-4">
 
-        {{-- Thông tin cá nhân --}}
         <div class="card mb-3">
             <div class="card-body p-4 text-center">
                 @if($nguoidung->hinh_anh)
@@ -49,8 +47,10 @@
                 <div class="text-muted small mb-2">{{ $nguoidung->email }}</div>
                 <div class="d-flex justify-content-center gap-2">
                     @if($nguoidung->isAdmin())
-                        <span class="badge bg-danger">Admin</span>
-                    @elseif($nguoidung->isStaff())
+                        <span class="badge bg-danger">Giám đốc</span>
+                    @elseif($nguoidung->isKetoan())
+                        <span class="badge bg-warning text-dark">Kế toán</span>
+                    @elseif($nguoidung->isNhanVien())
                         <span class="badge bg-info text-dark">Nhân viên</span>
                     @else
                         <span class="badge bg-primary">Khách hàng</span>
@@ -80,7 +80,6 @@
             </div>
         </div>
 
-        {{-- Thống kê --}}
         <div class="card mb-3">
             <div class="card-header"><i class="fas fa-chart-bar me-2"></i>Thống Kê</div>
             <div class="card-body p-3">
@@ -115,7 +114,6 @@
             </div>
         </div>
 
-        {{-- Địa chỉ --}}
         @if($nguoidung->diaChis->count() > 0)
         <div class="card">
             <div class="card-header"><i class="fas fa-map-marker-alt me-2"></i>Địa Chỉ Giao Hàng</div>
@@ -141,10 +139,8 @@
 
     </div>
 
-    {{-- CỘT PHẢI --}}
     <div class="col-lg-8">
 
-        {{-- Lịch sử đơn hàng --}}
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <span><i class="fas fa-shopping-bag me-2"></i>Lịch Sử Đơn Hàng</span>

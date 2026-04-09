@@ -45,10 +45,11 @@ class GoogleController extends Controller
                 'kich_hoat'     => true,
             ]);
         }
+        $sessionId = session()->getId();
 
         Auth::login($user, true);
 
-        $this->mergeGioHang(session()->getId());
+        $this->mergeGioHang($sessionId);
 
         return redirect('/')->with('success', 'Đăng nhập bằng Google thành công!');
     }

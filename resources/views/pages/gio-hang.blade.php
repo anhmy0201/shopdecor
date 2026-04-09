@@ -3,13 +3,11 @@
 
 @section('extra-css')
 <style>
-    /* Bảng giỏ hàng */
     .cart-table { width:100%; border-collapse:collapse; font-size:0.88rem; background:#fff; }
     .cart-table th { background:#f5f5f5; border:1px solid #ddd; padding:10px 12px; font-weight:700; color:#333; text-align:center; }
     .cart-table td { border:1px solid #eee; padding:12px; vertical-align:middle; }
     .cart-table tbody tr:hover { background:#fafafa; }
 
-    /* Số lượng */
     .qty-box { display:flex; align-items:center; justify-content:center; }
     .qty-btn { width:30px; height:30px; border:1px solid #ddd; background:#f5f5f5; cursor:pointer; font-size:0.9rem; display:flex; align-items:center; justify-content:center; }
     .qty-btn:hover { background:#ddd; }
@@ -19,7 +17,6 @@
 
 @section('content')
 
-{{-- Breadcrumb --}}
 <div style="background:#eaf4fb;border-bottom:1px solid #d0e8f5;padding:8px 0;font-size:0.82rem;">
     <div class="container">
         <a href="{{ url('/') }}" class="text-decoration-none" style="color:#1a5276">
@@ -42,7 +39,6 @@
     @if($giohang->chitiets->count() > 0)
     <div class="row align-items-start g-4">
 
-        {{-- BẢNG SẢN PHẨM --}}
         <div class="col-lg-8">
             <div class="fw-bold py-2 px-3 mb-0 text-white" style="background:#1a5276;font-size:0.95rem">
                 <i class="fas fa-shopping-cart me-2"></i>GIỎ HÀNG ({{ $giohang->chitiets->count() }} sản phẩm)
@@ -85,11 +81,12 @@
                             <td>
                                 <div class="qty-box">
                                     <button class="qty-btn" onclick="doiSoLuong({{ $ct->id }}, -1)">−</button>
+                                    {{-- Bỏ onchange, chỉ dùng onblur để xử lý khi nhập tay --}}
                                     <input type="number" class="qty-input"
                                            id="qty-{{ $ct->id }}"
                                            value="{{ $ct->so_luong }}"
                                            min="1" max="99"
-                                           onchange="capNhatSoLuong({{ $ct->id }})">
+                                           onblur="capNhatSoLuong({{ $ct->id }})">
                                     <button class="qty-btn" onclick="doiSoLuong({{ $ct->id }}, 1)">+</button>
                                 </div>
                             </td>
@@ -97,7 +94,6 @@
                                 {{ number_format($ct->thanh_tien) }}đ
                             </td>
                             <td class="text-center">
-                                {{-- Dùng form thay vì JS fetch để tránh lỗi 405/404 trên XAMPP --}}
                                 <form action="{{ url('/gio-hang/xoa/' . $ct->id) }}" method="POST"
                                       onsubmit="return confirm('Xóa sản phẩm này khỏi giỏ hàng?')">
                                     @csrf
@@ -123,7 +119,6 @@
             </div>
         </div>
 
-        {{-- TỔNG TIỀN --}}
         <div class="col-lg-4">
             <div class="border">
                 <div class="fw-bold py-2 px-3 text-white text-uppercase" style="background:#1a5276;font-size:0.9rem">
@@ -155,7 +150,6 @@
                 </div>
             </div>
 
-            {{-- Chính sách --}}
             <div class="border mt-3 p-3 bg-white small text-muted">
                 <div class="mb-2"><i class="fas fa-truck text-danger me-2"></i>Miễn phí ship đơn từ 500.000đ</div>
                 <div class="mb-2"><i class="fas fa-undo text-danger me-2"></i>Đổi trả trong 7 ngày</div>
@@ -183,31 +177,45 @@
 
 @section('extra-js')
 <script>
-const CSRF = document.querySelector('meta[name="csrf-token"]').content;
+const CSRF        = document.querySelector('meta[name="csrf-token"]').content;
+const BASE_URL    = "{{ url('/gio-hang/cap-nhat') }}";
+const debounceTimers = {};
 
 function doiSoLuong(id, delta) {
     const input = document.getElementById('qty-' + id);
     const val = parseInt(input.value) + delta;
     if (val >= 1 && val <= 99) {
         input.value = val;
-        capNhatSoLuong(id);
+        clearTimeout(debounceTimers[id]);
+        debounceTimers[id] = setTimeout(() => capNhatSoLuong(id), 300);
     }
 }
 
 function capNhatSoLuong(id) {
-    const soLuong = parseInt(document.getElementById('qty-' + id).value);
-    if (soLuong < 1) return;
-    fetch(`/gio-hang/cap-nhat/${id}`, {
+    clearTimeout(debounceTimers[id]);
+
+    const input  = document.getElementById('qty-' + id);
+    const soLuong = parseInt(input.value);
+    if (!soLuong || soLuong < 1) {
+        input.value = 1;
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('_token', CSRF);
+    formData.append('_method', 'PATCH');
+    formData.append('so_luong', soLuong);
+
+    fetch(`${BASE_URL}/${id}`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF },
-        body: JSON.stringify({ so_luong: soLuong, _method: 'PATCH' })
+        body: formData
     })
     .then(r => r.json())
     .then(data => {
         if (data.success) {
             document.getElementById('thanhtien-' + id).textContent = data.thanh_tien;
-            document.getElementById('tamTinh').textContent = data.tong_tien;
-            document.getElementById('tongCong').textContent = data.tong_tien;
+            document.getElementById('tamTinh').textContent          = data.tong_tien;
+            document.getElementById('tongCong').textContent         = data.tong_tien;
         }
     })
     .catch(err => console.error('Lỗi cập nhật:', err));

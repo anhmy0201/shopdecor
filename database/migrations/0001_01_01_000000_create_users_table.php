@@ -17,7 +17,9 @@ return new class extends Migration
             $table->string('so_dien_thoai', 15)->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('mat_khau');
-            $table->tinyInteger('quyen_han')->default(0)->comment('0=user, 1=staff, 2=admin');
+            $table->tinyInteger('quyen_han')
+                  ->default(0)
+                  ->comment('0=user, 1=staff, 2=ketoan, 3=admin');
             $table->boolean('kich_hoat')->default(true);
             $table->rememberToken();
             $table->timestamps();

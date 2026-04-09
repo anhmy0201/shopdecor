@@ -14,9 +14,11 @@ class SanphamSeeder extends Seeder
     {
         // Lấy id các danh mục
         $loaiTuong   = LoaiSanpham::where('slug', 'tuong-figurine')->first()->id;
+        $loaiDen     = LoaiSanpham::where('slug', 'den-decor')->first()->id;
+        $loaiCay     = LoaiSanpham::where('slug', 'cay-xanh-mini')->first()->id;
         $loaiVPP     = LoaiSanpham::where('slug', 'van-phong-pham')->first()->id;
-        $sanphams = [
 
+        $sanphams = [
 
             [
                 'loai_id'      => $loaiTuong,
@@ -205,7 +207,254 @@ class SanphamSeeder extends Seeder
                 ],
             ],
 
-            // ----- NHÓM VĂN PHÒNG PHẨM -----
+
+            [
+                'loai_id'      => $loaiTuong,
+                'ten_san_pham' => 'Decor Hạc Đồng Phong Thủy',
+                'slug'         => 'decor-hac-dong-phong-thuy',
+                'gia'          => 1380000,
+                'gia_cu'       => 1680000,
+                'mo_ta'        => 'Decor hạc đồng phong thủy cao cấp, được đúc từ đồng nguyên chất với kỹ thuật thủ công tỉ mỉ. Hạc là biểu tượng của trường thọ, thanh cao và điềm lành trong văn hóa phương Đông. Đặt trên bàn làm việc hay tủ kệ, sản phẩm không chỉ mang vẻ đẹp thẩm mỹ tinh tế mà còn giúp thu hút năng lượng tích cực, mang lại sự bình an và tài lộc cho gia chủ.',
+                'co_bien_the'  => true,
+                'gallery'      => [
+                    ['file' => 'Decor-hac-dong-phong-thuy-1.jpg', 'chinh' => true],
+                    ['file' => 'Decor-hac-dong-phong-thuy-2.jpg', 'chinh' => false],
+                    ['file' => 'Decor-hac-dong-phong-thuy-3.jpg', 'chinh' => false],
+                ],
+                'bienthes'     => [
+                    [
+                        'ten_bienthe' => 'Size S – 23cm',
+                        'ma_sku'      => 'DHDPT-A1',
+                        'gia'         => 1380000,
+                        'so_luong'    => 15,
+                        'hinh_anh'    => 'Decor-hac-dong-phong-thuy-A1.jpg',
+                    ],
+                    [
+                        'ten_bienthe' => 'Size M – 32cm',
+                        'ma_sku'      => 'DHDPT-A2',
+                        'gia'         => 1850000,
+                        'so_luong'    => 10,
+                        'hinh_anh'    => 'Decor-hac-dong-phong-thuy-A2.jpg',
+                    ],
+                    [
+                        'ten_bienthe' => 'Size L – 38cm',
+                        'ma_sku'      => 'DHDPT-A3',
+                        'gia'         => 2350000,
+                        'so_luong'    => 7,
+                        'hinh_anh'    => 'Decor-hac-dong-phong-thuy-A3.jpg',
+                    ],
+                ],
+            ],
+
+
+            [
+                'loai_id'      => $loaiDen,
+                'ten_san_pham' => 'Đèn Để Bàn Cặp Hươu Decor',
+                'slug'         => 'den-de-ban-cap-huou-decor',
+                'gia'          => 620000,
+                'gia_cu'       => 780000,
+                'mo_ta'        => 'Đèn để bàn tạo hình cặp hươu decor độc đáo, ánh sáng LED ấm áp dịu nhẹ tạo nên không gian làm việc thư giãn và ấm cúng. Thiết kế nghệ thuật với đường nét uốn lượn mềm mại, chất liệu kim loại sơn tĩnh điện bền đẹp. Phù hợp đặt trang trí bàn làm việc, bàn đọc sách hoặc phòng ngủ, vừa thắp sáng vừa là điểm nhấn thẩm mỹ thu hút ánh nhìn.',
+                'co_bien_the'  => false,
+                'gallery'      => [
+                    ['file' => 'Den-de-ban-cap-huou-decor-1.jpg', 'chinh' => true],
+                    ['file' => 'Den-de-ban-cap-huou-decor-3.jpg', 'chinh' => false],
+                    ['file' => 'Den-de-ban-cap-huou-decor-2.jpg', 'chinh' => false],
+                ],
+                'bienthes'     => [],
+            ],
+
+            [
+                'loai_id'      => $loaiDen,
+                'ten_san_pham' => 'Đèn Bàn Làm Việc IZKEA DB50',
+                'slug'         => 'den-ban-lam-viec-izkea-db50',
+                'gia'          => 485000,
+                'gia_cu'       => 590000,
+                'mo_ta'        => 'Đèn bàn làm việc IZKEA DB50 thiết kế tối giản hiện đại, ánh sáng LED chống chói bảo vệ mắt tối ưu trong các buổi làm việc dài. Cần đèn linh hoạt điều chỉnh góc chiếu 360 độ, công tắc cảm ứng tiện lợi với 3 chế độ sáng và điều chỉnh độ sáng vô cấp. Cổng sạc USB tích hợp giúp bạn sạc điện thoại trong lúc làm việc mà không cần thêm ổ điện.',
+                'co_bien_the'  => false,
+                'gallery'      => [
+                    ['file' => 'den-ban-lam-viec-izkea-db50-hoaianvendor-4.jpg', 'chinh' => true],
+                    ['file' => 'den-ban-lam-viec-izkea-db50-hoaianvendor-2.jpg', 'chinh' => false],
+                    ['file' => 'den-ban-lam-viec-izkea-db50-hoaianvendor-1.jpg', 'chinh' => false],
+                ],
+                'bienthes'     => [],
+            ],
+
+            [
+                'loai_id'      => $loaiDen,
+                'ten_san_pham' => 'Đèn LED Trang Trí Phòng Ngủ Tsuisuto DB07',
+                'slug'         => 'den-led-trang-tri-phong-ngu-tsuisuto-db07',
+                'gia'          => 320000,
+                'gia_cu'       => 420000,
+                'mo_ta'        => 'Đèn LED trang trí phòng ngủ Tsuisuto DB07 với hiệu ứng ánh sáng lung linh tạo bầu không khí mơ mộng và lãng mạn. Dải LED nhiều màu sắc điều chỉnh qua remote hoặc app điện thoại, hỗ trợ các chế độ nhấp nháy theo nhạc sinh động. Dán tường hoặc quấn quanh đồ vật dễ dàng, tiêu thụ điện năng cực thấp, an toàn sử dụng liên tục cho phòng ngủ và góc setup bàn làm việc.',
+                'co_bien_the'  => false,
+                'gallery'      => [
+                    ['file' => 'den-led-trang-tri-phong-ngu-tsuisuto-db07-1.jpg', 'chinh' => true],
+                    ['file' => 'den-led-trang-tri-phong-ngu-tsuisuto-db07-2.jpg', 'chinh' => false],
+                    ['file' => 'den-led-trang-tri-phong-ngu-tsuisuto-db07-4.jpg', 'chinh' => false],
+                ],
+                'bienthes'     => [],
+            ],
+
+            [
+                'loai_id'      => $loaiDen,
+                'ten_san_pham' => 'Đèn Để Bàn Đọc Sách Giá Rẻ Manabu DB04',
+                'slug'         => 'den-de-ban-doc-sach-gia-re-manabu-db04',
+                'gia'          => 185000,
+                'gia_cu'       => 240000,
+                'mo_ta'        => 'Đèn để bàn đọc sách Manabu DB04 nhỏ gọn tiện dụng, ánh sáng LED trắng trung tính 4000K không gây mỏi mắt kể cả khi đọc sách nhiều giờ liền. Cổng sạc USB cắm nguồn tiện lợi không cần thay pin, thân đèn uốn linh hoạt điều hướng ánh sáng theo ý muốn. Thiết kế nhẹ nhàng dễ mang theo, phù hợp sử dụng tại bàn học, bàn làm việc hoặc trên giường trước khi ngủ.',
+                'co_bien_the'  => true,
+                'gallery'      => [
+                    ['file' => 'den-de-ban-doc-sach-gia-re-manabu-db04-2.jpg', 'chinh' => true],
+                ],
+                'bienthes'     => [
+                    [
+                        'ten_bienthe' => 'Trắng',
+                        'ma_sku'      => 'MANABU-DB04-TG',
+                        'gia'         => 185000,
+                        'so_luong'    => 30,
+                        'hinh_anh'    => 'den-de-ban-doc-sach-gia-re-manabu-db04-1.jpg',
+                    ],
+                    [
+                        'ten_bienthe' => 'Đen',
+                        'ma_sku'      => 'MANABU-DB04-DN',
+                        'gia'         => 185000,
+                        'so_luong'    => 30,
+                        'hinh_anh'    => 'den-de-ban-doc-sach-gia-re-manabu-db04-2.jpg',
+                    ],
+                ],
+            ],
+
+            [
+                'loai_id'      => $loaiCay,
+                'ten_san_pham' => 'Chậu Kim Ngân 3 Thân',
+                'slug'         => 'chau-kim-ngan-3-than',
+                'gia'          => 145000,
+                'gia_cu'       => 190000,
+                'mo_ta'        => 'Chậu kim ngân 3 thân bện xoắn thủ công tinh tế, cây khỏe mạnh tươi tốt quanh năm với lá xanh óng ánh. Kim ngân là loài cây phong thủy biểu tượng cho tài lộc, may mắn và thịnh vượng trong phong thủy học. Cây dễ chăm sóc, chịu bóng tốt, phù hợp đặt trong nhà, văn phòng hay trên bàn làm việc để thanh lọc không khí và tạo năng lượng tích cực.',
+                'co_bien_the'  => false,
+                'gallery'      => [
+                    ['file' => 'chau-kim-ngan-3-than-1.jpg', 'chinh' => true],
+                    ['file' => 'chau-kim-ngan-3-than-2.jpg', 'chinh' => false],
+                ],
+                'bienthes'     => [],
+            ],
+
+            [
+                'loai_id'      => $loaiCay,
+                'ten_san_pham' => 'Kim Tiền Để Bàn',
+                'slug'         => 'kim-tien-de-ban',
+                'gia'          => 110000,
+                'gia_cu'       => 150000,
+                'mo_ta'        => 'Cây kim tiền để bàn mini xinh xắn trong chậu sứ nhỏ gọn, mang ý nghĩa phong thủy thu hút tài lộc và tiền bạc. Lá cây tròn xanh mướt như những đồng xu xếp chồng lên nhau tượng trưng cho sự sung túc và giàu có. Cây phát triển tốt trong điều kiện ánh sáng yếu, ít cần tưới nước — lý tưởng cho người bận rộn muốn có một góc xanh trên bàn làm việc.',
+                'co_bien_the'  => true,
+                'gallery'      => [
+                    ['file' => 'kim-tien-de-ban.jpg', 'chinh' => true],
+                ],
+                'bienthes'     => [
+                    [
+                        'ten_bienthe' => 'Chậu Hồng',
+                        'ma_sku'      => 'KTDB-HONG',
+                        'gia'         => 110000,
+                        'so_luong'    => 25,
+                        'hinh_anh'    => 'cay-kim-tien-size-s-1.jpg',
+                    ],
+                    [
+                        'ten_bienthe' => 'Chậu Trắng',
+                        'ma_sku'      => 'KTDB-TRANG',
+                        'gia'         => 110000,
+                        'so_luong'    => 25,
+                        'hinh_anh'    => 'cay-kim-tien-size-s-2.jpg',
+                    ],
+                ],
+            ],
+
+            [
+                'loai_id'      => $loaiCay,
+                'ten_san_pham' => 'Chậu Hoa Dành Dành',
+                'slug'         => 'chau-hoa-danh-danh',
+                'gia'          => 125000,
+                'gia_cu'       => 165000,
+                'mo_ta'        => 'Hoa dành dành trồng chậu mini thanh lịch với hương thơm dịu nhẹ tự nhiên, mang lại cảm giác thư thái và dễ chịu cho không gian làm việc. Cánh hoa trắng muốt hoặc hồng phấn mỏng manh xinh xắn, nở bung tỏa hương suốt mùa hè. Chậu sứ nhỏ gọn đặt vừa vặn trên góc bàn, vừa đẹp mắt vừa giúp thanh lọc không khí và giảm căng thẳng hiệu quả.',
+                'co_bien_the'  => true,
+                'gallery'      => [
+                    ['file' => 'chau-hoa-danh-danh-1.jpg', 'chinh' => true],
+                ],
+                'bienthes'     => [
+                    [
+                        'ten_bienthe' => 'Hoa Hồng',
+                        'ma_sku'      => 'CHDD-HONG',
+                        'gia'         => 125000,
+                        'so_luong'    => 20,
+                        'hinh_anh'    => 'chau-hoa-danh-danh-2.jpg',
+                    ],
+                    [
+                        'ten_bienthe' => 'Hoa Trắng',
+                        'ma_sku'      => 'CHDD-TRANG',
+                        'gia'         => 125000,
+                        'so_luong'    => 20,
+                        'hinh_anh'    => 'chau-hoa-danh-danh-3.jpg',
+                    ],
+                ],
+            ],
+
+            [
+                'loai_id'      => $loaiCay,
+                'ten_san_pham' => 'Đỏ Lá Cỏ Thư',
+                'slug'         => 'do-la-co-thu',
+                'gia'          => 98000,
+                'gia_cu'       => 130000,
+                'mo_ta'        => 'Cỏ thư đỏ lá mini trồng chậu, màu sắc nổi bật và cá tính tạo điểm nhấn sinh động cho góc bàn làm việc của bạn. Cây ưa ẩm, sống tốt trong nhà với ánh sáng gián tiếp, không cần chăm sóc phức tạp. Chậu nhỏ gọn tinh tế, phù hợp đặt cạnh màn hình máy tính hay trên kệ sách, vừa mang lại màu sắc tươi vui vừa giúp thư giãn đôi mắt sau những giờ làm việc căng thẳng.',
+                'co_bien_the'  => true,
+                'gallery'      => [
+                    ['file' => 'do-la-co-thu-1.jpg', 'chinh' => true],
+                ],
+                'bienthes'     => [
+                    [
+                        'ten_bienthe' => 'Chậu Hồng',
+                        'ma_sku'      => 'DLCT-HONG',
+                        'gia'         => 98000,
+                        'so_luong'    => 20,
+                        'hinh_anh'    => 'do-la-hoa-co-thu.jpg',
+                    ],
+                    [
+                        'ten_bienthe' => 'Chậu Trắng',
+                        'ma_sku'      => 'DLCT-TRANG',
+                        'gia'         => 98000,
+                        'so_luong'    => 20,
+                        'hinh_anh'    => 'do-la-co-thu-2.jpg',
+                    ],
+                ],
+            ],
+
+            [
+                'loai_id'      => $loaiCay,
+                'ten_san_pham' => 'Chậu Vạn Lộc Mix Cẩm Nhung',
+                'slug'         => 'chau-van-loc-mix-cam-nhung',
+                'gia'          => 135000,
+                'gia_cu'       => 175000,
+                'mo_ta'        => 'Chậu vạn lộc mix cẩm nhung là sự kết hợp độc đáo của hai loài cây phong thủy may mắn trong cùng một chậu, tạo nên vẻ đẹp tương phản xanh — đỏ bắt mắt và đầy sức sống. Vạn lộc mang ý nghĩa vạn điều may mắn, cẩm nhung với lá nhung đỏ rực rỡ tượng trưng cho sự nhiệt huyết và thành công. Bộ đôi cây dễ chăm, thích hợp đặt trong văn phòng hay bàn làm việc để thu hút tài lộc và nâng cao tinh thần.',
+                'co_bien_the'  => true,
+                'gallery'      => [
+                    ['file' => 'chau-van-loc-mix-cam-nhung-1.jpg',          'chinh' => true],
+                    ['file' => 'van-loc-mix-fittonia-la-may-man-1-1.jpg',   'chinh' => false],
+                ],
+                'bienthes'     => [
+                    [
+                        'ten_bienthe' => 'Chậu Hồng',
+                        'ma_sku'      => 'CVLMCN-HONG',
+                        'gia'         => 135000,
+                        'so_luong'    => 20,
+                        'hinh_anh'    => 'van-loc-mix-fittonia-la-may-man-2.jpg',
+                    ],
+                    [
+                        'ten_bienthe' => 'Chậu Trắng',
+                        'ma_sku'      => 'CVLMCN-TRANG',
+                        'gia'         => 135000,
+                        'so_luong'    => 20,
+                        'hinh_anh'    => 'chau-van-loc-mix-cam-nhung-2.jpg',
+                    ],
+                ],
+            ],
 
             [
                 'loai_id'      => $loaiVPP,
@@ -297,10 +546,42 @@ class SanphamSeeder extends Seeder
                 ],
             ],
 
+
+            [
+                'loai_id'      => $loaiVPP,
+                'ten_san_pham' => 'Bút Ký Cao Cấp Le Noble Starry Night',
+                'slug'         => 'but-ky-cao-cap-le-noble-starry-night',
+                'gia'          => 890000,
+                'gia_cu'       => 1100000,
+                'mo_ta'        => 'Bút ký cao cấp Le Noble Starry Night lấy cảm hứng từ bầu trời đêm đầy sao huyền ảo, thân bút được phủ lacquer đen bóng điểm xuyết các mảnh ánh kim lấp lánh như ngàn vì sao. Ngòi bút vàng 18K viết cực mượt và chính xác, phù hợp cho những buổi ký kết hợp đồng quan trọng hay làm quà tặng sếp, đối tác doanh nhân. Đi kèm hộp quà nhung sang trọng, đây là lựa chọn hoàn hảo cho những ai trân trọng từng nét chữ.',
+                'co_bien_the'  => false,
+                'gallery'      => [
+                    ['file' => 'Le-Noble-Starry-Night-1.png', 'chinh' => true],
+                    ['file' => 'Le-Noble-Starry-Night-2.png', 'chinh' => false],
+                    ['file' => 'Le-Noble-Starry-Night-3.png', 'chinh' => false],
+                ],
+                'bienthes'     => [],
+            ],
+
+            [
+                'loai_id'      => $loaiVPP,
+                'ten_san_pham' => 'Bút Ký Cao Cấp Leon Dio Primal Hive White',
+                'slug'         => 'but-ky-cao-cap-leon-dio-primal-hive-white',
+                'gia'          => 750000,
+                'gia_cu'       => 920000,
+                'mo_ta'        => 'Bút ký cao cấp Leon Dio Primal Hive White với thiết kế độc bản lấy cảm hứng từ tổ ong lục giác tự nhiên — biểu tượng của sự cần cù, trật tự và thịnh vượng. Thân bút màu trắng tinh khiết được chạm khắc hoa văn tổ ong 3D tinh xảo nổi bật, cầm chắc tay và không trượt. Ngòi bút thép không gỉ độ cứng trung bình cho nét chữ đều và mượt. Hộp đựng thiết kế cao cấp biến đây thành món quà ký kết hay tặng thưởng đẳng cấp.',
+                'co_bien_the'  => false,
+                'gallery'      => [
+                    ['file' => 'Hive-trang-copy.png', 'chinh' => true],
+                    ['file' => 'Hive-W-1.jpg',        'chinh' => false],
+                    ['file' => '35.png',               'chinh' => false],
+                ],
+                'bienthes'     => [],
+            ],
+
         ];
 
         foreach ($sanphams as $data) {
-            // 1. Tạo sản phẩm
             $sanpham = Sanpham::create([
                 'loai_id'      => $data['loai_id'],
                 'ten_san_pham' => $data['ten_san_pham'],
@@ -309,12 +590,11 @@ class SanphamSeeder extends Seeder
                 'gia_cu'       => $data['gia_cu'],
                 'mo_ta'        => $data['mo_ta'],
                 'co_bien_the'  => $data['co_bien_the'],
-                'so_luong'     => 0, // SP có biến thể — tồn kho tính từ bienthe
+                'so_luong'     => 0,
                 'luot_xem'     => rand(50, 500),
                 'luot_mua'     => rand(5, 80),
             ]);
 
-            // 2. Tạo ảnh gallery
             foreach ($data['gallery'] as $i => $anh) {
                 SanphamHinhanh::create([
                     'sanpham_id'    => $sanpham->id,
@@ -324,7 +604,6 @@ class SanphamSeeder extends Seeder
                 ]);
             }
 
-            // 3. Tạo biến thể
             foreach ($data['bienthes'] as $i => $bt) {
                 SanphamBienthe::create([
                     'sanpham_id'  => $sanpham->id,

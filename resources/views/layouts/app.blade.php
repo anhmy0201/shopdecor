@@ -326,7 +326,7 @@
         });
     }, 4000);
 </script>
-
+@vite(['resources/css/app.css', 'resources/js/app.js'])
 @yield('extra-js')
 </body>
 </html>

@@ -93,12 +93,16 @@ class GioHangController extends Controller
             ->where('giohang_id', $giohang->id)
             ->firstOrFail();
 
-        $chitiet->update(['so_luong' => $request->so_luong]);
+        $soLuong = (int) $request->so_luong;
+
+        $chitiet->update(['so_luong' => $soLuong]);
+        $thanhTien = $soLuong * $chitiet->gia;
+        $tongTien = $giohang->chitiets()->selectRaw('SUM(so_luong * gia) as total')->value('total') ?? 0;
 
         return response()->json([
             'success'    => true,
-            'thanh_tien' => number_format($chitiet->thanh_tien) . 'đ',
-            'tong_tien'  => number_format($giohang->fresh()->load('chitiets')->tong_tien) . 'đ',
+            'thanh_tien' => number_format($thanhTien) . 'đ',
+            'tong_tien'  => number_format($tongTien) . 'đ',
         ]);
     }
 

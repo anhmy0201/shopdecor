@@ -38,6 +38,8 @@ class RegisterController extends Controller
             'mat_khau.confirmed'       => 'Xác nhận mật khẩu không khớp.',
         ]);
 
+        $sessionId = $request->session()->getId();
+
         $user = User::create([
             'ho_ten'        => $request->ho_ten,
             'ten_dang_nhap' => $request->ten_dang_nhap,
@@ -50,7 +52,7 @@ class RegisterController extends Controller
 
         Auth::login($user);
 
-        $this->mergeGioHang(session()->getId());
+        $this->mergeGioHang($sessionId);
 
         return redirect('/')->with('success', 'Chào mừng ' . $user->ho_ten . '! Đăng ký thành công.');
     }

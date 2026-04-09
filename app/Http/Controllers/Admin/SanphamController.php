@@ -16,6 +16,7 @@ use Illuminate\View\View;
 use App\Imports\SanphamImport;
 use App\Exports\SanphamExport;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Events\TonKhoCapNhatEvent;
 
 class SanphamController extends Controller
 {
@@ -148,7 +149,9 @@ class SanphamController extends Controller
             'bienthe.*.so_luong'    => 'required_with:bienthe|integer|min:0',
         ]);
 
-        DB::transaction(function () use ($request, $sanpham) {
+        $bientheIdsDaCapNhat = [];
+
+        DB::transaction(function () use ($request, $sanpham, &$bientheIdsDaCapNhat) {
             $coBienThe = $request->boolean('co_bien_the');
 
             $slug = $sanpham->ten_san_pham !== $request->ten_san_pham
@@ -221,9 +224,11 @@ class SanphamController extends Controller
                             ->update($data);
 
                         $ids[] = $realId;
+                        $bientheIdsDaCapNhat[] = $realId;
                     } else {
                         $new   = SanphamBienthe::create(array_merge($data, ['sanpham_id' => $sanpham->id]));
                         $ids[] = $new->id;
+                        $bientheIdsDaCapNhat[] = $new->id;
                     }
                 }
 
@@ -233,6 +238,20 @@ class SanphamController extends Controller
                 $sanpham->bienthes()->delete();
             }
         });
+
+        // Broadcast cập nhật tồn kho real-time ra ngoài frontend
+        $sanpham->refresh()->load('bienthesActive');
+
+        if ($sanpham->co_bien_the && count($bientheIdsDaCapNhat) > 0) {
+            foreach ($bientheIdsDaCapNhat as $btId) {
+                $bienthe = SanphamBienthe::find($btId);
+                if ($bienthe) {
+                    broadcast(new TonKhoCapNhatEvent($sanpham, $bienthe));
+                }
+            }
+        } else {
+            broadcast(new TonKhoCapNhatEvent($sanpham));
+        }
 
         return redirect()->route('admin.sanpham.index')
             ->with('success', 'Cập nhật sản phẩm thành công!');

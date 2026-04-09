@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 
 class CheckAdmin
 {
+
     public function handle(Request $request, Closure $next, string $level = 'admin')
     {
         $user = $request->user();
@@ -15,12 +16,21 @@ class CheckAdmin
             return redirect()->route('login');
         }
 
-        if ($level === 'admin' && !$user->isAdmin()) {
-            abort(403);
+        if (!$user->kich_hoat) {
+            abort(403, 'Tài khoản của bạn đã bị khóa.');
         }
 
-        if ($level === 'staff' && !$user->isStaff()) {
-            abort(403);
+        $quyen = $user->quyen_han;
+
+        $allowed = match ($level) {
+            'admin'  => $quyen >= 3,
+            'ketoan' => $quyen >= 2,
+            'staff'  => $quyen >= 1,
+            default  => false,
+        };
+
+        if (!$allowed) {
+            abort(403, 'Bạn không có quyền truy cập trang này.');
         }
 
         return $next($request);

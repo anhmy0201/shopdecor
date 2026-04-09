@@ -8,14 +8,14 @@ use App\Http\Controllers\DanhMucController;
 use App\Http\Controllers\SanphamController;
 use App\Http\Controllers\GioHangController;
 use App\Http\Controllers\ThanhToanController;
-use App\Http\Controllers\DonHangController;
+use App\Http\Controllers\DonhangController;       
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\TinTucController;
 use App\Http\Controllers\KhuyenMaiController;
 use App\Http\Controllers\TimKiemController;
 use App\Http\Controllers\LienHeController;
 use App\Http\Controllers\TraCuuDonHangController;
-// Admin controllers — dùng alias để tránh trùng tên với controller frontend
+// Admin controllers
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\BaocaoController;
 use App\Http\Controllers\Admin\LoaiSanphamController as AdminLoaiSanphamController;
@@ -48,7 +48,7 @@ Route::get('/auth/google',          [GoogleController::class, 'redirect'])->name
 Route::get('/auth/google/callback', [GoogleController::class, 'callback']);
 
 // ===== DANH MỤC & SẢN PHẨM =====
-Route::get('/san-pham', [DanhMucController::class, 'index']);
+Route::get('/san-pham',        [DanhMucController::class, 'index']);
 Route::get('/danh-muc/{slug}', [DanhMucController::class, 'show']);
 Route::get('/san-pham/{slug}', [SanphamController::class, 'show']);
 
@@ -56,9 +56,9 @@ Route::get('/san-pham/{slug}', [SanphamController::class, 'show']);
 Route::get('/gio-hang',                  [GioHangController::class, 'index'])->name('gio-hang');
 Route::post('/gio-hang/them',            [GioHangController::class, 'them']);
 Route::patch('/gio-hang/cap-nhat/{id}', [GioHangController::class, 'capNhat']);
-Route::post('/gio-hang/cap-nhat/{id}',  [GioHangController::class, 'capNhat']); 
+Route::post('/gio-hang/cap-nhat/{id}',  [GioHangController::class, 'capNhat']);
 Route::delete('/gio-hang/xoa/{id}',     [GioHangController::class, 'xoa']);
-Route::post('/gio-hang/xoa/{id}',       [GioHangController::class, 'xoa']);      
+Route::post('/gio-hang/xoa/{id}',       [GioHangController::class, 'xoa']);
 Route::delete('/gio-hang/xoa-tat',      [GioHangController::class, 'xoaTat']);
 
 // ===== THANH TOÁN =====
@@ -73,6 +73,7 @@ Route::get('/payos/cancel',        [ThanhToanController::class, 'payosCancel'])-
 Route::post('/payos/webhook',      [ThanhToanController::class, 'payosWebhook'])
     ->name('payos.webhook')
     ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
+
 // ===== ĐƠN HÀNG — cần đăng nhập =====
 Route::middleware('auth')->group(function () {
     Route::get('/don-hang',                       [DonhangController::class, 'index'])->name('don-hang');
@@ -90,80 +91,72 @@ Route::prefix('tai-khoan')->name('account.')->group(function () {
     Route::delete('/dia-chi/{diaChi}',         [AccountController::class, 'xoaDiaChi'])->name('dia-chi.xoa');
     Route::patch('/dia-chi/{diaChi}/mac-dinh', [AccountController::class, 'datMacDinh'])->name('dia-chi.mac-dinh');
 });
-Route::get('/tin-tuc',              [TinTucController::class, 'index'])->name('tin-tuc.index');
-Route::get('/tin-tuc/{slug}',       [TinTucController::class, 'show'])->name('tin-tuc.show');
-Route::get('/khuyen-mai', [KhuyenMaiController::class, 'index'])->name('khuyen-mai');
-Route::view('/gioi-thieu', 'pages.gioi-thieu')->name('gioi-thieu');
 
-Route::get('/tim-kiem', [TimKiemController::class, 'index'])->name('tim-kiem');
+Route::get('/tin-tuc',        [TinTucController::class, 'index'])->name('tin-tuc.index');
+Route::get('/tin-tuc/{slug}', [TinTucController::class, 'show'])->name('tin-tuc.show');
+Route::get('/khuyen-mai',     [KhuyenMaiController::class, 'index'])->name('khuyen-mai');
+Route::view('/gioi-thieu',    'pages.gioi-thieu')->name('gioi-thieu');
+Route::get('/tim-kiem',       [TimKiemController::class, 'index'])->name('tim-kiem');
+Route::get('/lien-he',        [LienHeController::class, 'index'])->name('lien-he');
+Route::post('/lien-he/gui',   [LienHeController::class, 'gui'])->name('lien-he.gui');
+Route::get('/tra-cuu-don-hang',  [TraCuuDonHangController::class, 'index'])->name('tra-cuu-don-hang');
+Route::post('/tra-cuu-don-hang', [TraCuuDonHangController::class, 'traCuu'])->name('tra-cuu-don-hang.ket-qua');
 
-Route::get('/lien-he', [LienHeController::class, 'index'])->name('lien-he');
-Route::post('/lien-he/gui', [LienHeController::class, 'gui'])->name('lien-he.gui');
- 
-Route::get('/tra-cuu-don-hang', [TraCuuDonHangController::class, 'index'])
-    ->name('tra-cuu-don-hang');
- 
-Route::post('/tra-cuu-don-hang', [TraCuuDonHangController::class, 'traCuu'])
-    ->name('tra-cuu-don-hang.ket-qua');
+// ===== BROADCASTING (Reverb) =====
+// Route này tự động được tạo khi chạy: php artisan install:broadcasting
+// Nếu chưa có file routes/channels.php thì thêm dòng này:
+require __DIR__ . '/../routes/channels.php';
+
 // ===== ADMIN =====
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'check.admin:staff'])->group(function () {
 
-    // Dashboard
+    // Dashboard — tất cả staff trở lên
     Route::get('/',         [AdminDashboardController::class, 'index'])->name('dashboard');
     Route::get('dashboard', [AdminDashboardController::class, 'index']);
 
-    // Loại sản phẩm
     Route::resource('loai-sanpham', AdminLoaiSanphamController::class)
          ->except(['show']);
 
-    // Sản phẩm — nhập/xuất phải đặt TRƯỚC resource
     Route::post('sanpham/nhap', [AdminSanphamController::class, 'postNhap'])->name('sanpham.nhap');
     Route::get('sanpham/xuat',  [AdminSanphamController::class, 'getXuat'])->name('sanpham.xuat');
     Route::resource('sanpham', AdminSanphamController::class);
 
-    // Đơn hàng — chỉ xuất, đặt TRƯỚC resource
     Route::get('donhang/xuat', [AdminDonhangController::class, 'getXuat'])->name('donhang.xuat');
-    Route::resource('donhang', AdminDonhangController::class)
-         ->only(['index', 'show']);
+    Route::resource('donhang', AdminDonhangController::class)->only(['index', 'show']);
     Route::patch('donhang/{donhang}/cap-nhat-trang-thai',
         [AdminDonhangController::class, 'capNhatTrangThai'])
         ->name('donhang.cap-nhat-trang-thai');
 
-    // Mã giảm giá — nhập/xuất phải đặt TRƯỚC resource
     Route::post('magiamgia/nhap', [MagiamgiaController::class, 'postNhap'])->name('magiamgia.nhap');
     Route::get('magiamgia/xuat',  [MagiamgiaController::class, 'getXuat'])->name('magiamgia.xuat');
     Route::resource('magiamgia', MagiamgiaController::class)
-     ->parameters(['magiamgia' => 'magiamgia']);
+         ->parameters(['magiamgia' => 'magiamgia']);
     Route::patch('magiamgia/{magiamgia}/toggle',
         [MagiamgiaController::class, 'toggleKichHoat'])
         ->name('magiamgia.toggle');
 
-    // Người dùng
-    Route::resource('nguoidung', NguoidungController::class)
-         ->only(['index', 'show', 'edit', 'update']);
-    Route::patch('nguoidung/{nguoidung}/toggle',
-        [NguoidungController::class, 'toggleKichHoat'])
-        ->name('nguoidung.toggle');
-    
-    // Bình luận
-    Route::get('binhluan',              [BinhluanController::class, 'index'])->name('binhluan.index');
+    Route::get('binhluan',               [BinhluanController::class, 'index'])->name('binhluan.index');
     Route::delete('binhluan/{binhluan}', [BinhluanController::class, 'destroy'])->name('binhluan.destroy');
 
-    // Báo cáo
-    Route::get('baocao', [BaocaoController::class, 'index'])->name('baocao.index');
-
-    // Cài đặt
-    Route::get('caidat',  [CaidatController::class, 'index'])->name('caidat.index');
-    Route::post('caidat', [CaidatController::class, 'update'])->name('caidat.update');
-
-    // Hồ sơ admin
-    Route::get('profile',  [ProfileController::class, 'index'])->name('profile');
-    Route::post('profile', [ProfileController::class, 'update'])->name('profile.update');
-
-    // Tin tức
     Route::resource('tin-tuc', AdminTinTucController::class);
     Route::patch('tin-tuc/{tinTuc}/toggle',
-    [AdminTinTucController::class, 'toggleKichHoat'])
-    ->name('tin-tuc.toggle');
+        [AdminTinTucController::class, 'toggleKichHoat'])
+        ->name('tin-tuc.toggle');
 
+    Route::middleware('check.admin:ketoan')->group(function () {
+        Route::get('baocao', [BaocaoController::class, 'index'])->name('baocao.index');
+        Route::get('caidat',  [CaidatController::class, 'index'])->name('caidat.index');
+        Route::post('caidat', [CaidatController::class, 'update'])->name('caidat.update');
+    });
+
+    Route::middleware('check.admin:admin')->group(function () {
+        Route::resource('nguoidung', NguoidungController::class)
+             ->only(['index', 'show', 'edit', 'update']);
+        Route::patch('nguoidung/{nguoidung}/toggle',
+            [NguoidungController::class, 'toggleKichHoat'])
+            ->name('nguoidung.toggle');
+    });
+
+    Route::get('profile',  [ProfileController::class, 'index'])->name('profile');
+    Route::post('profile', [ProfileController::class, 'update'])->name('profile.update');
 });

@@ -10,39 +10,72 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    const USER  = 0;
-    const STAFF = 1;
-    const ADMIN = 2;
-
-    protected $table = 'users';
+    const USER   = 0;   // Khách hàng
+    const STAFF  = 1;   // Nhân viên
+    const KETOAN = 2;   // Kế toán
+    const ADMIN  = 3;   // Giám đốc / Admin
 
     protected $fillable = [
-        'ho_ten', 'hinh_anh', 'ten_dang_nhap', 'email',
-        'so_dien_thoai', 'mat_khau', 'quyen_han', 'kich_hoat',
+        'ho_ten',
+        'hinh_anh',
+        'ten_dang_nhap',
+        'email',
+        'so_dien_thoai',
+        'email_verified_at',
+        'mat_khau',
+        'quyen_han',
+        'kich_hoat',
     ];
 
-    protected $hidden = ['mat_khau', 'remember_token'];
+    protected $hidden = [
+        'mat_khau',
+        'remember_token',
+    ];
 
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'mat_khau'          => 'hashed',
-            'quyen_han'         => 'integer',
-            'kich_hoat'         => 'boolean',
-        ];
-    }
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'kich_hoat'         => 'boolean',
+    ];
 
     public function getAuthPassword(): string
     {
         return $this->mat_khau;
     }
+    public function isAdmin(): bool
+    {
+        return $this->quyen_han === self::ADMIN;
+    }
 
-    public function isAdmin(): bool { return $this->quyen_han === self::ADMIN; }
-    public function isStaff(): bool { return $this->quyen_han >= self::STAFF; }
-    public function isUser(): bool  { return $this->quyen_han === self::USER; }
+    public function isKetoan(): bool
+    {
+        return $this->quyen_han === self::KETOAN;
+    }
 
-    public function diaChis()
+    public function isStaff(): bool
+    {
+        return $this->quyen_han >= self::STAFF;
+    }
+
+    public function isNhanVien(): bool
+    {
+        return $this->quyen_han === self::STAFF;
+    }
+
+    public function isUser(): bool
+    {
+        return $this->quyen_han === self::USER;
+    }
+
+    public function tenQuyenHan(): string
+    {
+        return match ($this->quyen_han) {
+            self::ADMIN  => 'Giám đốc',
+            self::KETOAN => 'Kế toán',
+            self::STAFF  => 'Nhân viên',
+            default      => 'Khách hàng',
+        };
+    }
+        public function diaChis()
     {
         return $this->hasMany(DiaChiUser::class, 'user_id');
     }

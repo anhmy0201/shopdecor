@@ -187,7 +187,6 @@
                             </div>
                             <div>
                                 <strong class="d-block" style="font-size:.88rem">Chuyển khoản ngân hàng</strong>
-                                <span class="text-muted" style="font-size:.78rem">Vietcombank — 1234567890 — NGUYEN VAN A</span>
                             </div>
                         </label>
                         @error('phuong_thuc_thanhtoan')<span class="text-danger small d-block mt-1">{{ $message }}</span>@enderror

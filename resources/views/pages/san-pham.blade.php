@@ -4,32 +4,28 @@
 
 @section('extra-css')
 <style>
-
     .breadcrumb-bar { background:#eaf4fb; border-bottom:1px solid #d0e8f5; font-size:.82rem; }
     .breadcrumb-bar a { color:#1a5276; text-decoration:none; }
     .breadcrumb-bar a:hover { text-decoration:underline; }
 
-    /* Gallery */
     .gallery-main { border:1px solid #ddd; background:#f9f9f9; aspect-ratio:1; overflow:hidden; }
     .gallery-main img { width:100%; height:100%; object-fit:contain; cursor:zoom-in; transition:transform .3s; }
     .gallery-main img:hover { transform:scale(1.05); }
-    .gallery-thumb { width:70px; height:70px; border:2px solid #ddd; background:#f9f9f9; cursor:pointer; overflow:hidden; flex-shrink:0; transition:border-color .2s; }
-    .gallery-thumb img { width:100%; height:100%; object-fit:cover; }
+    .gallery-thumb { width:80px; height:88px; border:2px solid #ddd; background:#f9f9f9; cursor:pointer; overflow:hidden; flex-shrink:0; transition:border-color .2s; }
+    .gallery-thumb img { width:100%; height:72px; object-fit:cover; }
     .gallery-thumb:hover, .gallery-thumb.active { border-color:#e74c3c; }
+    .gallery-thumb-label { font-size:9px; text-align:center; color:#555; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding:2px 2px 0; }
 
-    /* Biến thể */
     .bienthe-btn { border:2px solid #ddd; background:#fff; padding:6px 14px; font-size:.82rem; cursor:pointer; transition:all .2s; display:inline-flex; align-items:center; gap:6px; }
     .bienthe-btn img { width:28px; height:28px; object-fit:cover; border:1px solid #eee; }
     .bienthe-btn:hover { border-color:#1a5276; color:#1a5276; }
     .bienthe-btn.active { border-color:#e74c3c; color:#e74c3c; font-weight:700; }
     .bienthe-btn.het-hang { opacity:.4; cursor:not-allowed; text-decoration:line-through; }
 
-    /* Số lượng */
     .qty-btn { width:36px; height:36px; border:1px solid #ddd; background:#f5f5f5; cursor:pointer; transition:background .15s; }
     .qty-btn:hover { background:#e0e0e0; }
     .qty-input { width:55px; height:36px; border:1px solid #ddd; border-left:none; border-right:none; text-align:center; font-size:.9rem; font-weight:600; outline:none; }
 
-    /* Tabs */
     .tab-nav { border-bottom:2px solid #1a5276; }
     .tab-btn { background:#f0f0f0; border:1px solid #ddd; border-bottom:none; padding:9px 20px; font-size:.85rem; font-weight:600; cursor:pointer; color:#555; transition:all .15s; }
     .tab-btn.active { background:#1a5276; color:#fff; border-color:#1a5276; }
@@ -37,17 +33,12 @@
     .tab-content { border:1px solid #ddd; border-top:none; padding:20px; background:#fff; font-size:.88rem; line-height:1.8; color:#333; display:none; }
     .tab-content.active { display:block; }
 
-    /* Đánh giá */
     .review-item { border-bottom:1px dashed #eee; padding:15px 0; }
     .review-item:last-child { border-bottom:none; }
-    .star-select i { font-size:1.3rem; color:#ddd; cursor:pointer; transition:color .15s; }
-    .star-select i.active, .star-select i:hover { color:#f0a500; }
 
-    /* Section title */
     .section-title { background:#1a5276; color:#fff; font-size:.95rem; font-weight:700; padding:8px 15px; position:relative; }
     .section-title::after { content:''; position:absolute; right:-1px; top:0; width:0; height:100%; border-style:solid; border-width:18px 0 18px 12px; border-color:transparent transparent transparent #1a5276; }
 
-    /* Product card */
     .product-card { background:#fff; border:1px solid #ddd; transition:box-shadow .2s; height:100%; }
     .product-card:hover { box-shadow:0 4px 15px rgba(0,0,0,.1); }
     .product-card-img { position:relative; overflow:hidden; padding-top:75%; background:#f9f9f9; }
@@ -72,26 +63,39 @@
 
 <div class="container py-4">
 
-    {{-- ===== CHI TIẾT SẢN PHẨM ===== --}}
     <div class="row mb-4">
 
-        {{-- GALLERY ẢNH --}}
         <div class="col-lg-5 mb-4 mb-lg-0">
             <div class="gallery-main mb-2" id="galleryMain">
                 <img src="{{ asset($sanpham->anhChinh?->duong_dan_anh ?? 'images/no-image.png') }}"
                      alt="{{ $sanpham->ten_san_pham }}" id="mainImg">
             </div>
-            <div class="d-flex flex-wrap gap-2" id="galleryThumbs">
+            <div class="d-flex gap-2 mt-2" id="galleryThumbs"
+                 style="overflow-x:auto; flex-wrap:nowrap; padding-bottom:6px; scrollbar-width:thin;">
+
                 @foreach($sanpham->hinhanhs->sortBy('thu_tu') as $anh)
                 <div class="gallery-thumb {{ $anh->la_anh_chinh ? 'active' : '' }}"
                      onclick="doiAnh('{{ asset($anh->duong_dan_anh) }}', this)">
                     <img src="{{ asset($anh->duong_dan_anh) }}" alt="">
                 </div>
                 @endforeach
+
+                @if($sanpham->co_bien_the)
+                    @foreach($sanpham->bienthesActive as $bt)
+                        @if($bt->hinh_anh)
+                        <div class="gallery-thumb"
+                             data-bienthe-id="{{ $bt->id }}"
+                             onclick="doiAnh('{{ asset($bt->hinh_anh) }}', this)">
+                            <img src="{{ asset($bt->hinh_anh) }}" alt="{{ $bt->ten_bienthe }}">
+                            <div class="gallery-thumb-label">{{ $bt->ten_bienthe }}</div>
+                        </div>
+                        @endif
+                    @endforeach
+                @endif
+
             </div>
         </div>
 
-        {{-- THÔNG TIN SẢN PHẨM --}}
         <div class="col-lg-7">
 
             <h1 class="fs-5 fw-bold text-dark lh-sm mb-2">{{ $sanpham->ten_san_pham }}</h1>
@@ -102,7 +106,6 @@
                 <span><i class="fas fa-star me-1" style="color:#f0a500"></i>{{ $sanpham->binhluans->count() }} đánh giá</span>
             </div>
 
-            {{-- GIÁ --}}
             <div class="mb-3 d-flex align-items-center flex-wrap gap-2">
                 <span class="fs-4 fw-bold text-danger" id="giaHienThi">{{ number_format($sanpham->gia) }}đ</span>
                 @if($sanpham->gia_cu && $sanpham->gia_cu > $sanpham->gia)
@@ -113,20 +116,28 @@
                 @endif
             </div>
 
-            {{-- TỒN KHO --}}
-            <div class="mb-3">
+            <div class="mb-3 d-flex align-items-center flex-wrap gap-2">
                 @if($sanpham->con_hang)
-                    <span class="badge fw-semibold" style="background:#e8f8f0;color:#27ae60;border:1px solid #a9dfbf;font-size:.8rem">
+                    <span class="badge fw-semibold" id="badgeTonKho"
+                          style="background:#e8f8f0;color:#27ae60;border:1px solid #a9dfbf;font-size:.8rem">
                         <i class="fas fa-check-circle me-1"></i>Còn hàng
                     </span>
+                    @if(!$sanpham->co_bien_the)
+                        <span class="text-muted" id="slHienThi" style="font-size:.8rem">
+                            SL: <strong>{{ $sanpham->so_luong }}</strong>
+                        </span>
+                    @else
+                        <span class="text-muted d-none" id="slHienThi" style="font-size:.8rem"></span>
+                    @endif
                 @else
-                    <span class="badge fw-semibold" style="background:#fdf2f2;color:#e74c3c;border:1px solid #f5c6c6;font-size:.8rem">
+                    <span class="badge fw-semibold" id="badgeTonKho"
+                          style="background:#fdf2f2;color:#e74c3c;border:1px solid #f5c6c6;font-size:.8rem">
                         <i class="fas fa-times-circle me-1"></i>Hết hàng
                     </span>
+                    <span class="d-none" id="slHienThi"></span>
                 @endif
             </div>
 
-            {{-- BIẾN THỂ --}}
             @if($sanpham->co_bien_the && $sanpham->bienthesActive->count() > 0)
             <div class="mb-3">
                 <div class="fw-bold small mb-2">
@@ -137,6 +148,7 @@
                     <button class="bienthe-btn {{ !$bt->con_hang ? 'het-hang' : '' }}"
                             data-id="{{ $bt->id }}" data-gia="{{ $bt->gia }}"
                             data-ten="{{ $bt->ten_bienthe }}" data-ton="{{ $bt->so_luong }}"
+                            data-anh="{{ $bt->hinh_anh ? asset($bt->hinh_anh) : '' }}"
                             {{ !$bt->con_hang ? 'disabled' : '' }}
                             onclick="chonBienThe(this)">
                         @if($bt->hinh_anh)<img src="{{ asset($bt->hinh_anh) }}" alt="">@endif
@@ -148,7 +160,6 @@
             </div>
             @endif
 
-            {{-- SỐ LƯỢNG --}}
             <div class="mb-3">
                 <div class="fw-bold small mb-2">Số lượng:</div>
                 <div class="d-flex align-items-center">
@@ -158,7 +169,6 @@
                 </div>
             </div>
 
-            {{-- NÚT MUA --}}
             <div class="d-flex gap-2 flex-wrap mb-3">
                 <button class="btn fw-bold rounded-0 text-white"
                         style="background:#1a5276;padding:11px 24px"
@@ -172,7 +182,6 @@
                 </a>
             </div>
 
-            {{-- CHÍNH SÁCH --}}
             <div class="border bg-light p-3 small" style="font-size:.82rem">
                 <div class="d-flex align-items-center gap-2 py-1 border-bottom">
                     <i class="fas fa-truck text-danger"></i>
@@ -195,7 +204,6 @@
         </div>
     </div>
 
-    {{-- ===== TABS MÔ TẢ + ĐÁNH GIÁ ===== --}}
     <div class="mb-5">
         <div class="tab-nav d-flex">
             <button class="tab-btn active" onclick="doiTab('mo-ta', this)">
@@ -231,37 +239,11 @@
                 <div class="small text-secondary">{{ $bl->noi_dung }}</div>
             </div>
             @empty
-                <p class="text-muted">Chưa có đánh giá nào. Hãy là người đầu tiên đánh giá!</p>
+                <p class="text-muted mb-0">Chưa có đánh giá nào.</p>
             @endforelse
-
-            @auth
-            <div class="mt-4">
-                <h6 class="fw-bold mb-3" style="color:#1a5276">Viết đánh giá của bạn</h6>
-                <form action="{{ url('/binh-luan/' . $sanpham->id) }}" method="POST">
-                    @csrf
-                    <div class="star-select d-flex gap-1 mb-2" id="starSelect">
-                        @for($i = 1; $i <= 5; $i++)
-                            <i class="fas fa-star" data-val="{{ $i }}" onclick="chonSao({{ $i }})"></i>
-                        @endfor
-                    </div>
-                    <input type="hidden" name="sao_danh_gia" id="saoDanhGia" value="5">
-                    <textarea name="noi_dung" class="form-control form-control-sm rounded-0 mb-2"
-                              placeholder="Chia sẻ cảm nhận của bạn về sản phẩm..." required style="min-height:80px"></textarea>
-                    <button type="submit" class="btn btn-sm rounded-0 text-white fw-semibold"
-                            style="background:#1a5276">
-                        <i class="fas fa-paper-plane me-1"></i>Gửi đánh giá
-                    </button>
-                </form>
-            </div>
-            @else
-            <p class="small text-muted mt-3 mb-0">
-                <a href="{{ route('login') }}" class="fw-bold" style="color:#1a5276">Đăng nhập</a> để viết đánh giá.
-            </p>
-            @endauth
         </div>
     </div>
 
-    {{-- ===== SẢN PHẨM LIÊN QUAN ===== --}}
     @if($lienQuan->count() > 0)
     <div class="section-title d-flex align-items-center gap-2 mb-3">
         <i class="fas fa-th-large"></i> SẢN PHẨM LIÊN QUAN
@@ -305,6 +287,19 @@ function chonBienThe(el) {
     document.getElementById('giaHienThi').textContent = new Intl.NumberFormat('vi-VN').format(el.dataset.gia) + 'đ';
     document.getElementById('tenBienThe').textContent = el.dataset.ten;
     document.getElementById('soLuong').max = el.dataset.ton;
+
+    const slHienThi = document.getElementById('slHienThi');
+    if (slHienThi) {
+        slHienThi.classList.remove('d-none');
+        slHienThi.innerHTML = 'SL: <strong>' + el.dataset.ton + '</strong>';
+    }
+
+    if (el.dataset.anh) {
+        document.getElementById('mainImg').src = el.dataset.anh;
+        document.querySelectorAll('.gallery-thumb').forEach(t => t.classList.remove('active'));
+        const matchThumb = document.querySelector(`.gallery-thumb[data-bienthe-id="${el.dataset.id}"]`);
+        if (matchThumb) matchThumb.classList.add('active');
+    }
 }
 
 function doiSoLuong(delta) {
@@ -320,12 +315,6 @@ function doiTab(id, el) {
     document.getElementById('tab-' + id).classList.add('active');
     el.classList.add('active');
 }
-
-function chonSao(val) {
-    document.getElementById('saoDanhGia').value = val;
-    document.querySelectorAll('#starSelect i').forEach((el, i) => el.classList.toggle('active', i < val));
-}
-chonSao(5);
 
 function themGioHang(sanPhamId) {
     const bientheActive = document.querySelector('.bienthe-btn.active');
@@ -344,5 +333,70 @@ function themGioHang(sanPhamId) {
     .then(r => r.json())
     .then(data => { if (data.success) alert('Đã thêm vào giỏ hàng!'); });
 }
+
+function dangKyEcho() {
+    if (window.Echo) {
+        window.Echo.channel('san-pham-{{ $sanpham->id }}')
+            .listen('.ton-kho-cap-nhat', function (data) {
+                const badge     = document.getElementById('badgeTonKho');
+                const slHienThi = document.getElementById('slHienThi');
+
+                if (badge) {
+                    if (data.con_hang) {
+                        badge.style.cssText = 'background:#e8f8f0;color:#27ae60;border:1px solid #a9dfbf;font-size:.8rem';
+                        badge.innerHTML = '<i class="fas fa-check-circle me-1"></i>Còn hàng';
+                    } else {
+                        badge.style.cssText = 'background:#fdf2f2;color:#e74c3c;border:1px solid #f5c6c6;font-size:.8rem';
+                        badge.innerHTML = '<i class="fas fa-times-circle me-1"></i>Hết hàng';
+                    }
+                }
+
+                if (!data.bienthe_id) {
+                    const input = document.getElementById('soLuong');
+                    if (input) input.max = data.so_luong;
+                    if (slHienThi) {
+                        if (data.con_hang) {
+                            slHienThi.classList.remove('d-none');
+                            slHienThi.innerHTML = 'SL: <strong>' + data.so_luong + '</strong>';
+                        } else {
+                            slHienThi.classList.add('d-none');
+                        }
+                    }
+                }
+
+                if (data.bienthe_id) {
+                    const btn = document.querySelector(`.bienthe-btn[data-id="${data.bienthe_id}"]`);
+                    if (btn) {
+                        btn.dataset.ton = data.bienthe_so_luong;
+
+                        if (data.bienthe_so_luong <= 0 && !btn.classList.contains('het-hang')) {
+                            btn.classList.add('het-hang');
+                            btn.disabled = true;
+                            if (!btn.querySelector('small')) {
+                                btn.innerHTML += ' <small>(Hết)</small>';
+                            }
+                        } else if (data.bienthe_so_luong > 0 && btn.classList.contains('het-hang')) {
+                            btn.classList.remove('het-hang');
+                            btn.disabled = false;
+                            btn.querySelectorAll('small').forEach(s => s.remove());
+                        }
+
+                        if (btn.classList.contains('active')) {
+                            const input = document.getElementById('soLuong');
+                            if (input) input.max = data.bienthe_so_luong;
+                            if (slHienThi) {
+                                slHienThi.classList.remove('d-none');
+                                slHienThi.innerHTML = 'SL: <strong>' + data.bienthe_so_luong + '</strong>';
+                            }
+                        }
+                    }
+                }
+            });
+    } else {
+        setTimeout(dangKyEcho, 200);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', dangKyEcho);
 </script>
 @endsection

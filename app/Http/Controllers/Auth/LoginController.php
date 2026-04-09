@@ -39,9 +39,11 @@ class LoginController extends Controller
         ];
 
         if (Auth::attempt($credentials, $remember)) {
+            $sessionId = $request->session()->getId();
+
             $request->session()->regenerate();
 
-            $this->mergeGioHang($request->session()->getId());
+            $this->mergeGioHang($sessionId);
 
             if (Auth::user()->isAdmin() || Auth::user()->isStaff()) {
                 return redirect()->intended('/admin/dashboard');

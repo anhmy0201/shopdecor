@@ -13,13 +13,11 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Giohang;
 use App\Models\DiaChiUser;
 use PayOS\PayOS;
+use App\Events\DonHangMoiEvent;
+use App\Events\TonKhoCapNhatEvent;
 
 class ThanhToanController extends Controller
 {
-    /**
-     * Lấy giỏ hàng theo user đăng nhập hoặc session (guest).
-     * Dùng chung cho index(), apMa(), store().
-     */
     private function layGioHang(): Giohang
     {
         if (Auth::check()) {
@@ -41,7 +39,6 @@ class ThanhToanController extends Controller
 
         $giohang->load(['chitiets.sanpham.anhChinh', 'chitiets.bienthe']);
 
-        // Địa chỉ đã lưu — chỉ có khi đăng nhập
         $diaChis       = Auth::check()
             ? Auth::user()->diaChis()->orderByDesc('mac_dinh')->get()
             : collect();
@@ -120,6 +117,29 @@ class ThanhToanController extends Controller
 
         $giohang->load(['chitiets.sanpham.anhChinh', 'chitiets.bienthe']);
 
+        foreach ($giohang->chitiets as $ct) {
+            if ($ct->bienthe_id) {
+                $tonKho = SanphamBienthe::where('id', $ct->bienthe_id)
+                    ->lockForUpdate()
+                    ->value('so_luong');
+                $tenSp  = $ct->sanpham->ten_san_pham . ' — ' . $ct->bienthe->ten_bienthe;
+            } else {
+                $tonKho = Sanpham::where('id', $ct->sanpham_id)
+                    ->lockForUpdate()
+                    ->value('so_luong');
+                $tenSp  = $ct->sanpham->ten_san_pham;
+            }
+
+            if ($tonKho === null || $tonKho < $ct->so_luong) {
+                $conLai = $tonKho ?? 0;
+                $msg    = $conLai > 0
+                    ? "Sản phẩm \"{$tenSp}\" chỉ còn {$conLai} trong kho, không đủ số lượng bạn yêu cầu."
+                    : "Sản phẩm \"{$tenSp}\" đã hết hàng.";
+
+                return redirect()->route('gio-hang')->with('error', $msg);
+            }
+        }
+
         $tongTienHang = $giohang->tong_tien;
         $soTienGiam   = 0;
         $magiamgiaId  = null;
@@ -166,7 +186,7 @@ class ThanhToanController extends Controller
                 'ghi_chu_khach'         => $request->ghi_chu_khach,
             ]);
 
-            // 2. Tạo chi tiết đơn hàng + trừ tồn kho
+            // 2. Tạo chi tiết đơn hàng + trừ tồn kho atomic
             foreach ($giohang->chitiets as $ct) {
                 ChitietDonhang::create([
                     'donhang_id'   => $donhang->id,
@@ -180,7 +200,6 @@ class ThanhToanController extends Controller
                     'gia'          => $ct->gia,
                 ]);
 
-                // Trừ tồn kho atomic
                 if ($ct->bienthe_id) {
                     SanphamBienthe::where('id', $ct->bienthe_id)
                         ->decrement('so_luong', $ct->so_luong);
@@ -198,7 +217,7 @@ class ThanhToanController extends Controller
             // 4. Xóa giỏ hàng
             $giohang->chitiets()->delete();
 
-            // 5. Lưu địa chỉ vào dia_chi_user — CHỈ khi đã đăng nhập
+            // 5. Lưu địa chỉ vào dia_chi_user — chỉ khi đã đăng nhập
             if (Auth::check()) {
                 $diaChiTonTai = DiaChiUser::where('user_id', Auth::id())
                     ->where('dia_chi_chi_tiet', $request->dia_chi_chi_tiet)
@@ -221,6 +240,20 @@ class ThanhToanController extends Controller
                 }
             }
         });
+
+        broadcast(new DonHangMoiEvent($donhang));
+
+        $donhang->load('chitiets');
+        foreach ($donhang->chitiets as $ct) {
+            $sp = Sanpham::find($ct->sanpham_id);
+            if (!$sp) continue;
+
+            $bienthe = $ct->bienthe_id
+                ? SanphamBienthe::find($ct->bienthe_id)
+                : null;
+
+            broadcast(new TonKhoCapNhatEvent($sp, $bienthe));
+        }
 
         session(['don_hang_vua_dat' => $donhang->id]);
 
@@ -272,7 +305,6 @@ class ThanhToanController extends Controller
             config('services.payos.checksum_key')
         );
 
-        // orderCode phải là số nguyên dương, unique
         $orderCode = (int)(str_pad($donhang->id, 6, '0', STR_PAD_LEFT) . substr(time(), -4));
 
         $data = [

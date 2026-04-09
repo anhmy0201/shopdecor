@@ -71,7 +71,10 @@
                             Nhân viên
                         </option>
                         <option value="2" {{ old('quyen_han', $nguoidung->quyen_han) == 2 ? 'selected' : '' }}>
-                            Admin
+                            Kế toán
+                        </option>
+                        <option value="3" {{ old('quyen_han', $nguoidung->quyen_han) == 3 ? 'selected' : '' }}>
+                            Giám đốc
                         </option>
                     </select>
                     @error('quyen_han')<div class="invalid-feedback">{{ $message }}</div>@enderror
