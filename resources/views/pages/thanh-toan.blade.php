@@ -180,13 +180,24 @@
                                 <span class="text-muted" style="font-size:.78rem">Thanh toán bằng tiền mặt khi nhận được hàng</span>
                             </div>
                         </label>
-                        <label class="payment-option d-flex align-items-center gap-3 p-2" onclick="chonThanhToan(this)">
+                        <label class="payment-option d-flex align-items-center gap-3 p-2 mb-2" onclick="chonThanhToan(this)">
                             <input type="radio" name="phuong_thuc_thanhtoan" value="chuyen_khoan">
                             <div class="payment-option-icon d-flex align-items-center justify-content-center">
                                 <i class="fas fa-university"></i>
                             </div>
                             <div>
                                 <strong class="d-block" style="font-size:.88rem">Chuyển khoản ngân hàng</strong>
+                                <span class="text-muted" style="font-size:.78rem">Chuyển khoản theo thông tin sau khi đặt hàng</span>
+                            </div>
+                        </label>
+                        <label class="payment-option d-flex align-items-center gap-3 p-2" onclick="chonThanhToan(this)">
+                            <input type="radio" name="phuong_thuc_thanhtoan" value="payos">
+                            <div class="payment-option-icon d-flex align-items-center justify-content-center" style="background:#0F6E56;">
+                                <i class="fas fa-qrcode"></i>
+                            </div>
+                            <div>
+                                <strong class="d-block" style="font-size:.88rem">Thanh toán qua cổng PayOS</strong>
+                                <span class="text-muted" style="font-size:.78rem">Quét mã QR – thanh toán ngay sau khi đặt hàng</span>
                             </div>
                         </label>
                         @error('phuong_thuc_thanhtoan')<span class="text-danger small d-block mt-1">{{ $message }}</span>@enderror

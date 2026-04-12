@@ -31,11 +31,11 @@ class DonhangSeeder extends Seeder
 
         $donhangMaus = [
             ['trang_thai' => Donhang::TRANG_THAI_HOAN_TAT, 'tt_tt' => 'da_thanh_toan',   'tt_vc' => 'da_giao',          'pttt' => 'cod'],
-            ['trang_thai' => Donhang::TRANG_THAI_HOAN_TAT, 'tt_tt' => 'da_thanh_toan',   'tt_vc' => 'da_giao',          'pttt' => 'momo'],
+            ['trang_thai' => Donhang::TRANG_THAI_HOAN_TAT, 'tt_tt' => 'da_thanh_toan',   'tt_vc' => 'da_giao',          'pttt' => 'payos'],
             ['trang_thai' => Donhang::TRANG_THAI_XU_LY,    'tt_tt' => 'chua_thanh_toan',  'tt_vc' => 'dang_van_chuyen',  'pttt' => 'cod'],
             ['trang_thai' => Donhang::TRANG_THAI_XU_LY,    'tt_tt' => 'da_thanh_toan',   'tt_vc' => 'cho_lay_hang',     'pttt' => 'chuyen_khoan'],
             ['trang_thai' => Donhang::TRANG_THAI_MOI,      'tt_tt' => 'chua_thanh_toan',  'tt_vc' => 'cho_lay_hang',     'pttt' => 'cod'],
-            ['trang_thai' => Donhang::TRANG_THAI_MOI,      'tt_tt' => 'chua_thanh_toan',  'tt_vc' => 'cho_lay_hang',     'pttt' => 'momo'],
+            ['trang_thai' => Donhang::TRANG_THAI_MOI,      'tt_tt' => 'chua_thanh_toan',  'tt_vc' => 'cho_lay_hang',     'pttt' => 'payos'],
             ['trang_thai' => Donhang::TRANG_THAI_HUY,      'tt_tt' => 'chua_thanh_toan',  'tt_vc' => 'cho_lay_hang',     'pttt' => 'cod'],
             ['trang_thai' => Donhang::TRANG_THAI_HOAN_TAT, 'tt_tt' => 'da_thanh_toan',   'tt_vc' => 'da_giao',          'pttt' => 'chuyen_khoan'],
         ];
@@ -55,7 +55,7 @@ class DonhangSeeder extends Seeder
                 $tongTienHang += $bt->gia * $soLuong;
             }
 
-            $soTienGiam   = ($i === 0) ? 100000 : 0; // đơn đầu dùng mã giảm giá
+            $soTienGiam   = ($i === 0) ? 100000 : 0; 
             $tongThanhToan = $tongTienHang + $phiShip - $soTienGiam;
 
             $donhang = Donhang::create([

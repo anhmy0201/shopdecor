@@ -95,7 +95,7 @@ class ThanhToanController extends Controller
             'phuong_xa'             => 'required|string|max:100',
             'quan_huyen'            => 'required|string|max:100',
             'tinh_thanh'            => 'required|string|max:100',
-            'phuong_thuc_thanhtoan' => 'required|in:cod,chuyen_khoan',
+            'phuong_thuc_thanhtoan' => 'required|in:cod,chuyen_khoan,payos',
             'ghi_chu_khach'         => 'nullable|string|max:500',
             'magiamgia_id'          => 'nullable|exists:magiamgia,id',
         ], [
@@ -252,6 +252,10 @@ class ThanhToanController extends Controller
 
         session(['don_hang_vua_dat' => $donhang->id]);
 
+        if ($request->phuong_thuc_thanhtoan === 'payos') {
+            return redirect()->route('payos.checkout', $donhang->id);
+        }
+
         return redirect()->route('xac-nhan-don-hang', $donhang->id);
     }
 
@@ -317,12 +321,6 @@ class ThanhToanController extends Controller
         return redirect($response['checkoutUrl']);
     }
 
-    /**
-     * Return URL sau khi PayOS redirect về — CHỈ redirect, KHÔNG cập nhật DB.
-     * Việc cập nhật trang_thai_thanhtoan phải do webhook (đã xác thực chữ ký) xử lý.
-     * Nếu để URL này cập nhật DB, kẻ tấn công có thể gọi URL bất kỳ lúc nào
-     * để giả vờ thanh toán thành công mà không cần chuyển tiền thật.
-     */
     public function payosSuccess(Request $request)
     {
         return redirect()->route('xac-nhan-don-hang', $request->donhang_id)
@@ -335,10 +333,6 @@ class ThanhToanController extends Controller
             ->with('warning', 'Bạn đã hủy thanh toán. Đơn hàng vẫn được giữ, có thể thanh toán lại sau.');
     }
 
-    /**
-     * Webhook từ PayOS — có xác thực chữ ký checksum.
-     * Đây là nơi DUY NHẤT được phép cập nhật trang_thai_thanhtoan = 'da_thanh_toan'.
-     */
     public function payosWebhook(Request $request)
     {
         $payos = new PayOS(
@@ -356,6 +350,7 @@ class ThanhToanController extends Controller
                 if ($donhang && $donhang->trang_thai_thanhtoan !== 'da_thanh_toan') {
                     $donhang->update([
                         'trang_thai_thanhtoan' => 'da_thanh_toan',
+                        'trang_thai'           => Donhang::TRANG_THAI_XU_LY,
                     ]);
                 }
             }
