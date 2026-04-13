@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
  
 use App\Models\TinTuc;
+use App\Models\LoaiSanpham;
 use Illuminate\Http\Request;
  
 class TinTucController extends Controller
@@ -14,8 +15,22 @@ class TinTucController extends Controller
             ->daPublish()
             ->latest('ngay_dang')
             ->paginate(9);
+
+        $soLuong = LoaiSanpham::withCount('sanphams')
+            ->get()
+            ->mapWithKeys(fn($cat) => [
+                match($cat->slug) {
+                    'tuong-figurine' => 'tuong',
+                    'den-decor'      => 'den',
+                    'cay-xanh-mini'  => 'cay',
+                    'van-phong-pham' => 'vanphong',
+                    'to-chuc-ban'    => 'tochuc',
+                    'desk-mat'       => 'deskmat',
+                    default          => $cat->slug,
+                } => $cat->sanphams_count
+            ]);
  
-        return view('tin-tuc.index', compact('tintuc'));
+        return view('tin-tuc.index', compact('tintuc', 'soLuong'));
     }
  
     // Chi tiết bài viết
