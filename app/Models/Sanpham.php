@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 class Sanpham extends Model
 {
     use SoftDeletes;
+    use LogsActivity;
 
     protected $table = 'sanpham';
 
@@ -19,6 +21,18 @@ class Sanpham extends Model
     protected $casts = [
         'co_bien_the' => 'boolean',
     ];
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['ten_san_pham', 'gia', 'so_luong', 'kich_hoat'])
+            ->logOnlyDirty()
+            ->setDescriptionForEvent(fn(string $e) => match($e) {
+                'created' => 'Thêm sản phẩm mới',
+                'updated' => 'Cập nhật sản phẩm',
+                'deleted' => 'Xóa sản phẩm',
+            });
+    }
 
     public function loai()
     {

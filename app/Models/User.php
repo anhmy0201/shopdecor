@@ -5,10 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, LogsActivity; 
 
     const USER   = 0;   // Khách hàng
     const STAFF  = 1;   // Nhân viên
@@ -37,6 +38,17 @@ class User extends Authenticatable
         'kich_hoat'         => 'boolean',
     ];
 
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['ten_dang_nhap', 'email', 'quyen_han', 'kich_hoat'])
+            ->logOnlyDirty()
+            ->setDescriptionForEvent(fn(string $e) => match($e) {
+                'created' => 'Thêm người dùng mới',
+                'updated' => 'Cập nhật thông tin người dùng',
+                'deleted' => 'Xóa người dùng',
+            });
+    }
     public function getAuthPassword(): string
     {
         return $this->mat_khau;

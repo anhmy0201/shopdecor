@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 class Donhang extends Model
 {
+    use LogsActivity;
     protected $table = 'donhang';
 
     const TRANG_THAI_MOI      = 0;
@@ -30,6 +32,17 @@ class Donhang extends Model
         'ngay_giao'  => 'datetime',
         'trang_thai' => 'integer',
     ];
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['trang_thai', 'tong_thanh_toan'])
+            ->logOnlyDirty()
+            ->setDescriptionForEvent(fn(string $e) => match($e) {
+                'created' => 'Tạo đơn hàng mới',
+                'updated' => 'Cập nhật đơn hàng',
+                'deleted' => 'Xóa đơn hàng',
+            });
+    }
 
     public function user()
     {

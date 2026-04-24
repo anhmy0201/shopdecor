@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Banner;
 use App\Models\Sanpham;
 use App\Models\LoaiSanpham;
 
@@ -44,6 +45,8 @@ class HomeController extends Controller
                 } => $cat->sanphams_count
             ]);
 
-        return view('pages.home', compact('noiBat', 'tatCa', 'banChay', 'soLuong'));
+        $banners = Banner::hoatDong()->get();
+
+        return view('pages.home', compact('noiBat', 'tatCa', 'banChay', 'soLuong', 'banners'));
     }
 }

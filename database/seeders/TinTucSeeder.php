@@ -142,6 +142,5 @@ class TinTucSeeder extends Seeder
             }
         }
 
-        $this->command->info('✅ Đã tạo ' . count($baiViet) . ' bài viết tin tức mẫu.');
     }
 }

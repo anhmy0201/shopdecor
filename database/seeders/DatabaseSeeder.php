@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
             DonhangSeeder::class,       // 5. Đơn hàng mẫu
             BinhluanSeeder::class,      // 6. Bình luận / đánh giá
             TinTucSeeder::class,       // 7. Tin tức
+            BannerSeeder::class,
         ]);
     }
 }

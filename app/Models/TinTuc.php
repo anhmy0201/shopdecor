@@ -3,10 +3,11 @@
 namespace App\Models;
  
 use Illuminate\Database\Eloquent\Model;
- 
+ use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 class TinTuc extends Model
 {
- 
+    use LogsActivity;
     protected $table = 'tintuc';
  
     protected $fillable = [
@@ -25,7 +26,17 @@ class TinTuc extends Model
         'kich_hoat' => 'boolean',
         'ngay_dang' => 'datetime',
     ];
- 
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['tieu_de', 'kich_hoat'])
+            ->logOnlyDirty()
+            ->setDescriptionForEvent(fn(string $e) => match($e) {
+                'created' => 'Thêm tin tức mới',
+                'updated' => 'Cập nhật tin tức',
+                'deleted' => 'Xóa tin tức',
+            });
+    }
     // Relationships
     public function tacGia()
     {

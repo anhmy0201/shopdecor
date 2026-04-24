@@ -3,11 +3,24 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 class Magiamgia extends Model
 {
     protected $table = 'magiamgia';
+    use LogsActivity;
 
+     public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['ma_code', 'gia_tri', 'kich_hoat'])
+            ->logOnlyDirty()
+            ->setDescriptionForEvent(fn(string $e) => match($e) {
+                'created' => 'Thêm mã giảm giá mới',
+                'updated' => 'Cập nhật mã giảm giá',
+                'deleted' => 'Xóa mã giảm giá',
+            });
+    }
     protected $fillable = [
         'ma_code', 'mo_ta', 'kieu_giam', 'gia_tri',
         'don_hang_toi_thieu', 'giam_toi_da', 'so_luong',

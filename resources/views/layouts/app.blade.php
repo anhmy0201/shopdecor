@@ -91,6 +91,8 @@
 
     @yield('extra-css')
 </head>
+{{-- Chatbot Widget --}}
+@include('chatbot.widget')
 <body>
 
 {{-- TOPBAR --}}

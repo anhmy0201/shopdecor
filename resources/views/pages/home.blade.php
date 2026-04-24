@@ -199,53 +199,46 @@ gap:4px
 
 @section('content')
 
-{{-- ===== HERO SLIDER ===== --}}
-@php
-    $bannerDir  = public_path('storage/banner');
-    $extensions = ['jpg','jpeg','png','webp','gif'];
-    $banners    = [];
-    if (is_dir($bannerDir)) {
-        foreach (scandir($bannerDir) as $file) {
-            if (in_array(strtolower(pathinfo($file, PATHINFO_EXTENSION)), $extensions))
-                $banners[] = $file;
-        }
-        sort($banners);
-    }
-    $slideTexts = [
-        ['tag'=>'✨ Bộ sưu tập mới 2025','title'=>'Decor Bàn Làm Việc<br><span class="text-warning">Tinh Tế & Sang Trọng</span>','desc'=>'Hàng trăm mẫu tượng phong thủy, đèn decor và phụ kiện cao cấp.','btn'=>['url'=>'/san-pham','icon'=>'fa-shopping-bag','label'=>'Mua sắm ngay']],
-        ['tag'=>'🔥 Ưu đãi đặc biệt',   'title'=>'Giảm Đến <span class="text-warning">30%</span><br>Đơn Hàng Đầu Tiên','desc'=>'Dùng mã <strong class="text-warning">WELCOME10</strong> khi thanh toán.','btn'=>['url'=>'/san-pham','icon'=>'fa-tag','label'=>'Săn ưu đãi ngay']],
-        ['tag'=>'🌿 Mới về tuần này',    'title'=>'Cây Xanh Mini &<br><span class="text-warning">Đèn Decor</span> Tinh Tế','desc'=>'Thêm sức sống, ánh sáng ấm áp cho góc làm việc mỗi ngày.','btn'=>['url'=>'/danh-muc/cay-xanh-mini','icon'=>'fa-leaf','label'=>'Khám phá ngay']],
-    ];
-@endphp
-
 <div class="hero-slider" id="heroSlider">
-            @foreach($banners as $i => $file)
-            @php $t = $slideTexts[$i] ?? $slideTexts[0]; @endphp
-            <div class="hero-slide {{ $i===0?'active':'' }}">
-                <img class="slide-bg" src="{{ asset('storage/banner/'.$file) }}" alt="Banner {{ $i+1 }}">
-                <div class="slide-overlay"></div>
-                <div class="slide-body">
-                    <span class="badge bg-danger mb-2">{{ $t['tag'] }}</span>
-                    <div class="fs-3 fw-bold text-white mb-2">{!! $t['title'] !!}</div>
-                    <p class="text-light small mb-3">{!! $t['desc'] !!}</p>
-                    <a href="{{ url($t['btn']['url']) }}" class="btn btn-danger fw-bold">
-                        <i class="fas {{ $t['btn']['icon'] }} me-1"></i>{{ $t['btn']['label'] }}
-                    </a>
-                </div>
-            </div>
-            @endforeach
-
-            @if(count($banners) > 1)
-            <button class="slider-arrow prev" onclick="heroSlide(-1)"><i class="fas fa-chevron-left"></i></button>
-            <button class="slider-arrow next" onclick="heroSlide(1)"><i class="fas fa-chevron-right"></i></button>
-            <div class="slider-dots">
-                @foreach($banners as $i => $_)
-                    <button class="slider-dot {{ $i===0?'active':'' }}" onclick="heroGo({{ $i }})"></button>
-                @endforeach
-            </div>
-            <div class="slider-progress" id="sliderProgress"></div>
+    @forelse($banners as $i => $banner)
+    <div class="hero-slide {{ $i===0?'active':'' }}">
+        <img class="slide-bg" src="{{ asset($banner->duong_dan_anh) }}" alt="{{ $banner->tieu_de ?? 'Banner '.($i+1) }}">
+        <div class="slide-overlay"></div>
+        @if($banner->tieu_de || $banner->mo_ta)
+        <div class="slide-body">
+            @if($banner->tieu_de)
+            <div class="fs-3 fw-bold text-white mb-2">{{ $banner->tieu_de }}</div>
+            @endif
+            @if($banner->mo_ta)
+            <p class="text-light small mb-3">{{ $banner->mo_ta }}</p>
+            @endif
+            @if($banner->url_lien_ket)
+            <a href="{{ url($banner->url_lien_ket) }}" class="btn btn-danger fw-bold">
+                <i class="fas fa-arrow-right me-1"></i>Xem ngay
+            </a>
             @endif
         </div>
+        @endif
+    </div>
+    @empty
+    <div class="hero-slide active">
+        <div class="slide-body text-center">
+            <div class="fs-3 fw-bold text-white">Chào mừng đến ShopDecor</div>
+        </div>
+    </div>
+    @endforelse
+
+    @if($banners->count() > 1)
+    <button class="slider-arrow prev" onclick="heroSlide(-1)"><i class="fas fa-chevron-left"></i></button>
+    <button class="slider-arrow next" onclick="heroSlide(1)"><i class="fas fa-chevron-right"></i></button>
+    <div class="slider-dots">
+        @foreach($banners as $i => $_)
+            <button class="slider-dot {{ $i===0?'active':'' }}" onclick="heroGo({{ $i }})"></button>
+        @endforeach
+    </div>
+    <div class="slider-progress" id="sliderProgress"></div>
+    @endif
+</div>
 </div>
 
 {{-- ===== DANH MỤC NHANH ===== --}}

@@ -235,7 +235,6 @@
             </a>
         </li>
 
-        {{-- ── NGƯỜI DÙNG — chỉ admin ── --}}
         @if(Auth::user()->isAdmin())
         <li><div class="sidebar-section">Người Dùng</div></li>
         <li>
@@ -263,6 +262,13 @@
                 <i class="fas fa-newspaper fa-fw"></i> Tin Tức
             </a>
         </li>
+        <li>
+            <a href="{{ route('admin.banner.index') }}"
+               class="{{ request()->routeIs('admin.banner.*') ? 'active' : '' }}">
+                <i class="fas fa-newspaper fa-fw"></i> Banner
+            </a>
+        </li>
+
 
         {{-- ── BÁO CÁO & HỆ THỐNG — kế toán trở lên ── --}}
         @if(Auth::user()->quyen_han >= \App\Models\User::KETOAN)
