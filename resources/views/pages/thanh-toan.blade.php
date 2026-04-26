@@ -34,6 +34,8 @@
     #formDiaChiMoi { display:none; }
     #formDiaChiMoi.show { display:block; }
     .voucher-result { display:none; font-size:.82rem; }
+    #rowGiam { display:none; }
+    #rowGiam.show { display:flex; }
 </style>
 @endsection
 
@@ -86,7 +88,7 @@
                                     </div>
                                     <div class="text-muted" style="font-size:.78rem;line-height:1.5">
                                         {{ $dc->dia_chi_chi_tiet }}, {{ $dc->phuong_xa }},
-                                        {{ $dc->quan_huyen }}, {{ $dc->tinh_thanh }}
+                                        {{ $dc->tinh_thanh }}
                                     </div>
                                 </div>
                             </div>
@@ -120,11 +122,11 @@
                                 @guest
                                 <div class="col-12">
                                     <label class="form-label small fw-semibold">
-                                        Email <span class="text-muted fw-normal">(không bắt buộc)</span>
+                                        Email <span class="text-danger">*</span>
                                     </label>
                                     <input type="email" name="email" id="email"
                                            class="form-control form-control-sm rounded-0 @error('email') is-invalid @enderror"
-                                           value="{{ old('email') }}" placeholder="example@email.com">
+                                           value="{{ old('email') }}" placeholder="example@email.com" required>
                                     @error('email')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                 </div>
                                 @endguest
@@ -137,26 +139,25 @@
                                            placeholder="Số nhà, tên đường, tổ/ấp...">
                                     @error('dia_chi_chi_tiet')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                 </div>
-                                <div class="col-sm-4">
-                                    <label class="form-label small fw-semibold">Phường/Xã <span class="text-danger">*</span></label>
-                                    <input type="text" name="phuong_xa" id="phuong_xa"
-                                           class="form-control form-control-sm rounded-0 @error('phuong_xa') is-invalid @enderror"
-                                           value="{{ old('phuong_xa', $diaChiMacDinh?->phuong_xa) }}" placeholder="Phường Mỹ Long">
-                                    @error('phuong_xa')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                                </div>
-                                <div class="col-sm-4">
-                                    <label class="form-label small fw-semibold">Quận/Huyện <span class="text-danger">*</span></label>
-                                    <input type="text" name="quan_huyen" id="quan_huyen"
-                                           class="form-control form-control-sm rounded-0 @error('quan_huyen') is-invalid @enderror"
-                                           value="{{ old('quan_huyen', $diaChiMacDinh?->quan_huyen) }}" placeholder="TP. Long Xuyên">
-                                    @error('quan_huyen')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                                </div>
-                                <div class="col-sm-4">
+                                <div class="col-sm-6">
                                     <label class="form-label small fw-semibold">Tỉnh/Thành phố <span class="text-danger">*</span></label>
-                                    <input type="text" name="tinh_thanh" id="tinh_thanh"
-                                           class="form-control form-control-sm rounded-0 @error('tinh_thanh') is-invalid @enderror"
-                                           value="{{ old('tinh_thanh', $diaChiMacDinh?->tinh_thanh) }}" placeholder="An Giang">
+                                    <select name="tinh_thanh" id="tinh_thanh"
+                                            class="form-select form-select-sm rounded-0 @error('tinh_thanh') is-invalid @enderror">
+                                        <option value="">-- Chọn tỉnh/thành --</option>
+                                    </select>
                                     @error('tinh_thanh')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                </div>
+                                <div class="col-sm-6">
+                                    <label class="form-label small fw-semibold">Xã/Phường <span class="text-danger">*</span></label>
+                                    <select name="phuong_xa" id="phuong_xa"
+                                            class="form-select form-select-sm rounded-0 @error('phuong_xa') is-invalid @enderror"
+                                            disabled>
+                                        <option value="">-- Chọn xã/phường --</option>
+                                    </select>
+                                    @error('phuong_xa')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                    {{-- Lưu giá trị cũ để restore khi load trang --}}
+                                    <input type="hidden" id="_old_tinh_thanh" value="{{ old('tinh_thanh', $diaChiMacDinh?->tinh_thanh) }}">
+                                    <input type="hidden" id="_old_phuong_xa" value="{{ old('phuong_xa', $diaChiMacDinh?->phuong_xa) }}">
                                 </div>
                             </div>
                         </div>
@@ -181,23 +182,13 @@
                             </div>
                         </label>
                         <label class="payment-option d-flex align-items-center gap-3 p-2 mb-2" onclick="chonThanhToan(this)">
-                            <input type="radio" name="phuong_thuc_thanhtoan" value="chuyen_khoan">
-                            <div class="payment-option-icon d-flex align-items-center justify-content-center">
+                            <input type="radio" name="phuong_thuc_thanhtoan" value="payos">
+                            <div class="payment-option-icon d-flex align-items-center justify-content-center" style="background:#0F6E56;">
                                 <i class="fas fa-university"></i>
                             </div>
                             <div>
-                                <strong class="d-block" style="font-size:.88rem">Chuyển khoản ngân hàng</strong>
-                                <span class="text-muted" style="font-size:.78rem">Chuyển khoản theo thông tin sau khi đặt hàng</span>
-                            </div>
-                        </label>
-                        <label class="payment-option d-flex align-items-center gap-3 p-2" onclick="chonThanhToan(this)">
-                            <input type="radio" name="phuong_thuc_thanhtoan" value="payos">
-                            <div class="payment-option-icon d-flex align-items-center justify-content-center" style="background:#0F6E56;">
-                                <i class="fas fa-qrcode"></i>
-                            </div>
-                            <div>
-                                <strong class="d-block" style="font-size:.88rem">Thanh toán qua cổng PayOS</strong>
-                                <span class="text-muted" style="font-size:.78rem">Quét mã QR – thanh toán ngay sau khi đặt hàng</span>
+                                <strong class="d-block" style="font-size:.88rem">Thanh toán qua ngân hàng</strong>
+                                <span class="text-muted" style="font-size:.78rem">Mở app ngân hàng / quét QR — xác nhận tự động</span>
                             </div>
                         </label>
                         @error('phuong_thuc_thanhtoan')<span class="text-danger small d-block mt-1">{{ $message }}</span>@enderror
@@ -270,7 +261,7 @@
                                 <span>Phí vận chuyển:</span>
                                 <span class="text-success fw-semibold">Miễn phí</span>
                             </div>
-                            <div class="d-flex justify-content-between py-2 border-bottom small text-success" id="rowGiam" style="display:none!important">
+                            <div class="justify-content-between py-2 border-bottom small text-success" id="rowGiam">
                                 <span id="tenMaHienThi">Giảm giá:</span>
                                 <span id="soTienGiamHienThi">-0đ</span>
                             </div>
@@ -323,9 +314,8 @@ function chonDiaChi(el, id) {
     document.getElementById('ten_nguoi_nhan').value   = dc.ho_ten;
     document.getElementById('so_dien_thoai').value    = dc.so_dien_thoai;
     document.getElementById('dia_chi_chi_tiet').value = dc.dia_chi_chi_tiet;
-    document.getElementById('phuong_xa').value        = dc.phuong_xa;
-    document.getElementById('quan_huyen').value       = dc.quan_huyen;
-    document.getElementById('tinh_thanh').value       = dc.tinh_thanh;
+    // Đặt lại dropdown tỉnh rồi load xã theo dữ liệu đã lưu
+    setTinhThanh(dc.tinh_thanh, dc.phuong_xa);
 }
 
 function toggleFormMoi() {
@@ -334,12 +324,94 @@ function toggleFormMoi() {
         i.querySelector('input[type="radio"]').checked = false;
     });
     document.getElementById('formDiaChiMoi').classList.add('show');
-    ['ten_nguoi_nhan','so_dien_thoai','dia_chi_chi_tiet','phuong_xa','quan_huyen','tinh_thanh']
+    ['ten_nguoi_nhan','so_dien_thoai','dia_chi_chi_tiet']
         .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+    // Reset dropdown địa chỉ
+    const selTinh = document.getElementById('tinh_thanh');
+    const selXa   = document.getElementById('phuong_xa');
+    selTinh.value = '';
+    selXa.innerHTML = '<option value="">-- Chọn xã/phường --</option>';
+    selXa.disabled = true;
     document.getElementById('ten_nguoi_nhan').focus();
 }
 
+/* =====================================================
+   DROPDOWN ĐỊA CHỈ — API provinces.open-api.vn v2
+   v2 = sau sáp nhập 07/2025, xã/phường trực thuộc tỉnh
+   (không còn cấp huyện)
+   ===================================================== */
+const API_BASE = 'https://provinces.open-api.vn/api/v2';
+
+// Nạp danh sách tỉnh/thành
+async function loadTinhs() {
+    try {
+        const res  = await fetch(`${API_BASE}/p/`);
+        const data = await res.json();
+        const sel  = document.getElementById('tinh_thanh');
+        data.forEach(t => {
+            const opt        = document.createElement('option');
+            opt.value        = t.name;
+            opt.dataset.code = t.code;
+            opt.textContent  = t.name;
+            sel.appendChild(opt);
+        });
+        // Restore giá trị cũ (old() hoặc địa chỉ mặc định)
+        const oldTinh = document.getElementById('_old_tinh_thanh').value;
+        const oldXa   = document.getElementById('_old_phuong_xa').value;
+        if (oldTinh) await setTinhThanh(oldTinh, oldXa);
+    } catch (e) { console.warn('Không tải được danh sách tỉnh:', e); }
+}
+
+// Nạp xã/phường trực tiếp dưới tỉnh (v2: depth=2, wards nằm trong tỉnh)
+async function loadXas(tinhCode, selectVal = '') {
+    const selXa     = document.getElementById('phuong_xa');
+    selXa.innerHTML = '<option value="">-- Đang tải... --</option>';
+    selXa.disabled  = true;
+    try {
+        const res  = await fetch(`${API_BASE}/p/${tinhCode}?depth=2`);
+        const data = await res.json();
+        selXa.innerHTML = '<option value="">-- Chọn xã/phường --</option>';
+        // v2: wards trực tiếp dưới tỉnh (không qua districts)
+        const wards = data.wards || [];
+        wards.forEach(w => {
+            const opt       = document.createElement('option');
+            opt.value       = w.name;
+            opt.textContent = w.name;
+            if (w.name === selectVal) opt.selected = true;
+            selXa.appendChild(opt);
+        });
+        selXa.disabled = wards.length === 0;
+    } catch (e) {
+        selXa.innerHTML = '<option value="">-- Không tải được --</option>';
+        console.warn('Không tải được danh sách xã:', e);
+    }
+}
+
+// Set tỉnh theo tên rồi load xã tương ứng
+async function setTinhThanh(tinhName, xaName = '') {
+    const selTinh = document.getElementById('tinh_thanh');
+    const opt = [...selTinh.options].find(o => o.value === tinhName);
+    if (opt) {
+        selTinh.value = tinhName;
+        await loadXas(opt.dataset.code, xaName);
+    }
+}
+
+// Sự kiện thay tỉnh
+document.getElementById('tinh_thanh').addEventListener('change', function () {
+    const opt = this.options[this.selectedIndex];
+    if (opt && opt.dataset.code) {
+        loadXas(opt.dataset.code);
+    } else {
+        const selXa     = document.getElementById('phuong_xa');
+        selXa.innerHTML = '<option value="">-- Chọn xã/phường --</option>';
+        selXa.disabled  = true;
+    }
+});
+
 document.addEventListener('DOMContentLoaded', function () {
+    loadTinhs();
+    // Nếu có địa chỉ mặc định thì điền vào form
     const macDinh = document.querySelector('.dia-chi-item.selected');
     if (macDinh) chonDiaChi(macDinh, macDinh.querySelector('input[type="radio"]').value);
 });
@@ -369,7 +441,7 @@ function apMaGiamGia() {
     .then(data => {
         if (data.success) {
             document.getElementById('magiamgiaId').value = data.magiamgia_id;
-            document.getElementById('rowGiam').style.display = 'flex';
+            document.getElementById('rowGiam').classList.add('show');
             document.getElementById('tenMaHienThi').textContent = 'Mã ' + data.ten_ma + ':';
             document.getElementById('soTienGiamHienThi').textContent = '-' + data.so_tien_giam;
             document.getElementById('tongThanhToan').textContent = data.tong_thanh_toan;
@@ -377,7 +449,7 @@ function apMaGiamGia() {
             resultEl.className = 'voucher-result text-success';
         } else {
             document.getElementById('magiamgiaId').value = '';
-            document.getElementById('rowGiam').style.display = 'none';
+            document.getElementById('rowGiam').classList.remove('show');
             document.getElementById('tongThanhToan').textContent = new Intl.NumberFormat('vi-VN').format(tongTienHang) + 'đ';
             resultEl.innerHTML = '<i class="fas fa-times-circle me-1"></i>' + data.message;
             resultEl.className = 'voucher-result text-danger';

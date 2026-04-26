@@ -89,7 +89,16 @@
                         @endforeach
                     </div>
                     <div class="text-center mt-3">
-                        @if($tt === \App\Models\Donhang::TRANG_THAI_MOI)
+                        @php
+                            $choThanhToan = $tt === \App\Models\Donhang::TRANG_THAI_MOI
+                                && $donhang->phuong_thuc_thanhtoan === 'payos'
+                                && $donhang->trang_thai_thanhtoan  !== 'da_thanh_toan';
+                        @endphp
+                        @if($choThanhToan)
+                            <span class="badge bg-danger fs-6">
+                                <i class="fas fa-university me-1"></i>Chờ thanh toán
+                            </span>
+                        @elseif($tt === \App\Models\Donhang::TRANG_THAI_MOI)
                             <span class="badge bg-warning text-dark fs-6">
                                 <i class="fas fa-clock me-1"></i>Chờ xác nhận
                             </span>
@@ -179,37 +188,7 @@
                 </div>
             </div>
 
-            {{-- Thông tin CK --}}
-            @if($donhang->phuong_thuc_thanhtoan === 'chuyen_khoan'
-                && $donhang->trang_thai_thanhtoan !== 'da_thanh_toan')
-            <div class="card border-primary shadow-sm mb-3">
-                <div class="card-header" style="background:#1a5276;color:#fff;">
-                    <i class="fas fa-university me-2"></i>Thông Tin Chuyển Khoản
-                </div>
-                <div class="card-body small">
-                    <p class="text-muted mb-3">
-                        Vui lòng chuyển khoản trong vòng <strong class="text-danger">24 giờ</strong>.
-                    </p>
-                    <div class="bg-light p-3 rounded border">
-                        <div class="fw-bold text-primary mb-2"><i class="fas fa-piggy-bank me-1"></i>Thông tin tài khoản</div>
-                        <div class="row g-1">
-                            <div class="col-5 text-muted">Ngân hàng</div>
-                            <div class="col-7 fw-bold">Vietcombank</div>
-                            <div class="col-5 text-muted">Số tài khoản</div>
-                            <div class="col-7 fw-bold">1234567890</div>
-                            <div class="col-5 text-muted">Chủ tài khoản</div>
-                            <div class="col-7 fw-bold">NGUYEN VAN A</div>
-                            <div class="col-5 text-muted">Nội dung CK</div>
-                            <div class="col-7 fw-bold text-primary">
-                                DH{{ str_pad($donhang->id, 6, '0', STR_PAD_LEFT) }} {{ $donhang->so_dien_thoai }}
-                            </div>
-                            <div class="col-5 text-muted">Số tiền</div>
-                            <div class="col-7 fw-bold text-danger">{{ number_format($donhang->tong_thanh_toan) }}đ</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            @endif
+
 
             {{-- Nút --}}
             <div class="d-flex gap-2 flex-wrap">
@@ -219,6 +198,12 @@
                 <a href="{{ url('/') }}" class="btn btn-primary" style="background:#1a5276;border-color:#1a5276">
                     <i class="fas fa-shopping-bag me-1"></i>Tiếp tục mua sắm
                 </a>
+                @if($choThanhToan)
+                <a href="{{ route('payos.checkout', $donhang->id) }}"
+                   class="btn btn-warning fw-bold">
+                    <i class="fas fa-university me-1"></i>Thanh toán ngay
+                </a>
+                @endif
                 @if($donhang->coTheHuy())
                 <form action="{{ url('/don-hang/' . $donhang->id . '/huy') }}" method="POST"
                       onsubmit="return confirm('Xác nhận hủy đơn hàng này?')">

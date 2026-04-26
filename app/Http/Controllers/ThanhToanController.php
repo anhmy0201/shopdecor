@@ -15,6 +15,9 @@ use App\Models\DiaChiUser;
 use PayOS\PayOS;
 use App\Events\DonHangMoiEvent;
 use App\Events\TonKhoCapNhatEvent;
+use App\Mail\DonHangMail;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 class ThanhToanController extends Controller
 {
@@ -60,6 +63,29 @@ class ThanhToanController extends Controller
             ]);
         }
 
+        // Kiểm tra đã dùng mã này chưa
+        if (Auth::check()) {
+            // User đã đăng nhập: kiểm tra lịch sử đơn hàng
+            $daDung = Donhang::where('user_id', Auth::id())
+                ->where('magiamgia_id', $ma->id)
+                ->exists();
+            if ($daDung) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Bạn đã sử dụng mã giảm giá này rồi.',
+                ]);
+            }
+        } else {
+            // Guest: kiểm tra session — mỗi session chỉ dùng mỗi mã 1 lần
+            $maDaDungTrongSession = session('guest_ma_da_dung', []);
+            if (in_array($ma->id, $maDaDungTrongSession)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Mã giảm giá này đã được áp dụng cho đơn hàng của bạn.',
+                ]);
+            }
+        }
+
         $giohang = $this->layGioHang();
         $giohang->load('chitiets');
         $tongTienHang = $giohang->tong_tien;
@@ -87,23 +113,44 @@ class ThanhToanController extends Controller
 
     public function store(Request $request)
     {
+        // Nếu user chọn địa chỉ đã lưu (_dia_chi_chon), lấy dữ liệu từ DB
+        // để tránh bị bypass validate bằng cách sửa form phía client
+        if (Auth::check() && $request->filled('_dia_chi_chon')) {
+            $diaChiChon = DiaChiUser::where('id', $request->_dia_chi_chon)
+                ->where('user_id', Auth::id())
+                ->first();
+
+            if ($diaChiChon) {
+                $request->merge([
+                    'ten_nguoi_nhan'   => $diaChiChon->ho_ten,
+                    'so_dien_thoai'    => $diaChiChon->so_dien_thoai,
+                    'dia_chi_chi_tiet' => $diaChiChon->dia_chi_chi_tiet,
+                    'phuong_xa'        => $diaChiChon->phuong_xa,
+                    'tinh_thanh'       => $diaChiChon->tinh_thanh,
+                ]);
+            }
+        }
+
         $request->validate([
             'ten_nguoi_nhan'        => 'required|string|max:255',
-            'so_dien_thoai'         => 'required|string|max:15',
-            'email'                 => 'nullable|email|max:255',
+            'so_dien_thoai'         => ['required', 'string', 'max:15', 'regex:/^(0[3|5|7|8|9])[0-9]{8}$/'],
+            // Guest bắt buộc nhập email để nhận xác nhận đơn hàng
+            // User đăng nhập thì lấy email từ tài khoản, không cần nhập lại
+            'email'                 => Auth::check() ? 'nullable' : 'required|email|max:255',
             'dia_chi_chi_tiet'      => 'required|string|max:500',
             'phuong_xa'             => 'required|string|max:100',
-            'quan_huyen'            => 'required|string|max:100',
             'tinh_thanh'            => 'required|string|max:100',
-            'phuong_thuc_thanhtoan' => 'required|in:cod,chuyen_khoan,payos',
+            'phuong_thuc_thanhtoan' => 'required|in:cod,payos',
             'ghi_chu_khach'         => 'nullable|string|max:500',
             'magiamgia_id'          => 'nullable|exists:magiamgia,id',
         ], [
             'ten_nguoi_nhan.required'        => 'Vui lòng nhập họ tên người nhận.',
             'so_dien_thoai.required'         => 'Vui lòng nhập số điện thoại.',
+            'so_dien_thoai.regex'            => 'Số điện thoại không hợp lệ (VD: 0901234567).',
+            'email.required'                 => 'Vui lòng nhập email để nhận xác nhận đơn hàng.',
+            'email.email'                    => 'Email không hợp lệ.',
             'dia_chi_chi_tiet.required'      => 'Vui lòng nhập địa chỉ chi tiết.',
             'phuong_xa.required'             => 'Vui lòng nhập phường/xã.',
-            'quan_huyen.required'            => 'Vui lòng nhập quận/huyện.',
             'tinh_thanh.required'            => 'Vui lòng nhập tỉnh/thành phố.',
             'phuong_thuc_thanhtoan.required' => 'Vui lòng chọn phương thức thanh toán.',
         ]);
@@ -148,8 +195,27 @@ class ThanhToanController extends Controller
         if ($request->magiamgia_id) {
             $magiamgia = Magiamgia::find($request->magiamgia_id);
             if ($magiamgia && $magiamgia->conHieuLuc()) {
-                $soTienGiam  = $magiamgia->tinhSoTienGiam($tongTienHang);
-                $magiamgiaId = $magiamgia->id;
+                // Kiểm tra đã dùng mã này chưa (user: theo DB, guest: theo session)
+                if (Auth::check()) {
+                    $daDung = Donhang::where('user_id', Auth::id())
+                        ->where('magiamgia_id', $magiamgia->id)
+                        ->exists();
+                } else {
+                    $maDaDungTrongSession = session('guest_ma_da_dung', []);
+                    $daDung = in_array($magiamgia->id, $maDaDungTrongSession);
+                }
+
+                if (!$daDung) {
+                    $soTienGiam = $magiamgia->tinhSoTienGiam($tongTienHang);
+                    if ($soTienGiam > 0) {
+                        $magiamgiaId = $magiamgia->id;
+                    } else {
+                        $soTienGiam = 0;
+                        $magiamgia  = null;
+                    }
+                } else {
+                    $magiamgia = null; // bỏ qua vì đã dùng
+                }
             }
         }
 
@@ -173,7 +239,6 @@ class ThanhToanController extends Controller
                 'email'                 => $email,
                 'dia_chi_chi_tiet'      => $request->dia_chi_chi_tiet,
                 'phuong_xa'             => $request->phuong_xa,
-                'quan_huyen'            => $request->quan_huyen,
                 'tinh_thanh'            => $request->tinh_thanh,
                 'phuong_thuc_thanhtoan' => $request->phuong_thuc_thanhtoan,
                 'trang_thai_thanhtoan'  => 'chua_thanh_toan',
@@ -209,6 +274,12 @@ class ThanhToanController extends Controller
 
             if ($magiamgia) {
                 $magiamgia->tangDaSuDung();
+                // Ghi vào session cho guest để không dùng lại mã này
+                if (!Auth::check()) {
+                    $dsDaDung   = session('guest_ma_da_dung', []);
+                    $dsDaDung[] = $magiamgia->id;
+                    session(['guest_ma_da_dung' => array_unique($dsDaDung)]);
+                }
             }
 
             $giohang->chitiets()->delete();
@@ -228,7 +299,6 @@ class ThanhToanController extends Controller
                         'so_dien_thoai'    => $request->so_dien_thoai,
                         'dia_chi_chi_tiet' => $request->dia_chi_chi_tiet,
                         'phuong_xa'        => $request->phuong_xa,
-                        'quan_huyen'       => $request->quan_huyen,
                         'tinh_thanh'       => $request->tinh_thanh,
                         'mac_dinh'         => $laDauTien,
                     ]);
@@ -251,6 +321,21 @@ class ThanhToanController extends Controller
         }
 
         session(['don_hang_vua_dat' => $donhang->id]);
+
+        // Gửi email xác nhận đơn hàng
+        // User đăng nhập: email lấy từ tài khoản (luôn có)
+        // Guest: email lấy từ form (bắt buộc nhập, luôn có)
+        $emailNhan = $donhang->email;
+        if ($emailNhan) {
+            try {
+                $donhang->load(['chitiets', 'magiamgia']);
+                Mail::to($emailNhan)->send(new DonHangMail($donhang));
+            } catch (\Exception $e) {
+                Log::error('Gửi email xác nhận đơn hàng thất bại: ' . $e->getMessage(), [
+                    'donhang_id' => $donhang->id,
+                ]);
+            }
+        }
 
         if ($request->phuong_thuc_thanhtoan === 'payos') {
             return redirect()->route('payos.checkout', $donhang->id);
@@ -304,7 +389,13 @@ class ThanhToanController extends Controller
             config('services.payos.checksum_key')
         );
 
-        $orderCode = (int)(str_pad($donhang->id, 6, '0', STR_PAD_LEFT) . substr(time(), -4));
+        // Tạo orderCode unique: donhang_id ghép 6 chữ số cuối unix timestamp
+        // Tối đa 12 chữ số, an toàn với giới hạn int của PayOS (< 9007199254740991)
+        $suffix    = (int) substr((string) time(), -6);
+        $orderCode = (int) ($donhang->id . str_pad($suffix, 6, '0', STR_PAD_LEFT));
+
+        // Lưu orderCode TRƯỚC khi gọi PayOS để webhook luôn tìm được đơn
+        $donhang->update(['payos_order_code' => $orderCode]);
 
         $data = [
             'orderCode'   => $orderCode,
@@ -316,15 +407,51 @@ class ThanhToanController extends Controller
 
         $response = $payos->createPaymentLink($data);
 
-        $donhang->update(['payos_order_code' => $orderCode]);
-
         return redirect($response['checkoutUrl']);
     }
 
     public function payosSuccess(Request $request)
     {
-        return redirect()->route('xac-nhan-don-hang', $request->donhang_id)
-            ->with('success', 'Cảm ơn! Đơn hàng đang chờ xác nhận thanh toán.');
+        $donhangId = $request->donhang_id;
+
+        if (Auth::check()) {
+            $donhang = Donhang::where('id', $donhangId)
+                ->where('user_id', Auth::id())
+                ->first();
+        } else {
+            $donhang = session('don_hang_vua_dat') == $donhangId
+                ? Donhang::where('id', $donhangId)->whereNull('user_id')->first()
+                : null;
+        }
+
+        if (!$donhang) {
+            return redirect()->route('gio-hang')->with('error', 'Không tìm thấy đơn hàng.');
+        }
+
+        // Nếu chưa được cập nhật bởi webhook, kiểm tra lại với PayOS API
+        if ($donhang->trang_thai_thanhtoan !== 'da_thanh_toan' && $donhang->payos_order_code) {
+            try {
+                $payos = new PayOS(
+                    config('services.payos.client_id'),
+                    config('services.payos.api_key'),
+                    config('services.payos.checksum_key')
+                );
+                $info = $payos->getPaymentLinkInformation($donhang->payos_order_code);
+                if (isset($info['status']) && $info['status'] === 'PAID') {
+                    $donhang->update([
+                        'trang_thai_thanhtoan' => 'da_thanh_toan',
+                        'trang_thai'           => Donhang::TRANG_THAI_XU_LY,
+                    ]);
+                }
+            } catch (\Exception $e) {
+                Log::error('PayOS getPaymentLinkInformation lỗi: ' . $e->getMessage(), [
+                    'donhang_id' => $donhang->id,
+                ]);
+            }
+        }
+
+        return redirect()->route('xac-nhan-don-hang', $donhangId)
+            ->with('success', 'Cảm ơn! Thanh toán của bạn đang được xác nhận.');
     }
 
     public function payosCancel(Request $request)

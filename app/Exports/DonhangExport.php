@@ -52,7 +52,7 @@ class DonhangExport implements FromCollection, WithHeadings, WithMapping
 
         $phuongThuc = match($row->phuong_thuc_thanhtoan) {
             'cod'          => 'Tiền mặt (COD)',
-            'chuyen_khoan' => 'Chuyển khoản',
+
             'momo'         => 'Momo',
             default        => $row->phuong_thuc_thanhtoan,
         };

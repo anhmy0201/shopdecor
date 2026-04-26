@@ -107,9 +107,9 @@ display:block
                             <div>
                                 <div class="text-muted" style="font-size:.72rem">HOTLINE 24/7</div>
                                 <div class="fw-semibold small">
-                                    <a href="tel:0969534568" class="text-decoration-none" style="color:#1a5276">0969 534 568</a>
+                                    <a href="tel:0799669238" class="text-decoration-none" style="color:#1a5276">0799 669 238</a>
                                     &nbsp;—&nbsp;
-                                    <a href="tel:0898434568" class="text-decoration-none" style="color:#1a5276">0898 434 568</a>
+                                    <a href="tel:0898434568" class="text-decoration-none" style="color:#1a5276">0799 669 238</a>
                                 </div>
                             </div>
                         </div>
@@ -138,7 +138,7 @@ display:block
                                class="btn btn-sm social-yt me-1 mb-1">
                                 <i class="fab fa-youtube me-1"></i>YouTube
                             </a>
-                            <a href="https://zalo.me/0969534568" target="_blank"
+                            <a href="https://zalo.me/0799669238" target="_blank"
                                class="btn btn-sm social-zl mb-1">
                                 <i class="fas fa-comment-dots me-1"></i>Zalo
                             </a>
@@ -266,8 +266,8 @@ display:block
                 </p>
             </div>
             <div class="col-md-4 text-md-end mt-3 mt-md-0">
-                <a href="tel:0969534568" class="btn btn-danger fw-bold px-4 py-2">
-                    <i class="fas fa-phone-alt me-2"></i>0969 534 568
+                <a href="tel:0799669238" class="btn btn-danger fw-bold px-4 py-2">
+                    <i class="fas fa-phone-alt me-2"></i>0799 669 238
                 </a>
             </div>
         </div>

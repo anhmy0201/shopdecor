@@ -24,6 +24,7 @@ class Donhang extends Model
         'tong_tien_hang', 'so_tien_giam', 'tong_thanh_toan',
         'trang_thai', 'ngay_dat', 'ngay_duyet', 'ngay_giao',
         'ghi_chu_khach', 'ghi_chu_admin',
+        'payos_order_code',
     ];
 
     protected $casts = [
@@ -61,6 +62,6 @@ class Donhang extends Model
 
     public function coTheHuy(): bool
     {
-        return in_array($this->trang_thai, [self::TRANG_THAI_MOI, self::TRANG_THAI_XU_LY]);
+        return $this->trang_thai === self::TRANG_THAI_MOI;
     }
 }

@@ -239,7 +239,6 @@
                                             <div class="small mt-1">
                                                 {{ $dc->dia_chi_chi_tiet }},
                                                 {{ $dc->phuong_xa }},
-                                                {{ $dc->quan_huyen }},
                                                 {{ $dc->tinh_thanh }}
                                             </div>
                                             <div class="d-flex gap-2 mt-3">
@@ -380,19 +379,19 @@
                         </div>
                         <div class="col-12">
                             <label class="form-label fw-semibold">Địa chỉ chi tiết <span class="text-danger">*</span></label>
-                            <input type="text" name="dia_chi_chi_tiet" class="form-control" placeholder="Số nhà, tên đường..." required>
+                            <input type="text" name="dia_chi_chi_tiet" class="form-control" placeholder="Số nhà, tên đường, tổ/ấp..." required>
                         </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold">Phường/Xã <span class="text-danger">*</span></label>
-                            <input type="text" name="phuong_xa" class="form-control" required>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold">Quận/Huyện <span class="text-danger">*</span></label>
-                            <input type="text" name="quan_huyen" class="form-control" required>
-                        </div>
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <label class="form-label fw-semibold">Tỉnh/Thành phố <span class="text-danger">*</span></label>
-                            <input type="text" name="tinh_thanh" class="form-control" required>
+                            <select name="tinh_thanh" id="acc_tinh_thanh" class="form-select" required>
+                                <option value="">-- Chọn tỉnh/thành --</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Xã/Phường <span class="text-danger">*</span></label>
+                            <select name="phuong_xa" id="acc_phuong_xa" class="form-select" required disabled>
+                                <option value="">-- Chọn xã/phường --</option>
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -430,5 +429,76 @@ document.addEventListener('DOMContentLoaded', function () {
         document.querySelector('[href="#mat-khau"]').click();
     }
 });
+
+/* =====================================================
+   DROPDOWN ĐỊA CHỈ — API provinces.open-api.vn v2
+   v2 = sau sáp nhập 07/2025, xã/phường trực thuộc tỉnh
+   (không còn cấp huyện)
+   ===================================================== */
+const ACC_API = 'https://provinces.open-api.vn/api/v2';
+
+async function accLoadTinhs() {
+    try {
+        const res  = await fetch(`${ACC_API}/p/`);
+        const data = await res.json();
+        const sel  = document.getElementById('acc_tinh_thanh');
+        data.forEach(t => {
+            const opt        = document.createElement('option');
+            opt.value        = t.name;
+            opt.dataset.code = t.code;
+            opt.textContent  = t.name;
+            sel.appendChild(opt);
+        });
+    } catch (e) { console.warn('Không tải được danh sách tỉnh:', e); }
+}
+
+async function accLoadXas(tinhCode, selectVal = '') {
+    const selXa     = document.getElementById('acc_phuong_xa');
+    selXa.innerHTML = '<option value="">-- Đang tải... --</option>';
+    selXa.disabled  = true;
+    try {
+        const res  = await fetch(`${ACC_API}/p/${tinhCode}?depth=2`);
+        const data = await res.json();
+        selXa.innerHTML = '<option value="">-- Chọn xã/phường --</option>';
+        // v2: wards trực tiếp dưới tỉnh (không qua districts)
+        const wards = data.wards || [];
+        wards.forEach(w => {
+            const opt       = document.createElement('option');
+            opt.value       = w.name;
+            opt.textContent = w.name;
+            if (w.name === selectVal) opt.selected = true;
+            selXa.appendChild(opt);
+        });
+        selXa.disabled = wards.length === 0;
+    } catch (e) {
+        selXa.innerHTML = '<option value="">-- Không tải được --</option>';
+        console.warn('Không tải được danh sách xã:', e);
+    }
+}
+
+document.getElementById('acc_tinh_thanh').addEventListener('change', function () {
+    const opt = this.options[this.selectedIndex];
+    if (opt && opt.dataset.code) {
+        accLoadXas(opt.dataset.code);
+    } else {
+        const selXa     = document.getElementById('acc_phuong_xa');
+        selXa.innerHTML = '<option value="">-- Chọn xã/phường --</option>';
+        selXa.disabled  = true;
+    }
+});
+
+// Reset dropdown mỗi khi mở modal thêm địa chỉ
+const modalDiaChi = document.getElementById('modalThemDiaChi');
+if (modalDiaChi) {
+    modalDiaChi.addEventListener('show.bs.modal', function () {
+        document.getElementById('acc_tinh_thanh').value = '';
+        const selXa     = document.getElementById('acc_phuong_xa');
+        selXa.innerHTML = '<option value="">-- Chọn xã/phường --</option>';
+        selXa.disabled  = true;
+    });
+}
+
+// Nạp tỉnh khi trang load
+accLoadTinhs();
 </script>
 @endsection

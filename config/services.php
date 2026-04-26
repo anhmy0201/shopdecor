@@ -50,4 +50,12 @@ return [
     'api_key' => env('GROQ_API_KEY'),
     'model'   => env('GROQ_MODEL', 'llama-3.3-70b-versatile'),
 ],
+
+'bank' => [
+    'so_tai_khoan' => env('BANK_SO_TAI_KHOAN', '1031487289'),
+    'chu_tai_khoan' => env('BANK_CHU_TAI_KHOAN', 'TRUONG ANH MY'),
+    'ngan_hang'    => env('BANK_NGAN_HANG', 'VCB'),
+    'ten_ngan_hang' => env('BANK_TEN_NGAN_HANG', 'Vietcombank'),
+    'admin_email'  => env('BANK_ADMIN_EMAIL', env('MAIL_FROM_ADDRESS')),
+],
 ];

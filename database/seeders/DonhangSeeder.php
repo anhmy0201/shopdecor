@@ -22,22 +22,24 @@ class DonhangSeeder extends Seeder
 
         // Danh sách địa chỉ mẫu
         $diaChis = [
-            ['ten' => 'Nguyễn Văn An',  'sdt' => '0911111111', 'dc' => '12 Lê Lợi',      'px' => 'Phường Bến Nghé',  'qh' => 'Quận 1',        'tt' => 'TP. Hồ Chí Minh'],
-            ['ten' => 'Trần Thị Bích',  'sdt' => '0922222222', 'dc' => '45 Trần Phú',     'px' => 'Phường Hải Châu', 'qh' => 'Quận Hải Châu', 'tt' => 'Đà Nẵng'],
-            ['ten' => 'Lê Hoàng Minh',  'sdt' => '0933333333', 'dc' => '78 Hoàn Kiếm',    'px' => 'Phường Hàng Bạc', 'qh' => 'Quận Hoàn Kiếm','tt' => 'Hà Nội'],
-            ['ten' => 'Phạm Thúy Hằng', 'sdt' => '0944444444', 'dc' => '33 Nguyễn Huệ',   'px' => 'Phường Bến Thành','qh' => 'Quận 1',        'tt' => 'TP. Hồ Chí Minh'],
-            ['ten' => 'Võ Quốc Toàn',   'sdt' => '0955555555', 'dc' => '56 Điện Biên Phủ','px' => 'Phường Đa Kao',   'qh' => 'Quận 1',        'tt' => 'TP. Hồ Chí Minh'],
+            // Địa chỉ mẫu đã bỏ cấp huyện (theo sáp nhập đơn vị hành chính)
+            // Ví dụ An Giang: xã Hội An (trước là xã Hòa Bình huyện Chợ Mới, nay trực thuộc tỉnh)
+            ['ten' => 'Nguyễn Văn An',  'sdt' => '0911111111', 'dc' => '12 Lê Lợi',            'px' => 'Phường Bến Nghé',  'tt' => 'TP. Hồ Chí Minh'],
+            ['ten' => 'Trần Thị Bích',  'sdt' => '0922222222', 'dc' => '45 Trần Phú',           'px' => 'Phường Hải Châu',  'tt' => 'Đà Nẵng'],
+            ['ten' => 'Lê Hoàng Minh',  'sdt' => '0933333333', 'dc' => '78 Hoàn Kiếm',          'px' => 'Phường Hàng Bạc',  'tt' => 'Hà Nội'],
+            ['ten' => 'Phạm Thúy Hằng', 'sdt' => '0944444444', 'dc' => '201 Tổ 7 Ấp An Lương', 'px' => 'Xã Hội An',        'tt' => 'An Giang'],
+            ['ten' => 'Võ Quốc Toàn',   'sdt' => '0955555555', 'dc' => '56 Điện Biên Phủ',     'px' => 'Phường Đa Kao',    'tt' => 'TP. Hồ Chí Minh'],
         ];
 
         $donhangMaus = [
             ['trang_thai' => Donhang::TRANG_THAI_HOAN_TAT, 'tt_tt' => 'da_thanh_toan',   'tt_vc' => 'da_giao',          'pttt' => 'cod'],
             ['trang_thai' => Donhang::TRANG_THAI_HOAN_TAT, 'tt_tt' => 'da_thanh_toan',   'tt_vc' => 'da_giao',          'pttt' => 'payos'],
             ['trang_thai' => Donhang::TRANG_THAI_XU_LY,    'tt_tt' => 'chua_thanh_toan',  'tt_vc' => 'dang_van_chuyen',  'pttt' => 'cod'],
-            ['trang_thai' => Donhang::TRANG_THAI_XU_LY,    'tt_tt' => 'da_thanh_toan',   'tt_vc' => 'cho_lay_hang',     'pttt' => 'chuyen_khoan'],
+            ['trang_thai' => Donhang::TRANG_THAI_XU_LY,    'tt_tt' => 'da_thanh_toan',   'tt_vc' => 'cho_lay_hang',     'pttt' => 'payos'],
             ['trang_thai' => Donhang::TRANG_THAI_MOI,      'tt_tt' => 'chua_thanh_toan',  'tt_vc' => 'cho_lay_hang',     'pttt' => 'cod'],
             ['trang_thai' => Donhang::TRANG_THAI_MOI,      'tt_tt' => 'chua_thanh_toan',  'tt_vc' => 'cho_lay_hang',     'pttt' => 'payos'],
             ['trang_thai' => Donhang::TRANG_THAI_HUY,      'tt_tt' => 'chua_thanh_toan',  'tt_vc' => 'cho_lay_hang',     'pttt' => 'cod'],
-            ['trang_thai' => Donhang::TRANG_THAI_HOAN_TAT, 'tt_tt' => 'da_thanh_toan',   'tt_vc' => 'da_giao',          'pttt' => 'chuyen_khoan'],
+            ['trang_thai' => Donhang::TRANG_THAI_HOAN_TAT, 'tt_tt' => 'da_thanh_toan',   'tt_vc' => 'da_giao',          'pttt' => 'payos'],
         ];
 
         foreach ($donhangMaus as $i => $mau) {
@@ -66,7 +68,6 @@ class DonhangSeeder extends Seeder
                 'email'                 => $user->email,
                 'dia_chi_chi_tiet'      => $diaChi['dc'],
                 'phuong_xa'             => $diaChi['px'],
-                'quan_huyen'            => $diaChi['qh'],
                 'tinh_thanh'            => $diaChi['tt'],
                 'phuong_thuc_thanhtoan' => $mau['pttt'],
                 'trang_thai_thanhtoan'  => $mau['tt_tt'],

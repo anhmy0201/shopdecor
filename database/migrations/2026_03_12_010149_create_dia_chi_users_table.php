@@ -14,9 +14,8 @@ return new class extends Migration
             $table->string('ho_ten');
             $table->string('so_dien_thoai', 15);
             $table->string('dia_chi_chi_tiet');
-            $table->string('phuong_xa');
-            $table->string('quan_huyen');
-            $table->string('tinh_thanh');
+            $table->string('phuong_xa'); 
+            $table->string('tinh_thanh');  
             $table->boolean('mac_dinh')->default(false);
             $table->timestamps();
 

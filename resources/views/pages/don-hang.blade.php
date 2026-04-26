@@ -93,12 +93,18 @@
                     </span>
                 </div>
                 @php
-                    $badge = match($dh->trang_thai) {
-                        \App\Models\Donhang::TRANG_THAI_MOI      => ['warning', 'text-dark', 'fa-clock',        'Chờ xác nhận'],
-                        \App\Models\Donhang::TRANG_THAI_XU_LY   => ['info',    'text-dark', 'fa-sync-alt',     'Đang xử lý'],
-                        \App\Models\Donhang::TRANG_THAI_HOAN_TAT => ['success', 'text-white','fa-check-circle', 'Hoàn tất'],
-                        default                                   => ['danger',  'text-white','fa-times-circle', 'Đã hủy'],
-                    };
+                    $choThanhToan = $dh->trang_thai === \App\Models\Donhang::TRANG_THAI_MOI
+                        && $dh->phuong_thuc_thanhtoan === 'payos'
+                        && $dh->trang_thai_thanhtoan  !== 'da_thanh_toan';
+
+                    $badge = $choThanhToan
+                        ? ['danger', 'text-white', 'fa-university', 'Chờ thanh toán']
+                        : match($dh->trang_thai) {
+                            \App\Models\Donhang::TRANG_THAI_MOI      => ['warning', 'text-dark', 'fa-clock',        'Chờ xác nhận'],
+                            \App\Models\Donhang::TRANG_THAI_XU_LY   => ['info',    'text-dark', 'fa-sync-alt',     'Đang xử lý'],
+                            \App\Models\Donhang::TRANG_THAI_HOAN_TAT => ['success', 'text-white','fa-check-circle', 'Hoàn tất'],
+                            default                                   => ['danger',  'text-white','fa-times-circle', 'Đã hủy'],
+                        };
                 @endphp
                 <span class="badge bg-{{ $badge[0] }} {{ $badge[1] }} fs-6">
                     <i class="fas {{ $badge[2] }} me-1"></i>{{ $badge[3] }}
@@ -139,7 +145,13 @@
                     <strong class="text-danger fs-6">{{ number_format($dh->tong_thanh_toan) }}đ</strong>
                 </div>
                 <div class="d-flex gap-2">
-                    @if($dh->coTheHuy())
+                    @if($choThanhToan)
+                    <a href="{{ route('payos.checkout', $dh->id) }}"
+                       class="btn btn-sm btn-warning fw-bold">
+                        <i class="fas fa-university me-1"></i>Thanh toán ngay
+                    </a>
+                    @endif
+                    @if($dh->coTheHuy() && !$choThanhToan)
                     <form action="{{ url('/don-hang/' . $dh->id . '/huy') }}" method="POST"
                           onsubmit="return confirm('Xác nhận hủy đơn {{ $maDH }}?')">
                         @csrf @method('PATCH')

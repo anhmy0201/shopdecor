@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Donhang;
+use Illuminate\Support\Facades\DB;
 use App\Models\Binhluan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -90,15 +91,29 @@ class DonhangController extends Controller
     {
         $donhang = Donhang::where('id', $id)
             ->where('user_id', Auth::id())
+            ->with('chitiets')
             ->firstOrFail();
 
         if (!$donhang->coTheHuy()) {
             return back()->with('error', 'Đơn hàng này không thể hủy.');
         }
 
-        $donhang->update(['trang_thai' => Donhang::TRANG_THAI_HUY]);
+        DB::transaction(function () use ($donhang) {
+            // Hoàn tồn kho
+            foreach ($donhang->chitiets as $ct) {
+                if ($ct->bienthe_id) {
+                    \App\Models\SanphamBienthe::where('id', $ct->bienthe_id)
+                        ->increment('so_luong', $ct->so_luong);
+                } else {
+                    \App\Models\Sanpham::where('id', $ct->sanpham_id)
+                        ->increment('so_luong', $ct->so_luong);
+                }
+            }
 
-        return back()->with('success', 'Đã hủy đơn hàng #DH' . str_pad($donhang->id, 6, '0', STR_PAD_LEFT) . '.');
+            $donhang->update(['trang_thai' => Donhang::TRANG_THAI_HUY]);
+        });
+
+        return back()->with('success', 'Đã hủy đơn hàng #DH' . str_pad($donhang->id, 6, '0', STR_PAD_LEFT) . '. Tồn kho đã được hoàn lại.');
     }
 
     public function danhGia(Request $request, $donhangId)

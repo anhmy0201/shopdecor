@@ -72,13 +72,41 @@ class DonhangController extends Controller
             'ghi_chu_admin',
         ]);
 
-        // Tự động set ngày duyệt / ngày giao
+        // Kiểm tra ràng buộc luồng trạng thái
         if (isset($data['trang_thai'])) {
-            if ((int)$data['trang_thai'] === Donhang::TRANG_THAI_XU_LY && !$donhang->ngay_duyet) {
+            $tt    = (int) $data['trang_thai'];
+            $ttCu  = $donhang->trang_thai;
+
+            // Đơn đã hủy hoặc hoàn tất không được chuyển trạng thái khác
+            if (in_array($ttCu, [Donhang::TRANG_THAI_HUY, Donhang::TRANG_THAI_HOAN_TAT])
+                && $tt !== $ttCu) {
+                return back()->with('error', 'Không thể thay đổi trạng thái đơn đã hủy hoặc hoàn tất.');
+            }
+
+            // Tự động set ngày duyệt / ngày giao
+            if ($tt === Donhang::TRANG_THAI_XU_LY && !$donhang->ngay_duyet) {
                 $data['ngay_duyet'] = now();
             }
-            if ((int)$data['trang_thai'] === Donhang::TRANG_THAI_HOAN_TAT && !$donhang->ngay_giao) {
+            if ($tt === Donhang::TRANG_THAI_HOAN_TAT && !$donhang->ngay_giao) {
                 $data['ngay_giao'] = now();
+            }
+
+            // Nếu admin hủy đơn → hoàn tồn kho
+            if ($tt === Donhang::TRANG_THAI_HUY && $ttCu !== Donhang::TRANG_THAI_HUY) {
+                $donhang->load('chitiets');
+                \Illuminate\Support\Facades\DB::transaction(function () use ($donhang, $data) {
+                    foreach ($donhang->chitiets as $ct) {
+                        if ($ct->bienthe_id) {
+                            \App\Models\SanphamBienthe::where('id', $ct->bienthe_id)
+                                ->increment('so_luong', $ct->so_luong);
+                        } else {
+                            \App\Models\Sanpham::where('id', $ct->sanpham_id)
+                                ->increment('so_luong', $ct->so_luong);
+                        }
+                    }
+                    $donhang->update($data);
+                });
+                return back()->with('success', 'Đã hủy đơn hàng. Tồn kho đã được hoàn lại.');
             }
         }
 
