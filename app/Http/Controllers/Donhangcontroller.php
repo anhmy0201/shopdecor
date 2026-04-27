@@ -98,6 +98,23 @@ class DonhangController extends Controller
             return back()->with('error', 'Đơn hàng này không thể hủy.');
         }
 
+        // Nếu đã thanh toán qua PayOS → cần hủy link thanh toán trước khi hủy đơn
+        if ($donhang->phuong_thuc_thanhtoan === 'payos' && $donhang->daThanhToan()) {
+            try {
+                $payos = new \PayOS\PayOS(
+                    config('services.payos.client_id'),
+                    config('services.payos.api_key'),
+                    config('services.payos.checksum_key')
+                );
+                $payos->cancelPaymentLink($donhang->payos_order_code, 'Khách hủy đơn');
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('PayOS cancel lỗi: ' . $e->getMessage(), [
+                    'donhang_id' => $donhang->id,
+                ]);
+                return back()->with('error', 'Không thể hủy thanh toán PayOS. Vui lòng liên hệ hỗ trợ.');
+            }
+        }
+
         DB::transaction(function () use ($donhang) {
             // Hoàn tồn kho
             foreach ($donhang->chitiets as $ct) {
@@ -110,10 +127,17 @@ class DonhangController extends Controller
                 }
             }
 
-            $donhang->update(['trang_thai' => Donhang::TRANG_THAI_HUY]);
+            $donhang->update([
+                'trang_thai'           => Donhang::TRANG_THAI_HUY,
+                'trang_thai_thanhtoan' => $donhang->daThanhToan() ? 'hoan_tien' : $donhang->trang_thai_thanhtoan,
+            ]);
         });
 
-        return back()->with('success', 'Đã hủy đơn hàng #DH' . str_pad($donhang->id, 6, '0', STR_PAD_LEFT) . '. Tồn kho đã được hoàn lại.');
+        $msg = $donhang->daThanhToan()
+            ? 'Đã hủy đơn hàng. Yêu cầu hoàn tiền đã được gửi đến PayOS.'
+            : 'Đã hủy đơn hàng #DH' . str_pad($donhang->id, 6, '0', STR_PAD_LEFT) . '.';
+
+        return back()->with('success', $msg);
     }
 
     public function danhGia(Request $request, $donhangId)

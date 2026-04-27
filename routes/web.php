@@ -75,8 +75,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/don-hang/{donhangId}/danh-gia', [DonhangController::class, 'danhGia'])->name('don-hang.danh-gia');
 });
 
-Route::prefix('tai-khoan')->name('account.')->group(function () {
-    Route::get('/',                            [AccountController::class, 'index'])->name('index');
+Route::middleware('auth')->prefix('tai-khoan')->name('account.')->group(function () {
+    Route::get('/', [AccountController::class, 'index'])->name('index');
     Route::put('/cap-nhat',                    [AccountController::class, 'capNhatThongTin'])->name('cap-nhat');
     Route::put('/doi-mat-khau',                [AccountController::class, 'doiMatKhau'])->name('doi-mat-khau');
     Route::post('/dia-chi',                    [AccountController::class, 'themDiaChi'])->name('dia-chi.them');

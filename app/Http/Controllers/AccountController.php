@@ -14,8 +14,6 @@ use Illuminate\View\View;
 
 class AccountController extends Controller
 {
-    
-
     public function index(): View
     {
         $user = Auth::user()->load([
@@ -25,7 +23,6 @@ class AccountController extends Controller
 
         return view('pages.account', compact('user'));
     }
-
 
     public function capNhatThongTin(Request $request): RedirectResponse
     {
@@ -61,7 +58,6 @@ class AccountController extends Controller
         return back()->with('success', 'Cập nhật thông tin thành công!');
     }
 
-
     public function doiMatKhau(Request $request): RedirectResponse
     {
         $user = Auth::user();
@@ -83,7 +79,7 @@ class AccountController extends Controller
             return back()->withErrors(['mat_khau_cu' => 'Mật khẩu hiện tại không đúng.'])->withInput();
         }
 
-        $user->update(['mat_khau' => $request->mat_khau_moi]);
+        $user->update(['mat_khau' => Hash::make($request->mat_khau_moi)]);
 
         return back()->with('success', 'Đổi mật khẩu thành công!');
     }

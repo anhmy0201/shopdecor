@@ -61,9 +61,14 @@
         <div class="col-lg-7">
 
             {{-- Timeline trạng thái --}}
-            @if($donhang->trang_thai !== \App\Models\Donhang::TRANG_THAI_HUY)
-            @php
-                $tt = $donhang->trang_thai;
+    @php
+        $choThanhToan = $donhang->trang_thai === \App\Models\Donhang::TRANG_THAI_MOI
+            && $donhang->phuong_thuc_thanhtoan === 'payos'
+            && $donhang->trang_thai_thanhtoan  !== 'da_thanh_toan';
+    @endphp
+    @if($donhang->trang_thai !== \App\Models\Donhang::TRANG_THAI_HUY)
+    @php
+        $tt = $donhang->trang_thai;
                 $steps = [
                     ['label' => "Đặt hàng\nthành công", 'icon' => 'fa-check',          'done' => $tt >= 0, 'active' => $tt === 0],
                     ['label' => "Đã xác\nnhận",         'icon' => 'fa-clipboard-check', 'done' => $tt >= 1, 'active' => $tt === 1],
@@ -89,11 +94,6 @@
                         @endforeach
                     </div>
                     <div class="text-center mt-3">
-                        @php
-                            $choThanhToan = $tt === \App\Models\Donhang::TRANG_THAI_MOI
-                                && $donhang->phuong_thuc_thanhtoan === 'payos'
-                                && $donhang->trang_thai_thanhtoan  !== 'da_thanh_toan';
-                        @endphp
                         @if($choThanhToan)
                             <span class="badge bg-danger fs-6">
                                 <i class="fas fa-university me-1"></i>Chờ thanh toán
@@ -206,7 +206,9 @@
                 @endif
                 @if($donhang->coTheHuy())
                 <form action="{{ url('/don-hang/' . $donhang->id . '/huy') }}" method="POST"
-                      onsubmit="return confirm('Xác nhận hủy đơn hàng này?')">
+                      onsubmit="return confirm(
+                          '{{ $donhang->daThanhToan() ? 'Đơn đã thanh toán! Hủy sẽ yêu cầu hoàn tiền qua PayOS. Xác nhận?' : 'Xác nhận hủy đơn hàng này?' }}'
+                      )">
                     @csrf @method('PATCH')
                     <button type="submit" class="btn btn-outline-danger">
                         <i class="fas fa-times me-1"></i>Hủy đơn hàng

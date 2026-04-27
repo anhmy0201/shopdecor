@@ -64,4 +64,9 @@ class Donhang extends Model
     {
         return $this->trang_thai === self::TRANG_THAI_MOI;
     }
+
+    public function daThanhToan(): bool
+    {
+        return $this->trang_thai_thanhtoan === 'da_thanh_toan';
+    }
 }

@@ -38,9 +38,12 @@ class LoginController extends Controller
             'kich_hoat' => true,
         ];
 
-        if (Auth::attempt($credentials, $remember)) {
-            $sessionId = $request->session()->getId();
+        // FIX: Lấy session ID của guest TRƯỚC khi attempt()
+        // Sau khi attempt() thành công + regenerate(), session ID đã đổi
+        // → sessionId cũ dùng để merge giỏ hàng guest vào tài khoản
+        $sessionId = $request->session()->getId();
 
+        if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
 
             $this->mergeGioHang($sessionId);
