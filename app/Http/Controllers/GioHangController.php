@@ -24,6 +24,10 @@ class GioHangController extends Controller
     // Xem giỏ hàng
     public function index()
     {
+        // Xóa session mua_ngay khi user quay lại giỏ hàng
+        // để tránh xung đột khi vào thanh toán từ giỏ hàng thường
+        session()->forget('mua_ngay');
+
         $giohang = $this->layGioHang();
         $giohang->load(['chitiets.sanpham.anhChinh', 'chitiets.bienthe']);
 
@@ -97,7 +101,7 @@ class GioHangController extends Controller
 
         $chitiet->update(['so_luong' => $soLuong]);
         $thanhTien = $soLuong * $chitiet->gia;
-        $tongTien = $giohang->chitiets()->selectRaw('SUM(so_luong * gia) as total')->value('total') ?? 0;
+        $tongTien  = $giohang->chitiets()->selectRaw('SUM(so_luong * gia) as total')->value('total') ?? 0;
 
         return response()->json([
             'success'    => true,
@@ -106,21 +110,71 @@ class GioHangController extends Controller
         ]);
     }
 
-    public function xoa($id)
+    // FIX: Trả về JSON nếu request là AJAX, redirect nếu là form thường
+    public function xoa(Request $request, $id)
     {
         $giohang = $this->layGioHang();
         ChitietGiohang::where('id', $id)
             ->where('giohang_id', $giohang->id)
             ->delete();
 
+        $tongSoLuong = $giohang->chitiets()->sum('so_luong');
+        $tongTien    = $giohang->chitiets()->selectRaw('SUM(so_luong * gia) as total')->value('total') ?? 0;
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success'       => true,
+                'message'       => 'Đã xóa sản phẩm khỏi giỏ hàng!',
+                'tong_so_luong' => $tongSoLuong,
+                'tong_tien'     => number_format($tongTien) . 'đ',
+            ]);
+        }
+
         return redirect()->route('gio-hang')->with('success', 'Đã xóa sản phẩm khỏi giỏ hàng!');
     }
 
+    // Mua ngay — lưu session, không đụng giỏ hàng
+    public function muaNgay(Request $request)
+    {
+        $request->validate([
+            'san_pham_id' => 'required|exists:sanpham,id',
+            'so_luong'    => 'integer|min:1|max:99',
+            'bienthe_id'  => 'nullable|exists:sanpham_bienthe,id',
+        ]);
+
+        $sanpham   = Sanpham::findOrFail($request->san_pham_id);
+        $bientheId = $request->bienthe_id;
+        $soLuong   = (int) ($request->so_luong ?? 1);
+
+        // Lấy giá từ biến thể hoặc sản phẩm
+        $gia = $sanpham->gia;
+        if ($bientheId) {
+            $bienthe = SanphamBienthe::find($bientheId);
+            $gia = $bienthe ? $bienthe->gia : $sanpham->gia;
+        }
+        session(['mua_ngay' => [
+            'san_pham_id' => $sanpham->id,
+            'bienthe_id'  => $bientheId,
+            'so_luong'    => $soLuong,
+            'gia'         => $gia,
+            'ten_san_pham' => $sanpham->ten_san_pham,
+        ]]);
+
+        return redirect()->route('thanh-toan');
+    }
+
     // Xóa toàn bộ giỏ
-    public function xoaTat()
+    public function xoaTat(Request $request)
     {
         $giohang = $this->layGioHang();
         $giohang->chitiets()->delete();
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Đã xóa toàn bộ giỏ hàng!',
+            ]);
+        }
 
         return redirect()->route('gio-hang')->with('success', 'Đã xóa toàn bộ giỏ hàng!');
     }

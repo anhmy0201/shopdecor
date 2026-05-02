@@ -343,7 +343,7 @@ gap:4px
                                         <a href="{{ url('/san-pham/'.$sp->slug) }}" class="btn-chitiet">
                                             <i class="fas fa-eye"></i>Chi tiết
                                         </a>
-                                        <button class="btn-giohang" onclick="themGioHang({{ $sp->id }})">
+                                        <button class="btn-giohang" onclick="themGioHangQuick({{ $sp->id }}, {{ $sp->co_bien_the ? 'true' : 'false' }}, '{{ $sp->slug }}')">
                                             <i class="fas fa-cart-plus"></i>Thêm giỏ
                                         </button>
                                     </div>
@@ -381,7 +381,7 @@ gap:4px
                                         <a href="{{ url('/san-pham/'.$sp->slug) }}" class="btn-chitiet">
                                             <i class="fas fa-eye"></i>Chi tiết
                                         </a>
-                                        <button class="btn-giohang" onclick="themGioHang({{ $sp->id }})">
+                                        <button class="btn-giohang" onclick="themGioHangQuick({{ $sp->id }}, {{ $sp->co_bien_the ? 'true' : 'false' }}, '{{ $sp->slug }}')">
                                             <i class="fas fa-cart-plus"></i>Thêm giỏ
                                         </button>
                                     </div>
@@ -469,7 +469,12 @@ gap:4px
     show(0); reset();
 })();
 
-function themGioHang(id) {
+function themGioHangQuick(id, coBienThe, slug) {
+    // Nếu sản phẩm có biến thể, chuyển sang trang chi tiết để chọn biến thể
+    if (coBienThe) {
+        window.location.href = '{{ url('/san-pham') }}/' + slug + '?them_gio_hang=1';
+        return;
+    }
     fetch('{{ url('/gio-hang/them') }}', {
         method: 'POST',
         headers: {
@@ -478,7 +483,12 @@ function themGioHang(id) {
         },
         body: JSON.stringify({ san_pham_id: id, so_luong: 1 })
     }).then(r => r.json()).then(d => {
-        if (d.success) alert('Đã thêm vào giỏ hàng!');
+        if (d.success) {
+            // Cập nhật số lượng giỏ hàng trên header nếu có
+            const badge = document.querySelector('.cart-count, #cartCount, .badge-cart');
+            if (badge && d.tong_so_luong !== undefined) badge.textContent = d.tong_so_luong;
+            alert('Đã thêm vào giỏ hàng!');
+        }
     });
 }
 </script>

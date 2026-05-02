@@ -258,6 +258,13 @@
                         @enderror
                     </div>
 
+                    <!-- Quên mật khẩu -->
+                    <div class="text-end mb-2" style="margin-top:-8px;">
+                        <a href="{{ route('password.forgot') }}" style="color:#667eea; font-size:.85rem; text-decoration:none;">
+                            <i class="fas fa-key me-1"></i>Quên mật khẩu?
+                        </a>
+                    </div>
+
                     <!-- Nhớ tôi -->
                     <div class="form-group mb-4">
                         <div class="form-check">

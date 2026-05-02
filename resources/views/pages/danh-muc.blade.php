@@ -134,7 +134,7 @@
                                 </a>
                                 <button class="btn btn-sm fw-bold flex-fill text-white"
                                         style="background:#1a5276;font-size:0.75rem"
-                                        onclick="themGioHang({{ $sp->id }})">
+                                        onclick="themGioHangQuick({{ $sp->id }}, {{ $sp->co_bien_the ? 'true' : 'false' }}, '{{ $sp->slug }}')">
                                     <i class="fas fa-cart-plus me-1"></i>Thêm giỏ
                                 </button>
                             </div>
@@ -181,7 +181,12 @@
 
 @section('extra-js')
 <script>
-function themGioHang(sanPhamId) {
+function themGioHangQuick(sanPhamId, coBienThe, slug) {
+    // Nếu sản phẩm có biến thể, chuyển sang trang chi tiết để chọn biến thể
+    if (coBienThe) {
+        window.location.href = '{{ url('/san-pham') }}/' + slug + '?them_gio_hang=1';
+        return;
+    }
     fetch('{{ url('/gio-hang/them') }}', {
         method: 'POST',
         headers: {
@@ -192,7 +197,11 @@ function themGioHang(sanPhamId) {
     })
     .then(r => r.json())
     .then(data => {
-        if (data.success) alert('Đã thêm vào giỏ hàng!');
+        if (data.success) {
+            const badge = document.querySelector('.cart-count, #cartCount, .badge-cart');
+            if (badge && data.tong_so_luong !== undefined) badge.textContent = data.tong_so_luong;
+            alert('Đã thêm vào giỏ hàng!');
+        }
     });
 }
 </script>

@@ -175,11 +175,11 @@
                         onclick="themGioHang({{ $sanpham->id }})">
                     <i class="fas fa-cart-plus me-2"></i>THÊM VÀO GIỎ
                 </button>
-                <a href="{{ url('/gio-hang') }}"
-                   class="btn btn-danger fw-bold rounded-0 text-white text-decoration-none"
-                   style="padding:11px 24px">
+                <button class="btn btn-danger fw-bold rounded-0 text-white"
+                        style="padding:11px 24px"
+                        onclick="muaNgay({{ $sanpham->id }})">
                     <i class="fas fa-bolt me-2"></i>MUA NGAY
-                </a>
+                </button>
             </div>
 
             <div class="border bg-light p-3 small" style="font-size:.82rem">
@@ -332,6 +332,37 @@ function themGioHang(sanPhamId) {
     })
     .then(r => r.json())
     .then(data => { if (data.success) alert('Đã thêm vào giỏ hàng!'); });
+}
+
+function muaNgay(sanPhamId) {
+    const bientheActive = document.querySelector('.bienthe-btn.active');
+    const soLuong = parseInt(document.getElementById('soLuong').value);
+    const bientheId = bientheActive ? bientheActive.dataset.id : null;
+
+    @if($sanpham->co_bien_the)
+    if (!bientheId) { alert('Vui lòng chọn phân loại sản phẩm!'); return; }
+    @endif
+
+    // Tạo form POST ẩn để gửi lên /gio-hang/mua-ngay — dùng session, không đụng giỏ hàng
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '{{ url('/gio-hang/mua-ngay') }}';
+
+    const addHidden = (name, value) => {
+        const input = document.createElement('input');
+        input.type  = 'hidden';
+        input.name  = name;
+        input.value = value ?? '';
+        form.appendChild(input);
+    };
+
+    addHidden('_token', document.querySelector('meta[name="csrf-token"]').content);
+    addHidden('san_pham_id', sanPhamId);
+    addHidden('so_luong', soLuong);
+    if (bientheId) addHidden('bienthe_id', bientheId);
+
+    document.body.appendChild(form);
+    form.submit();
 }
 
 function dangKyEcho() {

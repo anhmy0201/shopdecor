@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Auth;
 
 class DonhangController extends Controller
 {
-   
     public function index(Request $request)
     {
         $trangThai = $request->get('trang_thai', 'tat-ca');
@@ -36,13 +35,20 @@ class DonhangController extends Controller
 
         $donhangs = $query->paginate(8)->withQueryString();
 
-        // Đếm từng tab để hiện badge số
+        // FIX: Dùng 1 query GROUP BY thay vì 5 query COUNT riêng lẻ
+        $demTheo = Donhang::where('user_id', Auth::id())
+            ->selectRaw('trang_thai, count(*) as total')
+            ->groupBy('trang_thai')
+            ->pluck('total', 'trang_thai');
+
+        $tongTatCa = $demTheo->sum();
+
         $dem = [
-            'tat-ca'       => Donhang::where('user_id', Auth::id())->count(),
-            'cho-xac-nhan' => Donhang::where('user_id', Auth::id())->where('trang_thai', Donhang::TRANG_THAI_MOI)->count(),
-            'dang-xu-ly'   => Donhang::where('user_id', Auth::id())->where('trang_thai', Donhang::TRANG_THAI_XU_LY)->count(),
-            'hoan-tat'     => Donhang::where('user_id', Auth::id())->where('trang_thai', Donhang::TRANG_THAI_HOAN_TAT)->count(),
-            'da-huy'       => Donhang::where('user_id', Auth::id())->where('trang_thai', Donhang::TRANG_THAI_HUY)->count(),
+            'tat-ca'       => $tongTatCa,
+            'cho-xac-nhan' => $demTheo->get(Donhang::TRANG_THAI_MOI, 0),
+            'dang-xu-ly'   => $demTheo->get(Donhang::TRANG_THAI_XU_LY, 0),
+            'hoan-tat'     => $demTheo->get(Donhang::TRANG_THAI_HOAN_TAT, 0),
+            'da-huy'       => $demTheo->get(Donhang::TRANG_THAI_HUY, 0),
         ];
 
         return view('pages.don-hang', compact('donhangs', 'trangThai', 'dem'));
@@ -98,23 +104,6 @@ class DonhangController extends Controller
             return back()->with('error', 'Đơn hàng này không thể hủy.');
         }
 
-        // Nếu đã thanh toán qua PayOS → cần hủy link thanh toán trước khi hủy đơn
-        if ($donhang->phuong_thuc_thanhtoan === 'payos' && $donhang->daThanhToan()) {
-            try {
-                $payos = new \PayOS\PayOS(
-                    config('services.payos.client_id'),
-                    config('services.payos.api_key'),
-                    config('services.payos.checksum_key')
-                );
-                $payos->cancelPaymentLink($donhang->payos_order_code, 'Khách hủy đơn');
-            } catch (\Exception $e) {
-                \Illuminate\Support\Facades\Log::error('PayOS cancel lỗi: ' . $e->getMessage(), [
-                    'donhang_id' => $donhang->id,
-                ]);
-                return back()->with('error', 'Không thể hủy thanh toán PayOS. Vui lòng liên hệ hỗ trợ.');
-            }
-        }
-
         DB::transaction(function () use ($donhang) {
             // Hoàn tồn kho
             foreach ($donhang->chitiets as $ct) {
@@ -127,17 +116,10 @@ class DonhangController extends Controller
                 }
             }
 
-            $donhang->update([
-                'trang_thai'           => Donhang::TRANG_THAI_HUY,
-                'trang_thai_thanhtoan' => $donhang->daThanhToan() ? 'hoan_tien' : $donhang->trang_thai_thanhtoan,
-            ]);
+            $donhang->update(['trang_thai' => Donhang::TRANG_THAI_HUY]);
         });
 
-        $msg = $donhang->daThanhToan()
-            ? 'Đã hủy đơn hàng. Yêu cầu hoàn tiền đã được gửi đến PayOS.'
-            : 'Đã hủy đơn hàng #DH' . str_pad($donhang->id, 6, '0', STR_PAD_LEFT) . '.';
-
-        return back()->with('success', $msg);
+        return back()->with('success', 'Đã hủy đơn hàng #DH' . str_pad($donhang->id, 6, '0', STR_PAD_LEFT) . '. Tồn kho đã được hoàn lại.');
     }
 
     public function danhGia(Request $request, $donhangId)

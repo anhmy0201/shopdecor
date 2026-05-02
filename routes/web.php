@@ -3,6 +3,8 @@
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\GoogleController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\DanhMucController;
 use App\Http\Controllers\SanphamController;
@@ -36,6 +38,14 @@ Route::middleware('guest')->group(function () {
     Route::post('/login',    [LoginController::class,    'login']);
     Route::get('/register',  [RegisterController::class, 'showRegistrationForm'])->name('register');
     Route::post('/register', [RegisterController::class, 'register']);
+
+    // ── Quên mật khẩu ────────────────────────────────────────────────────────
+    Route::get('/quen-mat-khau',  [ForgotPasswordController::class, 'showForm'])->name('password.forgot');
+    Route::post('/quen-mat-khau', [ForgotPasswordController::class, 'sendResetLink'])->name('password.forgot.send');
+
+    // ── Đặt lại mật khẩu ─────────────────────────────────────────────────────
+    Route::get('/dat-lai-mat-khau/{token}', [ResetPasswordController::class, 'showForm'])->name('password.reset.form');
+    Route::post('/dat-lai-mat-khau',        [ResetPasswordController::class, 'reset'])->name('password.reset');
 });
 
 Route::post('/logout', [LoginController::class, 'logout'])
@@ -50,6 +60,7 @@ Route::get('/danh-muc/{slug}', [DanhMucController::class, 'show']);
 Route::get('/san-pham/{slug}', [SanphamController::class, 'show']);
 
 Route::get('/gio-hang',                  [GioHangController::class, 'index'])->name('gio-hang');
+Route::post('/gio-hang/mua-ngay',        [GioHangController::class, 'muaNgay']);
 Route::post('/gio-hang/them',            [GioHangController::class, 'them']);
 Route::patch('/gio-hang/cap-nhat/{id}', [GioHangController::class, 'capNhat']);
 Route::post('/gio-hang/cap-nhat/{id}',  [GioHangController::class, 'capNhat']);
@@ -60,6 +71,7 @@ Route::delete('/gio-hang/xoa-tat',      [GioHangController::class, 'xoaTat']);
 Route::get('/thanh-toan',             [ThanhToanController::class, 'index'])->name('thanh-toan');
 Route::post('/thanh-toan',            [ThanhToanController::class, 'store']);
 Route::post('/thanh-toan/ap-ma',      [ThanhToanController::class, 'apMa']);
+Route::get('/thanh-toan/danh-sach-ma', [ThanhToanController::class, 'danhSachMa']);
 Route::get('/xac-nhan-don-hang/{id}', [ThanhToanController::class, 'xacNhan'])->name('xac-nhan-don-hang');
 Route::get('/payos/checkout/{id}', [ThanhToanController::class, 'payosCheckout'])->name('payos.checkout');
 Route::get('/payos/success',       [ThanhToanController::class, 'payosSuccess'])->name('payos.success');
@@ -75,8 +87,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/don-hang/{donhangId}/danh-gia', [DonhangController::class, 'danhGia'])->name('don-hang.danh-gia');
 });
 
-Route::middleware('auth')->prefix('tai-khoan')->name('account.')->group(function () {
-    Route::get('/', [AccountController::class, 'index'])->name('index');
+Route::prefix('tai-khoan')->name('account.')->group(function () {
+    Route::get('/',                            [AccountController::class, 'index'])->name('index');
     Route::put('/cap-nhat',                    [AccountController::class, 'capNhatThongTin'])->name('cap-nhat');
     Route::put('/doi-mat-khau',                [AccountController::class, 'doiMatKhau'])->name('doi-mat-khau');
     Route::post('/dia-chi',                    [AccountController::class, 'themDiaChi'])->name('dia-chi.them');

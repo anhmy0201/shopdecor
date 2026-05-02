@@ -138,7 +138,7 @@
                         <span id="tongCong">{{ number_format($giohang->tong_tien) }}đ</span>
                     </div>
 
-                    <a href="{{ url('/thanh-toan') }}"
+                    <a href="{{ url('/thanh-toan') }}?from=cart"
                        class="btn btn-danger d-block mt-3 fw-bold py-2">
                         <i class="fas fa-credit-card me-2"></i>TIẾN HÀNH THANH TOÁN
                     </a>
