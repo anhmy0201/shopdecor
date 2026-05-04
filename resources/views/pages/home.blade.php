@@ -202,7 +202,7 @@ gap:4px
 <div class="hero-slider" id="heroSlider">
     @forelse($banners as $i => $banner)
     <div class="hero-slide {{ $i===0?'active':'' }}">
-        <img class="slide-bg" src="{{ asset($banner->duong_dan_anh) }}" alt="{{ $banner->tieu_de ?? 'Banner '.($i+1) }}">
+        <img class="slide-bg" src="{{ asset($banner->duong_dan_anh) }}?v={{ $banner->updated_at->timestamp }}" alt="{{ $banner->tieu_de ?? 'Banner '.($i+1) }}">
         <div class="slide-overlay"></div>
         @if($banner->tieu_de || $banner->mo_ta)
         <div class="slide-body">

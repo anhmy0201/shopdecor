@@ -18,7 +18,7 @@
                 {{-- Ảnh hiện tại --}}
                 <div class="col-md-5 text-center">
                     <div class="mb-2 fw-semibold text-muted small">Ảnh hiện tại</div>
-                    <img src="{{ asset($banner->duong_dan_anh) }}"
+                    <img src="{{ asset($banner->duong_dan_anh) }}?v={{ $banner->updated_at->timestamp }}"
                          id="previewImg"
                          alt="{{ $banner->tieu_de }}"
                          class="rounded border w-100"

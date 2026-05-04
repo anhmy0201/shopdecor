@@ -34,7 +34,7 @@
                 <tr>
                     <td class="text-center fw-semibold text-muted">{{ $banner->thu_tu }}</td>
                     <td>
-                        <img src="{{ asset($banner->duong_dan_anh) }}"
+                        <img src="{{ asset($banner->duong_dan_anh) }}?v={{ $banner->updated_at->timestamp }}"
                              alt="{{ $banner->tieu_de }}"
                              class="rounded"
                              style="width:100px;height:60px;object-fit:cover;">
