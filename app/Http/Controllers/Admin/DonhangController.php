@@ -91,7 +91,7 @@ class DonhangController extends Controller
                 $data['ngay_giao'] = now();
             }
 
-            // Nếu admin hủy đơn → hoàn tồn kho
+            // Nếu admin hủy đơn → hoàn tồn kho, hoàn mã giảm giá, giảm lượt mua
             if ($tt === Donhang::TRANG_THAI_HUY && $ttCu !== Donhang::TRANG_THAI_HUY) {
                 $donhang->load('chitiets');
                 \Illuminate\Support\Facades\DB::transaction(function () use ($donhang, $data) {
@@ -103,7 +103,19 @@ class DonhangController extends Controller
                             \App\Models\Sanpham::where('id', $ct->sanpham_id)
                                 ->increment('so_luong', $ct->so_luong);
                         }
+
+                        // Fix #2: Hoàn lại lượt mua khi admin hủy đơn
+                        \App\Models\Sanpham::where('id', $ct->sanpham_id)
+                            ->decrement('luot_mua', $ct->so_luong);
                     }
+
+                    // Fix #1: Hoàn lại lượt dùng mã giảm giá khi admin hủy đơn
+                    if ($donhang->magiamgia_id) {
+                        \App\Models\Magiamgia::where('id', $donhang->magiamgia_id)
+                            ->where('da_su_dung', '>', 0)
+                            ->decrement('da_su_dung');
+                    }
+
                     $donhang->update($data);
                 });
                 return back()->with('success', 'Đã hủy đơn hàng. Tồn kho đã được hoàn lại.');

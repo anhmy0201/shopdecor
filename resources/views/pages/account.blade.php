@@ -310,27 +310,25 @@
                                             @foreach($user->donhangs as $dh)
                                             <tr>
                                                 <td class="fw-bold">#{{ $dh->id }}</td>
-                                                <td class="text-muted small">{{ $dh->created_at->format('d/m/Y') }}</td>
+                                                <td class="text-muted small">{{ ($dh->ngay_dat ?? $dh->created_at)->format('d/m/Y') }}</td>
                                                 <td class="text-danger fw-bold">
-                                                    {{ number_format($dh->tong_tien) }}đ
+                                                    {{ number_format($dh->tong_thanh_toan) }}đ
                                                 </td>
                                                 <td>
                                                     @php
-                                                        $badge = match($dh->trang_thai ?? 'cho_xac_nhan') {
-                                                            'cho_xac_nhan'  => 'warning',
-                                                            'dang_xu_ly'    => 'info',
-                                                            'dang_giao'     => 'primary',
-                                                            'da_giao'       => 'success',
-                                                            'da_huy'        => 'danger',
-                                                            default         => 'secondary',
+                                                        $badge = match((int)$dh->trang_thai) {
+                                                            0 => 'warning',
+                                                            1 => 'info',
+                                                            2 => 'success',
+                                                            3 => 'danger',
+                                                            default => 'secondary',
                                                         };
-                                                        $label = match($dh->trang_thai ?? 'cho_xac_nhan') {
-                                                            'cho_xac_nhan'  => 'Chờ xác nhận',
-                                                            'dang_xu_ly'    => 'Đang xử lý',
-                                                            'dang_giao'     => 'Đang giao',
-                                                            'da_giao'       => 'Đã giao',
-                                                            'da_huy'        => 'Đã hủy',
-                                                            default         => 'Không rõ',
+                                                        $label = match((int)$dh->trang_thai) {
+                                                            0 => 'Chờ xác nhận',
+                                                            1 => 'Đang xử lý',
+                                                            2 => 'Hoàn tất',
+                                                            3 => 'Đã hủy',
+                                                            default => 'Không rõ',
                                                         };
                                                     @endphp
                                                     <span class="badge bg-{{ $badge }}">{{ $label }}</span>

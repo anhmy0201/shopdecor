@@ -54,6 +54,21 @@ class GioHangController extends Controller
             $gia = $bienthe ? $bienthe->gia : $sanpham->gia;
         }
 
+        // FIX #4: Kiểm tra tồn kho trước khi thêm vào giỏ (best-effort UX guard,
+        // không lock — lock thật nằm trong checkout transaction)
+        if ($bientheId) {
+            $tonKho = SanphamBienthe::where('id', $bientheId)->value('so_luong');
+        } else {
+            $tonKho = $sanpham->so_luong;
+        }
+
+        if ($tonKho !== null && $tonKho < 1) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Sản phẩm này hiện đã hết hàng.',
+            ], 422);
+        }
+
         $giohang = $this->layGioHang();
 
         // Kiểm tra đã có chưa

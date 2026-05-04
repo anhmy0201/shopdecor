@@ -34,9 +34,6 @@ class ThanhToanController extends Controller
     public function index()
     {
         $muaNgay = session('mua_ngay');
-
-        // Nếu request đến kèm tham số ?from=cart (bấm "Tiến hành thanh toán" từ giỏ hàng),
-        // hoặc referrer là trang giỏ hàng → xóa session mua_ngay để dùng giỏ hàng thật
         $fromCart = request()->get('from') === 'cart'
             || str_contains(request()->headers->get('referer', ''), route('gio-hang'));
 
@@ -46,13 +43,11 @@ class ThanhToanController extends Controller
         }
 
         if ($muaNgay) {
-            // Chế độ "Mua Ngay": tạo giỏ ảo từ session, không đụng DB giỏ hàng
             $sanpham = \App\Models\Sanpham::with('anhChinh')->findOrFail($muaNgay['san_pham_id']);
             $bienthe = $muaNgay['bienthe_id']
                 ? \App\Models\SanphamBienthe::find($muaNgay['bienthe_id'])
                 : null;
 
-            // Tạo object giỏ ảo để blade dùng chung template
             $giohang = new \stdClass();
             $giohang->chitiets = collect([(object)[
                 'id'         => null,
@@ -83,7 +78,6 @@ class ThanhToanController extends Controller
             : collect();
         $diaChiMacDinh = $diaChis->firstWhere('mac_dinh', true);
 
-        // Lấy danh sách mã giảm giá còn hiệu lực để render trong popup
         $danhSachMa = Magiamgia::where('kich_hoat', true)
             ->where(function($q) { $q->whereNull('ket_thuc')->orWhere('ket_thuc', '>=', now()); })
             ->where(function($q) { $q->whereNull('bat_dau')->orWhere('bat_dau', '<=', now()); })
@@ -259,13 +253,15 @@ class ThanhToanController extends Controller
             $chitiets = $giohang->chitiets;
         }
 
-        // Chuẩn bị dữ liệu mã giảm giá trước transaction
+        $magiamgiaIdInput = $request->magiamgia_id ?: null;
+
         $magiamgiaId  = null;
         $magiamgia    = null;
         $soTienGiam   = 0;
 
-        if ($request->magiamgia_id) {
-            $magiamgia = Magiamgia::find($request->magiamgia_id);
+        // Kiểm tra sơ bộ trước transaction (để hiển thị lỗi sớm, không phải lock cuối cùng)
+        if ($magiamgiaIdInput) {
+            $magiamgia = Magiamgia::find($magiamgiaIdInput);
             if ($magiamgia && $magiamgia->conHieuLuc()) {
                 if (Auth::check()) {
                     $daDung = Donhang::where('user_id', Auth::id())
@@ -294,7 +290,7 @@ class ThanhToanController extends Controller
 
         // Toàn bộ kiểm tra tồn kho và tạo đơn nằm trong cùng một transaction
         // lockForUpdate() chỉ có hiệu lực khi nằm bên trong transaction
-        // try-catch bắt exception TON_KHO ném ra từ bên trong để trả về lỗi thân thiện
+        // (TypeError, Error từ DB driver, v.v.) không chỉ Exception
         try {
         DB::transaction(function () use (
             $request, $giohang, $magiamgia, $chitiets, $laMuaNgay,
@@ -324,6 +320,18 @@ class ThanhToanController extends Controller
             }
 
             $tongTienHang = $chitiets->sum(fn($ct) => $ct->gia * $ct->so_luong);
+
+            if ($magiamgia) {
+                $magiamgiaLocked = Magiamgia::where('id', $magiamgia->id)
+                    ->lockForUpdate()
+                    ->first();
+
+                if (!$magiamgiaLocked || !$magiamgiaLocked->conHieuLuc()) {
+                    $magiamgia = null;
+                } else {
+                    $magiamgia = $magiamgiaLocked;
+                }
+            }
 
             if ($magiamgia) {
                 $soTienGiam = $magiamgia->tinhSoTienGiam($tongTienHang);
@@ -377,7 +385,6 @@ class ThanhToanController extends Controller
                         ->decrement('so_luong', $ct->so_luong);
                 }
 
-                // Bug 2 fix: Tăng lượt mua để tính năng "bán chạy" hoạt động đúng
                 Sanpham::where('id', $ct->sanpham_id)
                     ->increment('luot_mua', $ct->so_luong);
             }
@@ -391,7 +398,6 @@ class ThanhToanController extends Controller
                 }
             }
 
-            // Chỉ xóa giỏ DB khi không phải Mua Ngay
             if (!$laMuaNgay) {
                 $giohang->chitiets()->delete();
             }
@@ -417,13 +423,16 @@ class ThanhToanController extends Controller
                 }
             }
         });
-        } catch (\Exception $e) {
-            // Bug 1 fix: DB::transaction re-throw exception, phải bắt ở đây
+        } catch (\Throwable $e) {
             if (str_starts_with($e->getMessage(), 'TON_KHO:')) {
                 $msg = substr($e->getMessage(), 8);
                 return back()->with('error', $msg);
             }
             throw $e; // exception khác thì để Laravel xử lý
+        }
+
+        if (!$donhang) {
+            return back()->with('error', 'Đặt hàng thất bại. Vui lòng thử lại.');
         }
 
 
@@ -510,9 +519,6 @@ class ThanhToanController extends Controller
             config('services.payos.checksum_key')
         );
 
-        // FIX: Dùng donhang->id * 1_000_000 + random để tránh overflow và trùng orderCode
-        // Giới hạn PayOS: < 9007199254740991 (~9 * 10^15)
-        // donhang->id tối đa ~9_000_000 thì: 9_000_000 * 1_000_000 + 999_999 = 9_000_000_999_999 (~9 * 10^12) — an toàn
         $orderCode = $donhang->id * 1_000_000 + random_int(0, 999_999);
 
         $donhang->update(['payos_order_code' => $orderCode]);
@@ -573,7 +579,6 @@ class ThanhToanController extends Controller
             ->with('success', 'Cảm ơn! Thanh toán của bạn đang được xác nhận.');
     }
 
-    // FIX: Thêm kiểm tra ownership để tránh người dùng tùy ý truyền donhang_id
     public function payosCancel(Request $request)
     {
         $donhangId = $request->donhang_id;

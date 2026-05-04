@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Donhang;
+use App\Models\Magiamgia;
+use App\Models\Sanpham;
+use App\Models\SanphamBienthe;
 use Illuminate\Support\Facades\DB;
 use App\Models\Binhluan;
 use Illuminate\Http\Request;
@@ -105,15 +108,26 @@ class DonhangController extends Controller
         }
 
         DB::transaction(function () use ($donhang) {
-            // Hoàn tồn kho
+            // Hoàn tồn kho và giảm lượt mua
             foreach ($donhang->chitiets as $ct) {
                 if ($ct->bienthe_id) {
-                    \App\Models\SanphamBienthe::where('id', $ct->bienthe_id)
+                    SanphamBienthe::where('id', $ct->bienthe_id)
                         ->increment('so_luong', $ct->so_luong);
                 } else {
-                    \App\Models\Sanpham::where('id', $ct->sanpham_id)
+                    Sanpham::where('id', $ct->sanpham_id)
                         ->increment('so_luong', $ct->so_luong);
                 }
+
+                // Fix #2: Hoàn lại lượt mua khi hủy đơn
+                Sanpham::where('id', $ct->sanpham_id)
+                    ->decrement('luot_mua', $ct->so_luong);
+            }
+
+            // Fix #1: Hoàn lại lượt dùng mã giảm giá khi hủy đơn
+            if ($donhang->magiamgia_id) {
+                Magiamgia::where('id', $donhang->magiamgia_id)
+                    ->where('da_su_dung', '>', 0)
+                    ->decrement('da_su_dung');
             }
 
             $donhang->update(['trang_thai' => Donhang::TRANG_THAI_HUY]);
