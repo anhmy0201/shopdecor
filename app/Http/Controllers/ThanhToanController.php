@@ -292,8 +292,10 @@ class ThanhToanController extends Controller
         $tongTienHang = 0;
         $tongThanhToan = 0;
 
-        // FIX: Toàn bộ kiểm tra tồn kho và tạo đơn nằm trong cùng một transaction
+        // Toàn bộ kiểm tra tồn kho và tạo đơn nằm trong cùng một transaction
         // lockForUpdate() chỉ có hiệu lực khi nằm bên trong transaction
+        // try-catch bắt exception TON_KHO ném ra từ bên trong để trả về lỗi thân thiện
+        try {
         DB::transaction(function () use (
             $request, $giohang, $magiamgia, $chitiets, $laMuaNgay,
             $email, &$donhang, &$tongTienHang, &$tongThanhToan, &$soTienGiam, &$magiamgiaId
@@ -374,6 +376,10 @@ class ThanhToanController extends Controller
                     Sanpham::where('id', $ct->sanpham_id)
                         ->decrement('so_luong', $ct->so_luong);
                 }
+
+                // Bug 2 fix: Tăng lượt mua để tính năng "bán chạy" hoạt động đúng
+                Sanpham::where('id', $ct->sanpham_id)
+                    ->increment('luot_mua', $ct->so_luong);
             }
 
             if ($magiamgia) {
@@ -405,19 +411,22 @@ class ThanhToanController extends Controller
                         'so_dien_thoai'    => $request->so_dien_thoai,
                         'dia_chi_chi_tiet' => $request->dia_chi_chi_tiet,
                         'phuong_xa'        => $request->phuong_xa,
+                        'quan_huyen'       => $request->quan_huyen ?? '',
                         'tinh_thanh'       => $request->tinh_thanh,
                         'mac_dinh'         => $laDauTien,
                     ]);
                 }
             }
         });
-
-        // Xử lý exception tồn kho ném ra từ trong transaction
-        if ($donhang === null) {
-            // Không bao giờ tới đây vì exception đã được catch bởi DB::transaction
-            // nhưng giữ lại để an toàn
-            return redirect()->route('gio-hang')->with('error', 'Có lỗi xảy ra, vui lòng thử lại.');
+        } catch (\Exception $e) {
+            // Bug 1 fix: DB::transaction re-throw exception, phải bắt ở đây
+            if (str_starts_with($e->getMessage(), 'TON_KHO:')) {
+                $msg = substr($e->getMessage(), 8);
+                return back()->with('error', $msg);
+            }
+            throw $e; // exception khác thì để Laravel xử lý
         }
+
 
         broadcast(new DonHangMoiEvent($donhang));
 
