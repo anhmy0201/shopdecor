@@ -97,16 +97,19 @@ class BannerController extends Controller
     // Bật / tắt nhanh
     public function toggleKichHoat(Banner $banner)
     {
-        $banner->update(['kich_hoat' => !$banner->kich_hoat]);
-        $trang = $banner->kich_hoat ? 'bật' : 'tắt';
+        $newValue = !$banner->kich_hoat;
+        $banner->update(['kich_hoat' => $newValue]);
+        $trang = $newValue ? 'bật' : 'tắt';
         return back()->with('success', "Đã {$trang} banner.");
     }
 
     // Xóa
     public function destroy(Banner $banner)
     {
-        $path = str_replace('storage/', '', $banner->duong_dan_anh);
-        Storage::disk('public')->delete($path);
+        if ($banner->duong_dan_anh) {
+            $path = str_replace('storage/', '', $banner->duong_dan_anh);
+            Storage::disk('public')->delete($path);
+        }
         $banner->delete();
 
         return back()->with('success', 'Đã xóa banner!');
