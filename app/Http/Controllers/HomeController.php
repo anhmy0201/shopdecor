@@ -30,23 +30,13 @@ class HomeController extends Controller
             ->take(3)
             ->get();
 
-        // Số lượng SP theo danh mục (sidebar)
-        $soLuong = LoaiSanpham::withCount('sanphams')
-            ->get()
-            ->mapWithKeys(fn($cat) => [
-                match($cat->slug) {
-                    'tuong-figurine' => 'tuong',
-                    'den-decor'      => 'den',
-                    'cay-xanh-mini'  => 'cay',
-                    'van-phong-pham' => 'vanphong',
-                    'to-chuc-ban'    => 'tochuc',
-                    'desk-mat'       => 'deskmat',
-                    default          => $cat->slug,
-                } => $cat->sanphams_count
-            ]);
+        // Danh mục sản phẩm (dynamic từ DB)
+        $danhMucs = LoaiSanpham::withCount('sanphams')
+            ->orderBy('ten_loai')
+            ->get();
 
         $banners = Banner::hoatDong()->get();
 
-        return view('pages.home', compact('noiBat', 'tatCa', 'banChay', 'soLuong', 'banners'));
+        return view('pages.home', compact('noiBat', 'tatCa', 'banChay', 'danhMucs', 'banners'));
     }
 }

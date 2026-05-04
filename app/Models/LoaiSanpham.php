@@ -22,7 +22,7 @@ class LoaiSanpham extends Model
     }
     protected $table = 'loai_sanpham';
 
-    protected $fillable = ['ten_loai', 'slug', 'mo_ta'];
+    protected $fillable = ['ten_loai', 'slug', 'mo_ta', 'bieu_tuong'];
 
     public function sanphams()
     {

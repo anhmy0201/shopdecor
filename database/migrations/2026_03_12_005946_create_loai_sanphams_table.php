@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('ten_loai');
             $table->string('slug')->unique();
+            $table->string('bieu_tuong', 10)->default('🏷️');
             $table->text('mo_ta')->nullable();
             $table->timestamps();
         });

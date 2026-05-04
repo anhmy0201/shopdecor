@@ -28,8 +28,9 @@ class LoaiSanphamController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $data = $request->validate([
-            'ten_loai' => 'required|string|max:100|unique:loai_sanpham,ten_loai',
-            'mo_ta'    => 'nullable|string',
+            'ten_loai'   => 'required|string|max:100|unique:loai_sanpham,ten_loai',
+            'mo_ta'      => 'nullable|string',
+            'bieu_tuong' => 'nullable|string|max:10',
         ], [
             'ten_loai.required' => 'Vui lòng nhập tên loại.',
             'ten_loai.unique'   => 'Tên loại này đã tồn tại.',
@@ -58,8 +59,9 @@ class LoaiSanphamController extends Controller
     public function update(Request $request, LoaiSanpham $loaiSanpham): RedirectResponse
     {
         $data = $request->validate([
-            'ten_loai' => 'required|string|max:100|unique:loai_sanpham,ten_loai,' . $loaiSanpham->id,
-            'mo_ta'    => 'nullable|string',
+            'ten_loai'   => 'required|string|max:100|unique:loai_sanpham,ten_loai,' . $loaiSanpham->id,
+            'mo_ta'      => 'nullable|string',
+            'bieu_tuong' => 'nullable|string|max:10',
         ], [
             'ten_loai.required' => 'Vui lòng nhập tên loại.',
             'ten_loai.unique'   => 'Tên loại này đã tồn tại.',

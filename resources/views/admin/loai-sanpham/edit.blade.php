@@ -39,6 +39,20 @@
                     </div>
 
                     <div class="mb-3">
+                        <label class="form-label fw-bold">Biểu Tượng (Emoji)</label>
+                        <input type="text"
+                               name="bieu_tuong"
+                               class="form-control @error('bieu_tuong') is-invalid @enderror"
+                               value="{{ old('bieu_tuong', $loaiSanpham->bieu_tuong ?? '🏷️') }}"
+                               placeholder="VD: 🏆 💡 🌿 ✒️"
+                               style="font-size:1.4rem; max-width:120px">
+                        @error('bieu_tuong')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                        <div class="form-text">Icon hiển thị ở trang chủ. Sao chép emoji từ <a href="https://emojipedia.org" target="_blank">emojipedia.org</a> và dán vào đây.</div>
+                    </div>
+
+                    <div class="mb-3">
                         <label class="form-label fw-bold">Slug hiện tại</label>
                         <input type="text" class="form-control bg-light" value="{{ $loaiSanpham->slug }}" disabled>
                         <div class="form-text">Slug sẽ tự động cập nhật nếu bạn đổi tên loại.</div>

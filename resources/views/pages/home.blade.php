@@ -245,18 +245,11 @@ gap:4px
 <div class="bg-warning bg-opacity-10 py-3 border-bottom">
     <div class="container">
         <div class="row row-cols-3 row-cols-md-6 g-2">
-            @foreach([
-                ['/danh-muc/tuong-figurine','🏆','Tượng & Figurine'],
-                ['/danh-muc/den-decor',     '💡','Đèn Decor'],
-                ['/danh-muc/cay-xanh-mini', '🌿','Cây Xanh Mini'],
-                ['/danh-muc/van-phong-pham','✒️','Văn Phòng Phẩm'],
-                ['/danh-muc/to-chuc-ban',   '📦','Tổ Chức Bàn'],
-                ['/danh-muc/desk-mat',      '🖱️','Desk Mat'],
-            ] as [$url,$icon,$name])
+            @foreach($danhMucs->take(6) as $dm)
             <div class="col">
-                <a href="{{ url($url) }}" class="quick-cat-item">
-                    <div class="quick-cat-circle">{{ $icon }}</div>
-                    <div class="small">{{ $name }}</div>
+                <a href="{{ url('/danh-muc/' . $dm->slug) }}" class="quick-cat-item">
+                    <div class="quick-cat-circle">{{ $dm->bieu_tuong ?? '🏷️' }}</div>
+                    <div class="small">{{ $dm->ten_loai }}</div>
                 </a>
             </div>
             @endforeach
@@ -277,17 +270,10 @@ gap:4px
                     <div class="px-3 py-2 fw-bold text-white" style="background:#1a5276">
                         <i class="fas fa-bars me-2"></i>DANH MỤC SẢN PHẨM
                     </div>
-                    @foreach([
-                        ['/danh-muc/tuong-figurine','Tượng & Figurine','tuong'],
-                        ['/danh-muc/den-decor',     'Đèn Decor',       'den'],
-                        ['/danh-muc/cay-xanh-mini', 'Cây Xanh Mini',   'cay'],
-                        ['/danh-muc/van-phong-pham','Văn Phòng Phẩm',  'vanphong'],
-                        ['/danh-muc/to-chuc-ban',   'Tổ Chức Bàn',     'tochuc'],
-                        ['/danh-muc/desk-mat',      'Desk Mat',        'deskmat'],
-                    ] as [$url,$label,$key])
-                    <a href="{{ url($url) }}" class="d-flex justify-content-between px-3 py-2 border-bottom text-decoration-none text-dark small">
-                        <span><i class="fas fa-chevron-right me-1 text-muted small"></i>{{ $label }}</span>
-                        <span class="text-muted">{{ $soLuong[$key] ?? 0 }}</span>
+                    @foreach($danhMucs as $dm)
+                    <a href="{{ url('/danh-muc/' . $dm->slug) }}" class="d-flex justify-content-between px-3 py-2 border-bottom text-decoration-none text-dark small">
+                        <span><i class="fas fa-chevron-right me-1 text-muted small"></i>{{ $dm->ten_loai }}</span>
+                        <span class="text-muted">{{ $dm->sanphams_count }}</span>
                     </a>
                     @endforeach
                 </div>
