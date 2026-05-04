@@ -154,7 +154,7 @@
                         @endif
                     </td>
                     <td class="text-muted" style="max-width:160px">
-                        {{ \Illuminate\Support\Str::limit($dh->dia_chi_chi_tiet . ', ' . $dh->phuong_xa . ', ' . $dh->quan_huyen . ', ' . $dh->tinh_thanh, 60) }}
+                        {{ \Illuminate\Support\Str::limit($dh->dia_chi_chi_tiet . ', ' . $dh->phuong_xa . ', ' . $dh->tinh_thanh, 60) }}
                     </td>
                     <td class="text-end fw-bold text-danger">
                         {{ number_format($dh->tong_thanh_toan) }}đ

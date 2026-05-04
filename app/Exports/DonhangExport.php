@@ -62,7 +62,7 @@ class DonhangExport implements FromCollection, WithHeadings, WithMapping
             $row->user?->ho_ten ?? 'Khách',
             $row->ten_nguoi_nhan,
             $row->so_dien_thoai,
-            $row->dia_chi_chi_tiet . ', ' . $row->phuong_xa . ', ' . $row->quan_huyen . ', ' . $row->tinh_thanh,
+            $row->dia_chi_chi_tiet . ', ' . $row->phuong_xa . ', ' . $row->tinh_thanh,
             $phuongThuc,
             $trangThaiTT,
             $row->tong_tien_hang,

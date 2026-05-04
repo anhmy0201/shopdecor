@@ -155,7 +155,7 @@
                             <td class="text-muted ps-3">Địa chỉ</td>
                             <td class="fw-bold">
                                 {{ $donhang->dia_chi_chi_tiet }}, {{ $donhang->phuong_xa }},
-                                {{ $donhang->quan_huyen }}, {{ $donhang->tinh_thanh }}
+                                {{ $donhang->tinh_thanh }}
                             </td>
                         </tr>
                         <tr class="border-bottom">

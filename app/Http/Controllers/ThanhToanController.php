@@ -411,7 +411,6 @@ class ThanhToanController extends Controller
                         'so_dien_thoai'    => $request->so_dien_thoai,
                         'dia_chi_chi_tiet' => $request->dia_chi_chi_tiet,
                         'phuong_xa'        => $request->phuong_xa,
-                        'quan_huyen'       => $request->quan_huyen ?? '',
                         'tinh_thanh'       => $request->tinh_thanh,
                         'mac_dinh'         => $laDauTien,
                     ]);

@@ -144,7 +144,7 @@
                     <div class="col-md-6">
                         <div class="text-muted small mb-1">Địa chỉ giao hàng</div>
                         <div>{{ $donhang->dia_chi_chi_tiet }}</div>
-                        <div>{{ $donhang->phuong_xa }}, {{ $donhang->quan_huyen }}</div>
+                        <div>{{ $donhang->phuong_xa }}, {{ $donhang->tinh_thanh }}</div>
                         <div class="fw-bold">{{ $donhang->tinh_thanh }}</div>
                     </div>
                     @if($donhang->ghi_chu_khach)

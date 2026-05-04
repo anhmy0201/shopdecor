@@ -18,7 +18,7 @@ class Donhang extends Model
     protected $fillable = [
         'user_id', 'magiamgia_id',
         'ten_nguoi_nhan', 'so_dien_thoai', 'email',
-        'dia_chi_chi_tiet', 'phuong_xa', 'quan_huyen', 'tinh_thanh',
+        'dia_chi_chi_tiet', 'phuong_xa', 'tinh_thanh',
         'phuong_thuc_thanhtoan', 'trang_thai_thanhtoan', 'ma_giao_dich',
         'ma_van_don', 'phi_ship', 'trang_thai_van_chuyen',
         'tong_tien_hang', 'so_tien_giam', 'tong_thanh_toan',

@@ -129,7 +129,7 @@
                     <div class="text-muted small">{{ $dc->so_dien_thoai }}</div>
                     <div class="text-muted small">
                         {{ $dc->dia_chi_chi_tiet }}, {{ $dc->phuong_xa }},
-                        {{ $dc->quan_huyen }}, {{ $dc->tinh_thanh }}
+                        {{ $dc->tinh_thanh }}
                     </div>
                 </div>
                 @endforeach

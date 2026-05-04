@@ -10,7 +10,7 @@ class DiaChiUser extends Model
 
     protected $fillable = [
         'user_id', 'ho_ten', 'so_dien_thoai',
-        'dia_chi_chi_tiet', 'phuong_xa', 'quan_huyen', 'tinh_thanh', 'mac_dinh',
+        'dia_chi_chi_tiet', 'phuong_xa', 'tinh_thanh', 'mac_dinh',
     ];
 
     protected $casts = ['mac_dinh' => 'boolean'];

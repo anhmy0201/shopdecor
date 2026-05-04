@@ -8,7 +8,7 @@ class KhuyenMaiController extends Controller
 {
     public function index()
     {
-        $magiamgias = Magiamgia::where('kich_hoat', true)
+        $baseQuery = Magiamgia::where('kich_hoat', true)
             ->where(function ($q) {
                 $q->whereNull('ket_thuc')
                   ->orWhere('ket_thuc', '>', now());
@@ -20,10 +20,16 @@ class KhuyenMaiController extends Controller
             ->where(function ($q) {
                 $q->whereNull('so_luong')
                   ->orWhereColumn('da_su_dung', '<', 'so_luong');
-            })
-            ->orderByDesc('created_at')
-            ->get();
+            });
 
-        return view('pages.khuyen-mai', compact('magiamgias'));
+        $stats = [
+            'tong'      => (clone $baseQuery)->count(),
+            'phan_tram' => (clone $baseQuery)->where('kieu_giam', 'phan_tram')->count(),
+            'co_dinh'   => (clone $baseQuery)->where('kieu_giam', 'co_dinh')->count(),
+        ];
+
+        $magiamgias = $baseQuery->orderByDesc('created_at')->paginate(12)->withQueryString();
+
+        return view('pages.khuyen-mai', compact('magiamgias', 'stats'));
     }
 }

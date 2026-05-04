@@ -138,20 +138,20 @@
 <div class="km-main">
   <div class="container">
 
-    @if($magiamgias->count() > 0)
+    @if($stats['tong'] > 0)
 
     <div class="km-stats">
       <div class="km-stat-item">
         <div class="km-stat-icon blue"><i class="fas fa-ticket-alt"></i></div>
-        <div><div class="km-stat-label">Tổng mã</div><div class="km-stat-val">{{ $magiamgias->count() }} mã</div></div>
+        <div><div class="km-stat-label">Tổng mã</div><div class="km-stat-val">{{ $stats['tong'] }} mã</div></div>
       </div>
       <div class="km-stat-item">
         <div class="km-stat-icon red"><i class="fas fa-percent"></i></div>
-        <div><div class="km-stat-label">Giảm theo %</div><div class="km-stat-val">{{ $magiamgias->where('kieu_giam','phan_tram')->count() }} mã</div></div>
+        <div><div class="km-stat-label">Giảm theo %</div><div class="km-stat-val">{{ $stats['phan_tram'] }} mã</div></div>
       </div>
       <div class="km-stat-item">
         <div class="km-stat-icon green"><i class="fas fa-tag"></i></div>
-        <div><div class="km-stat-label">Giảm cố định</div><div class="km-stat-val">{{ $magiamgias->where('kieu_giam','co_dinh')->count() }} mã</div></div>
+        <div><div class="km-stat-label">Giảm cố định</div><div class="km-stat-val">{{ $stats['co_dinh'] }} mã</div></div>
       </div>
       <div class="ms-auto text-muted" style="font-size:0.75rem"><i class="fas fa-sync-alt me-1"></i>Cập nhật liên tục</div>
     </div>
@@ -241,6 +241,12 @@
       </div>
       @endforeach
     </div>
+
+    @if($magiamgias->hasPages())
+    <div class="d-flex justify-content-center mt-4">
+      {{ $magiamgias->links() }}
+    </div>
+    @endif
 
     <div id="emptyFilter" style="display:none" class="text-center py-5 text-muted">
       <div style="font-size:2.5rem;margin-bottom:12px">🔍</div>
