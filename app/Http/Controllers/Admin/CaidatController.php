@@ -44,12 +44,14 @@ class CaidatController extends Controller
             $logQuery->whereDate('created_at', '<=', $request->log_date_to);
         }
 
-        $activityLogs = $logQuery->paginate(15)->appends($request->query());
+       $activityLogs = $logQuery->paginate(15)->appends(
+            array_merge(['tab' => 'log'], $request->query())
+        );
         $tongLog      = Activity::count();
         $subjectMap   = $this->subjectMap;
         $causers = \App\Models\User::whereNotNull('quyen_han')
                     ->where('quyen_han', '>', 0)
-                    ->orderBy('ho_ten')
+                    ->orderBy('ho_ten') 
                     ->get(['id', 'ho_ten', 'email']);
 
         return view('admin.caidat.index', compact(

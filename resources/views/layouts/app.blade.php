@@ -100,7 +100,9 @@
     <div class="container">
         <div class="d-flex justify-content-between">
             <div>
-                <i class="fas fa-envelope"></i><a href="mailto:anhmy0201@gmail.com">anhmy0201@gmail.com</a>
+                <i class="fas fa-envelope"></i><a href="mailto:{{ $settings['email_lien_he'] ?? 'anhmy0201@gmail.com' }}">
+                                                    {{ $settings['email_lien_he'] ?? 'anhmy0201@gmail.com' }}
+                                                </a>
                 <span class="mx-2">|</span>
                 <i class="fab fa-facebook"></i><a href="#">Facebook</a>
                 <span class="mx-2">|</span>
@@ -122,13 +124,13 @@
 
             {{-- Logo --}}
             <a href="{{ url('/') }}" class="logo">
-                <i class="fas fa-store me-1"></i>Shop<span>Decor</span>
+                <i class="fas fa-store me-1"></i>{{ $settings['ten_cua_hang'] ?? 'ShopDecor' }}
             </a>
 
             {{-- Hotline --}}
             <div class="hotline d-none d-lg-block text-center">
                 <div><i class="fas fa-phone-alt text-danger"></i> Hotline:</div>
-                <strong>0799 669 238</strong>
+                <strong>{{ $settings['so_dien_thoai'] ?? '0799 669 238' }}</strong>
             </div>
 
             {{-- Search --}}
@@ -272,8 +274,8 @@
     <div class="container pb-4">
         <div class="row">
             <div class="col-lg-4 col-md-6 mb-4">
-                <h6><i class="fas fa-store"></i>ShopDecor</h6>
-                <p>Chuyên cung cấp phụ kiện và đồ decor bàn làm việc cao cấp. Nâng tầm không gian làm việc với sản phẩm tinh tế, ý nghĩa.</p>
+                <h6><i class="fas fa-store"></i>{{ $settings['ten_cua_hang'] ?? 'ShopDecor' }}</h6>
+                <p>{{ $settings['mo_ta_ngan'] ?? 'Chuyên cung cấp phụ kiện và đồ decor bàn làm việc cao cấp. Nâng tầm không gian làm việc với sản phẩm tinh tế, ý nghĩa.' }}</p>
                 <div class="d-flex gap-3 mt-2">
                     <a href="#"><i class="fab fa-facebook fa-lg"></i></a>
                     <a href="#"><i class="fab fa-instagram fa-lg"></i></a>
@@ -305,9 +307,9 @@
             <div class="col-lg-3 col-md-6 mb-4">
                 <h6>Liên Hệ</h6>
                 <ul class="list-unstyled">
-                    <li><i class="fas fa-map-marker-alt"></i>123 Nguyễn Huệ, Q.1, TP.HCM</li>
-                    <li><i class="fas fa-phone"></i><a href="tel:0799669238">0799 669 238</a></li>
-                    <li><i class="fas fa-envelope"></i><a href="mailto:anhmy0201@gmail.com">anhmy0201@gmail.com</a></li>
+                    <li><i class="fas fa-map-marker-alt"></i>{{ $settings['dia_chi'] ?? '123 Nguyễn Huệ, Q.1, TP.HCM' }}</li>
+                    <li><i class="fas fa-phone"></i><a href="tel:{{ $settings['so_dien_thoai'] ?? '0799669238' }}">{{ $settings['so_dien_thoai'] ?? '0799 669 238' }}</a></li>
+                    <li><i class="fas fa-envelope"></i><a href="mailto:{{ $settings['email_lien_he'] ?? 'anhmy0201@gmail.com' }}">{{ $settings['email_lien_he'] ?? 'anhmy0201@gmail.com' }}</a></li>
                     <li><i class="fas fa-clock"></i>8:00 – 22:00 mỗi ngày</li>
                 </ul>
             </div>
@@ -315,7 +317,7 @@
     </div>
     <div class="footer-bottom text-center">
         <div class="container">
-            © {{ date('Y') }} ShopDecor. Thiết kế tại Việt Nam.
+            © {{ date('Y') }} {{ $settings['ten_cua_hang'] ?? 'ShopDecor' }}. Thiết kế tại Việt Nam.
         </div>
     </div>
 </footer>
