@@ -39,4 +39,4 @@ class HomeController extends Controller
 
         return view('pages.home', compact('noiBat', 'tatCa', 'banChay', 'danhMucs', 'banners'));
     }
-}
+}   

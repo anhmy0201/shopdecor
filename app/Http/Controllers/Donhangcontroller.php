@@ -38,7 +38,6 @@ class DonhangController extends Controller
 
         $donhangs = $query->paginate(8)->withQueryString();
 
-        // FIX: Dùng 1 query GROUP BY thay vì 5 query COUNT riêng lẻ
         $demTheo = Donhang::where('user_id', Auth::id())
             ->selectRaw('trang_thai, count(*) as total')
             ->groupBy('trang_thai')
@@ -118,12 +117,9 @@ class DonhangController extends Controller
                         ->increment('so_luong', $ct->so_luong);
                 }
 
-                // Fix #2: Hoàn lại lượt mua khi hủy đơn
                 Sanpham::where('id', $ct->sanpham_id)
                     ->decrement('luot_mua', $ct->so_luong);
             }
-
-            // Fix #1: Hoàn lại lượt dùng mã giảm giá khi hủy đơn
             if ($donhang->magiamgia_id) {
                 Magiamgia::where('id', $donhang->magiamgia_id)
                     ->where('da_su_dung', '>', 0)

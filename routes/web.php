@@ -71,7 +71,6 @@ Route::delete('/gio-hang/xoa-tat',      [GioHangController::class, 'xoaTat']);
 Route::get('/thanh-toan',             [ThanhToanController::class, 'index'])->name('thanh-toan');
 Route::post('/thanh-toan',            [ThanhToanController::class, 'store']);
 Route::post('/thanh-toan/ap-ma',      [ThanhToanController::class, 'apMa']);
-Route::get('/thanh-toan/danh-sach-ma', [ThanhToanController::class, 'danhSachMa']);
 Route::get('/xac-nhan-don-hang/{id}', [ThanhToanController::class, 'xacNhan'])->name('xac-nhan-don-hang');
 Route::get('/payos/checkout/{id}', [ThanhToanController::class, 'payosCheckout'])->name('payos.checkout');
 Route::get('/payos/success',       [ThanhToanController::class, 'payosSuccess'])->name('payos.success');
@@ -154,7 +153,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'check.admin:staff']
     Route::delete('banner/{banner}',      [BannerController::class, 'destroy'])->name('banner.destroy');
 
     Route::middleware('check.admin:ketoan')->group(function () {
-        Route::get('baocao', [BaocaoController::class, 'index'])->name('baocao.index');
+        Route::get('baocao',        [BaocaoController::class, 'index'])->name('baocao.index');
+        Route::get('baocao/export', [BaocaoController::class, 'exportExcel'])->name('baocao.export');
         Route::get('caidat',  [CaidatController::class, 'index'])->name('caidat.index');
         Route::post('caidat', [CaidatController::class, 'update'])->name('caidat.update');
         Route::delete('caidat/log/all',        [CaidatController::class, 'destroyAllLog'])
