@@ -38,12 +38,8 @@ Route::middleware('guest')->group(function () {
     Route::post('/login',    [LoginController::class,    'login']);
     Route::get('/register',  [RegisterController::class, 'showRegistrationForm'])->name('register');
     Route::post('/register', [RegisterController::class, 'register']);
-
-    // ── Quên mật khẩu ────────────────────────────────────────────────────────
     Route::get('/quen-mat-khau',  [ForgotPasswordController::class, 'showForm'])->name('password.forgot');
     Route::post('/quen-mat-khau', [ForgotPasswordController::class, 'sendResetLink'])->name('password.forgot.send');
-
-    // ── Đặt lại mật khẩu ─────────────────────────────────────────────────────
     Route::get('/dat-lai-mat-khau/{token}', [ResetPasswordController::class, 'showForm'])->name('password.reset.form');
     Route::post('/dat-lai-mat-khau',        [ResetPasswordController::class, 'reset'])->name('password.reset');
 });
@@ -152,18 +148,17 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'check.admin:staff']
     Route::post('banner/{banner}/toggle', [BannerController::class, 'toggleKichHoat'])->name('banner.toggle');
     Route::delete('banner/{banner}',      [BannerController::class, 'destroy'])->name('banner.destroy');
 
-    Route::middleware('check.admin:ketoan')->group(function () {
+    Route::middleware('check.admin:admin')->group(function () {
         Route::get('baocao',        [BaocaoController::class, 'index'])->name('baocao.index');
         Route::get('baocao/export', [BaocaoController::class, 'exportExcel'])->name('baocao.export');
+
         Route::get('caidat',  [CaidatController::class, 'index'])->name('caidat.index');
         Route::post('caidat', [CaidatController::class, 'update'])->name('caidat.update');
         Route::delete('caidat/log/all',        [CaidatController::class, 'destroyAllLog'])
                ->name('caidat.log.destroy-all');
         Route::delete('caidat/log/{activity}', [CaidatController::class, 'destroyLog'])
                ->name('caidat.log.destroy');
-    });
 
-    Route::middleware('check.admin:admin')->group(function () {
         Route::resource('nguoidung', NguoidungController::class)
              ->only(['index', 'show', 'edit', 'update']);
         Route::patch('nguoidung/{nguoidung}/toggle',

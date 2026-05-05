@@ -270,8 +270,8 @@
         </li>
 
 
-        {{-- ── BÁO CÁO & HỆ THỐNG — kế toán trở lên ── --}}
-        @if(Auth::user()->quyen_han >= \App\Models\User::KETOAN)
+        {{-- ── BÁO CÁO & HỆ THỐNG ── --}}
+        @if(Auth::user()->isAdmin() || Auth::user()->isKetoan())
         <li><div class="sidebar-section">Báo Cáo & Hệ Thống</div></li>
         <li>
             <a href="{{ route('admin.baocao.index') }}"
@@ -279,6 +279,8 @@
                 <i class="fas fa-chart-line fa-fw"></i> Thống Kê
             </a>
         </li>
+        @endif
+        @if(Auth::user()->isAdmin())
         <li>
             <a href="{{ route('admin.caidat.index') }}"
                class="{{ request()->routeIs('admin.caidat.*') ? 'active' : '' }}">
