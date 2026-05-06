@@ -43,7 +43,7 @@ class NguoidungController extends Controller
             'tat_ca'    => User::count(),
             'user'      => User::where('quyen_han', User::USER)->count(),
             'staff'     => User::where('quyen_han', User::STAFF)->count(),
-            'ketoan'    => User::where('quyen_han', User::KETOAN)->count(),
+            'quanli'    => User::where('quyen_han', User::QUANLI)->count(),
             'giam_doc'  => User::where('quyen_han', User::GIAM_DOC)->count(),
             'admin'     => User::where('quyen_han', User::ADMIN)->count(),
         ];
@@ -81,12 +81,6 @@ class NguoidungController extends Controller
 
     public function edit(User $nguoidung): View
     {
-        // Giám đốc không được sửa tài khoản Admin
-        if (auth()->user()->quyen_han < User::ADMIN && $nguoidung->quyen_han >= User::ADMIN) {
-            return redirect()->route('admin.nguoidung.index')
-                ->with('error', 'Bạn không có quyền chỉnh sửa tài khoản Admin.');
-        }
-
         return view('admin.nguoidung.edit', compact('nguoidung'));
     }
 
@@ -105,11 +99,6 @@ class NguoidungController extends Controller
             'mat_khau.min'      => 'Mật khẩu tối thiểu 6 ký tự.',   
             'mat_khau.confirmed'=> 'Xác nhận mật khẩu không khớp.',
         ]);
-
-        // Giám đốc không được sửa tài khoản Admin
-        if (auth()->user()->quyen_han < User::ADMIN && $nguoidung->quyen_han >= User::ADMIN) {
-            return back()->with('error', 'Bạn không có quyền chỉnh sửa tài khoản Admin.');
-        }
 
         // Không cho phép tự hạ quyền chính mình
         if ($nguoidung->id === auth()->id() && (int)$request->quyen_han < User::ADMIN) {
@@ -145,7 +134,7 @@ class NguoidungController extends Controller
             return back()->with('error', 'Không thể khoá tài khoản của chính bạn.');
         }
 
-        // Giám đốc không được khóa/mở tài khoản Admin
+        // Các cấp thấp hơn Admin không được khóa/mở tài khoản Admin
         if (auth()->user()->quyen_han < User::ADMIN && $nguoidung->quyen_han >= User::ADMIN) {
             return back()->with('error', 'Bạn không có quyền khoá tài khoản Admin.');
         }

@@ -71,7 +71,7 @@
                             Nhân viên — SP · Đơn · Banner (Cấp 1)
                         </option>
                         <option value="2" {{ old('quyen_han', $nguoidung->quyen_han) == 2 ? 'selected' : '' }}>
-                            Kế toán — Doanh thu · Excel (Cấp 2)
+                            Quản lí — Doanh thu · Excel (Cấp 2)
                         </option>
                         <option value="3" {{ old('quyen_han', $nguoidung->quyen_han) == 3 ? 'selected' : '' }}>
                             Giám đốc — Báo cáo · Nhân sự · Cài đặt (Cấp 3)

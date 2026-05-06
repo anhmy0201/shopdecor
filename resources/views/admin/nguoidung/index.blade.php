@@ -27,7 +27,7 @@
             </a>
             <a href="{{ route('admin.nguoidung.index', ['quyen_han' => 2]) }}"
                class="btn btn-sm {{ request('quyen_han') === '2' ? 'btn-warning' : 'btn-outline-warning' }}">
-                Kế Toán <span class="badge bg-warning text-dark ms-1">{{ $demQuyen['ketoan'] }}</span>
+                Quản Lí <span class="badge bg-warning text-dark ms-1">{{ $demQuyen['quanli'] }}</span>
             </a>
             <a href="{{ route('admin.nguoidung.index', ['quyen_han' => 3]) }}"
                class="btn btn-sm {{ request('quyen_han') === '3' ? 'btn-danger' : 'btn-outline-danger' }}">
@@ -114,7 +114,7 @@
                         @elseif($user->isGiamDoc())
                             <span class="badge bg-danger">Giám đốc</span>
                         @elseif($user->isKetoan())
-                            <span class="badge bg-warning text-dark">Kế toán</span>
+                            <span class="badge bg-warning text-dark">Quản lí</span>
                         @elseif($user->isNhanVien())
                             <span class="badge bg-info text-dark">Nhân viên</span>
                         @else
@@ -136,8 +136,14 @@
                     </td>
                     <td class="text-center">
                         <div class="d-flex gap-1 justify-content-center">
+                            {{-- Giám đốc: chỉ được xem, không sửa/khoá --}}
+                            @if(auth()->user()->isGiamDoc())
+                            <a href="{{ route('admin.nguoidung.show', $user) }}"
+                               class="btn btn-sm btn-outline-info" title="Xem">
+                                <i class="fas fa-eye"></i>
+                            </a>
                             {{-- Chỉ Admin mới được xem/sửa/khoá tài khoản Admin --}}
-                            @if(!$user->isAdmin() || auth()->user()->isAdmin())
+                            @elseif(!$user->isAdmin() || auth()->user()->isAdmin())
                             <a href="{{ route('admin.nguoidung.show', $user) }}"
                                class="btn btn-sm btn-outline-info" title="Xem">
                                 <i class="fas fa-eye"></i>

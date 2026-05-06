@@ -10,6 +10,7 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
+        // Cấp 4 — Admin: toàn quyền hệ thống
         User::create([
             'ho_ten'        => 'Super Admin',
             'ten_dang_nhap' => 'admin',
@@ -20,6 +21,7 @@ class UserSeeder extends Seeder
             'kich_hoat'     => true,
         ]);
 
+        // Cấp 3 — Giám đốc: báo cáo, nhân sự, cài đặt
         User::create([
             'ho_ten'        => 'Giám Đốc',
             'ten_dang_nhap' => 'giamdoc01',
@@ -30,16 +32,18 @@ class UserSeeder extends Seeder
             'kich_hoat'     => true,
         ]);
 
+        // Cấp 2 — Quản lí: doanh thu, Excel
         User::create([
-            'ho_ten'        => 'Kế Toán Trưởng',
-            'ten_dang_nhap' => 'ketoan01',
-            'email'         => 'ketoan01@deskdecor.vn',
+            'ho_ten'        => 'Quản Lí Trưởng',
+            'ten_dang_nhap' => 'quanli01',
+            'email'         => 'quanli01@deskdecor.vn',
             'mat_khau'      => Hash::make('123456'),
             'so_dien_thoai' => '0903456789',
-            'quyen_han'     => User::KETOAN,        // 2
+            'quyen_han'     => User::QUANLI,        // 2
             'kich_hoat'     => true,
         ]);
 
+        // Cấp 1 — Nhân viên: sản phẩm, đơn hàng, banner
         User::create([
             'ho_ten'        => 'Nhân Viên A',
             'ten_dang_nhap' => 'staff01',
@@ -50,6 +54,7 @@ class UserSeeder extends Seeder
             'kich_hoat'     => true,
         ]);
 
+        // Cấp 0 — Khách hàng
         $khachs = [
             ['ho_ten' => 'Nguyễn Văn An',  'ten_dang_nhap' => 'vanan',    'email' => 'vanan@gmail.com',    'sdt' => '0911111111'],
             ['ho_ten' => 'Trần Thị Bích',  'ten_dang_nhap' => 'thibich',  'email' => 'thibich@gmail.com',  'sdt' => '0922222222'],

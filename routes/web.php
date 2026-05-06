@@ -156,7 +156,12 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'check.admin:staff']
         Route::get('baocao',        [BaocaoController::class, 'index'])->name('baocao.index');
         Route::get('baocao/export', [BaocaoController::class, 'exportExcel'])->name('baocao.export');
 
-        Route::get('caidat',  [CaidatController::class, 'index'])->name('caidat.index');
+        // Giam doc chi duoc XEM cai dat (GET)
+        Route::get('caidat', [CaidatController::class, 'index'])->name('caidat.index');
+    });
+
+    // Chi Admin moi duoc sua cai dat va xoa log
+    Route::middleware('check.admin:admin')->group(function () {
         Route::post('caidat', [CaidatController::class, 'update'])->name('caidat.update');
         Route::delete('caidat/log/all',        [CaidatController::class, 'destroyAllLog'])
                ->name('caidat.log.destroy-all');
@@ -164,7 +169,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'check.admin:staff']
                ->name('caidat.log.destroy');
     });
 
-    Route::middleware('check.admin:giam_doc')->group(function () {
+    // Chi Admin moi duoc vao trang Nguoi Dung
+    Route::middleware('check.admin:admin')->group(function () {
         Route::resource('nguoidung', NguoidungController::class)
              ->only(['index', 'show', 'edit', 'update']);
         Route::patch('nguoidung/{nguoidung}/toggle',

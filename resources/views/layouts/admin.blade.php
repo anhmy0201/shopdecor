@@ -109,7 +109,7 @@
         /* ── BADGE QUYỀN HẠN ── */
         .badge-role-superadmin { background: #6c3483; }
         .badge-role-giamdoc    { background: #c0392b; }
-        .badge-role-ketoan     { background: #2980b9; }
+        .badge-role-quanli     { background: #2980b9; }
         .badge-role-staff      { background: #27ae60; }
 
         @media(max-width:768px){
@@ -236,7 +236,7 @@
             </a>
         </li>
 
-        @if(Auth::user()->isAdmin() || Auth::user()->isGiamDoc())
+        @if(Auth::user()->isAdmin())
         <li><div class="sidebar-section">Người Dùng</div></li>
         <li>
             <a href="{{ route('admin.nguoidung.index') }}"
@@ -280,11 +280,12 @@
             </a>
         </li>
         @endif
-        @if(Auth::user()->isAdmin())
+        @if(Auth::user()->isAdmin() || Auth::user()->isGiamDoc())
         <li>
             <a href="{{ route('admin.caidat.index') }}"
                class="{{ request()->routeIs('admin.caidat.*') ? 'active' : '' }}">
                 <i class="fas fa-cog fa-fw"></i> Cài Đặt
+                @if(Auth::user()->isGiamDoc()) <small class="text-muted">(xem)</small> @endif
             </a>
         </li>
         @endif
@@ -342,7 +343,7 @@
                             @elseif($u->isGiamDoc())
                                 <span class="badge badge-role-giamdoc">Giám Đốc</span>
                             @elseif($u->isKetoan())
-                                <span class="badge badge-role-ketoan">Kế Toán</span>
+                                <span class="badge badge-role-quanli">Quản Lí</span>
                             @elseif($u->isNhanVien())
                                 <span class="badge badge-role-staff">Nhân Viên</span>
                             @endif

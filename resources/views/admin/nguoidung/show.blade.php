@@ -51,7 +51,7 @@
                     @elseif($nguoidung->isGiamDoc())
                         <span class="badge bg-danger">Giám đốc</span>
                     @elseif($nguoidung->isKetoan())
-                        <span class="badge bg-warning text-dark">Kế toán</span>
+                        <span class="badge bg-warning text-dark">Quản lí</span>
                     @elseif($nguoidung->isNhanVien())
                         <span class="badge bg-info text-dark">Nhân viên</span>
                     @else

@@ -13,7 +13,7 @@ class User extends Authenticatable
 
     const USER      = 0;   // Khách hàng
     const STAFF     = 1;   // Nhân viên
-    const KETOAN    = 2;   // Kế toán
+    const QUANLI    = 2;   // Quản lí
     const GIAM_DOC  = 3;   // Giám đốc
     const ADMIN     = 4;   // Admin — toàn quyền hệ thống
 
@@ -66,7 +66,7 @@ class User extends Authenticatable
 
     public function isKetoan(): bool
     {
-        return $this->quyen_han === self::KETOAN;
+        return $this->quyen_han === self::QUANLI;
     }
 
     public function isStaff(): bool
@@ -89,7 +89,7 @@ class User extends Authenticatable
         return match (true) {
             $this->quyen_han >= self::ADMIN    => 'Admin',
             $this->quyen_han === self::GIAM_DOC => 'Giám đốc',
-            $this->quyen_han === self::KETOAN   => 'Kế toán',
+            $this->quyen_han === self::QUANLI   => 'Quản lí',
             $this->quyen_han === self::STAFF    => 'Nhân viên',
             default                             => 'Khách hàng',
         };
