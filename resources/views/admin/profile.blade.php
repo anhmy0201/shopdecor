@@ -37,8 +37,12 @@
 
                 <div class="d-flex justify-content-center gap-2 mb-3">
                     @if($user->isAdmin())
-                        <span class="badge bg-danger">Admin</span>
-                    @elseif($user->isStaff())
+                        <span class="badge bg-dark">Admin</span>
+                    @elseif($user->isGiamDoc())
+                        <span class="badge bg-danger">Giám đốc</span>
+                    @elseif($user->isKetoan())
+                        <span class="badge bg-warning text-dark">Kế toán</span>
+                    @elseif($user->isNhanVien())
                         <span class="badge bg-info text-dark">Nhân viên</span>
                     @endif
                     <span class="badge bg-success">Hoạt động</span>

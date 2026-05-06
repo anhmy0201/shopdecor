@@ -40,11 +40,12 @@ class NguoidungController extends Controller
         $users = $query->latest()->paginate(15)->withQueryString();
 
         $demQuyen = [
-            'tat_ca' => User::count(),
-            'user'   => User::where('quyen_han', User::USER)->count(),
-            'staff'  => User::where('quyen_han', User::STAFF)->count(),
-            'ketoan' => User::where('quyen_han', User::KETOAN)->count(),
-            'admin'  => User::where('quyen_han', User::ADMIN)->count(),
+            'tat_ca'    => User::count(),
+            'user'      => User::where('quyen_han', User::USER)->count(),
+            'staff'     => User::where('quyen_han', User::STAFF)->count(),
+            'ketoan'    => User::where('quyen_han', User::KETOAN)->count(),
+            'giam_doc'  => User::where('quyen_han', User::GIAM_DOC)->count(),
+            'admin'     => User::where('quyen_han', User::ADMIN)->count(),
         ];
 
         return view('admin.nguoidung.index', compact('users', 'demQuyen'));
@@ -52,6 +53,12 @@ class NguoidungController extends Controller
 
     public function show(User $nguoidung): View
     {
+        // Giám đốc không được xem chi tiết tài khoản Admin
+        if (auth()->user()->quyen_han < User::ADMIN && $nguoidung->quyen_han >= User::ADMIN) {
+            return redirect()->route('admin.nguoidung.index')
+                ->with('error', 'Bạn không có quyền xem tài khoản Admin.');
+        }
+
         $nguoidung->load(['diaChis', 'donhangs' => function ($q) {
             $q->latest()->take(10);
         }]);
@@ -74,6 +81,12 @@ class NguoidungController extends Controller
 
     public function edit(User $nguoidung): View
     {
+        // Giám đốc không được sửa tài khoản Admin
+        if (auth()->user()->quyen_han < User::ADMIN && $nguoidung->quyen_han >= User::ADMIN) {
+            return redirect()->route('admin.nguoidung.index')
+                ->with('error', 'Bạn không có quyền chỉnh sửa tài khoản Admin.');
+        }
+
         return view('admin.nguoidung.edit', compact('nguoidung'));
     }
 
@@ -83,7 +96,7 @@ class NguoidungController extends Controller
             'ho_ten'       => 'required|string|max:100',
             'email'        => 'required|email|unique:users,email,' . $nguoidung->id,
             'so_dien_thoai'=> 'nullable|string|max:15',
-            'quyen_han'    => 'required|in:0,1,2,3',
+            'quyen_han'    => 'required|in:0,1,2,3,4',
             'kich_hoat'    => 'boolean',
             'mat_khau'     => 'nullable|string|min:6|confirmed',
         ], [
@@ -93,9 +106,19 @@ class NguoidungController extends Controller
             'mat_khau.confirmed'=> 'Xác nhận mật khẩu không khớp.',
         ]);
 
+        // Giám đốc không được sửa tài khoản Admin
+        if (auth()->user()->quyen_han < User::ADMIN && $nguoidung->quyen_han >= User::ADMIN) {
+            return back()->with('error', 'Bạn không có quyền chỉnh sửa tài khoản Admin.');
+        }
+
         // Không cho phép tự hạ quyền chính mình
         if ($nguoidung->id === auth()->id() && (int)$request->quyen_han < User::ADMIN) {
             return back()->with('error', 'Không thể tự hạ quyền tài khoản của chính bạn.');
+        }
+
+        // Chỉ Admin (cấp 4) mới được cấp quyền Admin cho người khác
+        if ((int)$request->quyen_han === User::ADMIN && auth()->user()->quyen_han < User::ADMIN) {
+            return back()->with('error', 'Chỉ Admin mới có thể cấp quyền Admin cho tài khoản khác.');
         }
 
         $data = [
@@ -120,6 +143,11 @@ class NguoidungController extends Controller
     {
         if ($nguoidung->id === auth()->id()) {
             return back()->with('error', 'Không thể khoá tài khoản của chính bạn.');
+        }
+
+        // Giám đốc không được khóa/mở tài khoản Admin
+        if (auth()->user()->quyen_han < User::ADMIN && $nguoidung->quyen_han >= User::ADMIN) {
+            return back()->with('error', 'Bạn không có quyền khoá tài khoản Admin.');
         }
 
         $nguoidung->update(['kich_hoat' => !$nguoidung->kich_hoat]);

@@ -23,13 +23,18 @@ class CheckAdmin
         $quyen = $user->quyen_han;
 
         $allowed = match ($level) {
-            'admin'  => $quyen >= 3,
-            'ketoan' => $quyen >= 2,
-            'staff'  => $quyen >= 1,
-            default  => false,
+            'admin'      => $quyen >= 4,   // Cấp 4 — Admin toàn quyền
+            'giam_doc'   => $quyen >= 3,   // Cấp 3+ — Giám đốc trở lên
+            'ketoan'     => $quyen >= 2,   // Cấp 2+ — Kế toán trở lên
+            'staff'      => $quyen >= 1,   // Cấp 1+ — Nhân viên trở lên
+            'khach_hang' => $quyen === 0 || $quyen >= 4,  // Khách hàng hoặc Admin được mua
+            default      => false,
         };
 
         if (!$allowed) {
+            if ($level === 'khach_hang') {
+                abort(403, 'Tài khoản nội bộ không được phép mua hàng.');
+            }
             abort(403, 'Bạn không có quyền truy cập trang này.');
         }
 

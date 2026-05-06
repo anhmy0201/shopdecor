@@ -31,7 +31,11 @@
             </a>
             <a href="{{ route('admin.nguoidung.index', ['quyen_han' => 3]) }}"
                class="btn btn-sm {{ request('quyen_han') === '3' ? 'btn-danger' : 'btn-outline-danger' }}">
-                Giám Đốc <span class="badge bg-danger ms-1">{{ $demQuyen['admin'] }}</span>
+                Giám Đốc <span class="badge bg-danger ms-1">{{ $demQuyen['giam_doc'] }}</span>
+            </a>
+            <a href="{{ route('admin.nguoidung.index', ['quyen_han' => 4]) }}"
+               class="btn btn-sm {{ request('quyen_han') === '4' ? 'btn-dark' : 'btn-outline-dark' }}">
+                Admin <span class="badge bg-dark ms-1">{{ $demQuyen['admin'] }}</span>
             </a>
         </div>
     </div>
@@ -106,6 +110,8 @@
                     </td>
                     <td class="text-center">
                         @if($user->isAdmin())
+                            <span class="badge bg-dark">Admin</span>
+                        @elseif($user->isGiamDoc())
                             <span class="badge bg-danger">Giám đốc</span>
                         @elseif($user->isKetoan())
                             <span class="badge bg-warning text-dark">Kế toán</span>
@@ -130,6 +136,8 @@
                     </td>
                     <td class="text-center">
                         <div class="d-flex gap-1 justify-content-center">
+                            {{-- Chỉ Admin mới được xem/sửa/khoá tài khoản Admin --}}
+                            @if(!$user->isAdmin() || auth()->user()->isAdmin())
                             <a href="{{ route('admin.nguoidung.show', $user) }}"
                                class="btn btn-sm btn-outline-info" title="Xem">
                                 <i class="fas fa-eye"></i>
@@ -146,6 +154,12 @@
                                     <i class="fas {{ $user->kich_hoat ? 'fa-lock' : 'fa-lock-open' }}"></i>
                                 </button>
                             </form>
+                            @endif
+                            @else
+                            {{-- Giám đốc / các cấp thấp hơn: chỉ xem, không sửa/khoá Admin --}}
+                            <span class="btn btn-sm btn-outline-secondary disabled" title="Không có quyền">
+                                <i class="fas fa-lock"></i>
+                            </span>
                             @endif
                         </div>
                     </td>

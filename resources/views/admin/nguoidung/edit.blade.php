@@ -65,17 +65,22 @@
                     <label class="form-label fw-bold">Quyền Hạn <span class="text-danger">*</span></label>
                     <select name="quyen_han" class="form-select @error('quyen_han') is-invalid @enderror">
                         <option value="0" {{ old('quyen_han', $nguoidung->quyen_han) == 0 ? 'selected' : '' }}>
-                            Khách hàng
+                            Khách hàng (Cấp 0)
                         </option>
                         <option value="1" {{ old('quyen_han', $nguoidung->quyen_han) == 1 ? 'selected' : '' }}>
-                            Nhân viên
+                            Nhân viên — SP · Đơn · Banner (Cấp 1)
                         </option>
                         <option value="2" {{ old('quyen_han', $nguoidung->quyen_han) == 2 ? 'selected' : '' }}>
-                            Kế toán
+                            Kế toán — Doanh thu · Excel (Cấp 2)
                         </option>
                         <option value="3" {{ old('quyen_han', $nguoidung->quyen_han) == 3 ? 'selected' : '' }}>
-                            Giám đốc
+                            Giám đốc — Báo cáo · Nhân sự · Cài đặt (Cấp 3)
                         </option>
+                        @if(auth()->user()->quyen_han >= \App\Models\User::ADMIN)
+                        <option value="4" {{ old('quyen_han', $nguoidung->quyen_han) == 4 ? 'selected' : '' }}>
+                            Admin — Toàn quyền hệ thống (Cấp 4)
+                        </option>
+                        @endif
                     </select>
                     @error('quyen_han')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>

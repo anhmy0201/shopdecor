@@ -47,6 +47,8 @@
                 <div class="text-muted small mb-2">{{ $nguoidung->email }}</div>
                 <div class="d-flex justify-content-center gap-2">
                     @if($nguoidung->isAdmin())
+                        <span class="badge bg-dark">Admin</span>
+                    @elseif($nguoidung->isGiamDoc())
                         <span class="badge bg-danger">Giám đốc</span>
                     @elseif($nguoidung->isKetoan())
                         <span class="badge bg-warning text-dark">Kế toán</span>

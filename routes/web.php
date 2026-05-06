@@ -56,21 +56,25 @@ Route::get('/danh-muc/{slug}', [DanhMucController::class, 'show']);
 Route::get('/san-pham/{slug}', [SanphamController::class, 'show']);
 
 Route::get('/gio-hang',                  [GioHangController::class, 'index'])->name('gio-hang');
-Route::post('/gio-hang/mua-ngay',        [GioHangController::class, 'muaNgay']);
-Route::post('/gio-hang/them',            [GioHangController::class, 'them']);
-Route::patch('/gio-hang/cap-nhat/{id}', [GioHangController::class, 'capNhat']);
-Route::post('/gio-hang/cap-nhat/{id}',  [GioHangController::class, 'capNhat']);
-Route::delete('/gio-hang/xoa/{id}',     [GioHangController::class, 'xoa']);
-Route::post('/gio-hang/xoa/{id}',       [GioHangController::class, 'xoa']);
-Route::delete('/gio-hang/xoa-tat',      [GioHangController::class, 'xoaTat']);
 
-Route::get('/thanh-toan',             [ThanhToanController::class, 'index'])->name('thanh-toan');
-Route::post('/thanh-toan',            [ThanhToanController::class, 'store']);
-Route::post('/thanh-toan/ap-ma',      [ThanhToanController::class, 'apMa']);
-Route::get('/xac-nhan-don-hang/{id}', [ThanhToanController::class, 'xacNhan'])->name('xac-nhan-don-hang');
-Route::get('/payos/checkout/{id}', [ThanhToanController::class, 'payosCheckout'])->name('payos.checkout');
-Route::get('/payos/success',       [ThanhToanController::class, 'payosSuccess'])->name('payos.success');
-Route::get('/payos/cancel',        [ThanhToanController::class, 'payosCancel'])->name('payos.cancel');
+// Chỉ khách hàng (cấp 0) mới được mua hàng — staff/kế toán/giám đốc bị chặn
+Route::middleware(['auth', 'check.admin:khach_hang'])->group(function () {
+    Route::post('/gio-hang/mua-ngay',        [GioHangController::class, 'muaNgay']);
+    Route::post('/gio-hang/them',            [GioHangController::class, 'them']);
+    Route::patch('/gio-hang/cap-nhat/{id}', [GioHangController::class, 'capNhat']);
+    Route::post('/gio-hang/cap-nhat/{id}',  [GioHangController::class, 'capNhat']);
+    Route::delete('/gio-hang/xoa/{id}',     [GioHangController::class, 'xoa']);
+    Route::post('/gio-hang/xoa/{id}',       [GioHangController::class, 'xoa']);
+    Route::delete('/gio-hang/xoa-tat',      [GioHangController::class, 'xoaTat']);
+
+    Route::get('/thanh-toan',             [ThanhToanController::class, 'index'])->name('thanh-toan');
+    Route::post('/thanh-toan',            [ThanhToanController::class, 'store']);
+    Route::post('/thanh-toan/ap-ma',      [ThanhToanController::class, 'apMa']);
+    Route::get('/xac-nhan-don-hang/{id}', [ThanhToanController::class, 'xacNhan'])->name('xac-nhan-don-hang');
+    Route::get('/payos/checkout/{id}', [ThanhToanController::class, 'payosCheckout'])->name('payos.checkout');
+    Route::get('/payos/success',       [ThanhToanController::class, 'payosSuccess'])->name('payos.success');
+    Route::get('/payos/cancel',        [ThanhToanController::class, 'payosCancel'])->name('payos.cancel');
+});
 Route::post('/payos/webhook',      [ThanhToanController::class, 'payosWebhook'])
     ->name('payos.webhook')
     ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
@@ -148,7 +152,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'check.admin:staff']
     Route::post('banner/{banner}/toggle', [BannerController::class, 'toggleKichHoat'])->name('banner.toggle');
     Route::delete('banner/{banner}',      [BannerController::class, 'destroy'])->name('banner.destroy');
 
-    Route::middleware('check.admin:admin')->group(function () {
+    Route::middleware('check.admin:giam_doc')->group(function () {
         Route::get('baocao',        [BaocaoController::class, 'index'])->name('baocao.index');
         Route::get('baocao/export', [BaocaoController::class, 'exportExcel'])->name('baocao.export');
 
@@ -158,7 +162,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'check.admin:staff']
                ->name('caidat.log.destroy-all');
         Route::delete('caidat/log/{activity}', [CaidatController::class, 'destroyLog'])
                ->name('caidat.log.destroy');
+    });
 
+    Route::middleware('check.admin:giam_doc')->group(function () {
         Route::resource('nguoidung', NguoidungController::class)
              ->only(['index', 'show', 'edit', 'update']);
         Route::patch('nguoidung/{nguoidung}/toggle',

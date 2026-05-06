@@ -11,12 +11,22 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         User::create([
-            'ho_ten'        => 'Admin Shop',
+            'ho_ten'        => 'Super Admin',
             'ten_dang_nhap' => 'admin',
             'email'         => 'admin@deskdecor.vn',
             'mat_khau'      => Hash::make('123456'),
             'so_dien_thoai' => '0901234567',
-            'quyen_han'     => User::ADMIN,     // 3
+            'quyen_han'     => User::ADMIN,         // 4
+            'kich_hoat'     => true,
+        ]);
+
+        User::create([
+            'ho_ten'        => 'Giám Đốc',
+            'ten_dang_nhap' => 'giamdoc01',
+            'email'         => 'giamdoc01@deskdecor.vn',
+            'mat_khau'      => Hash::make('123456'),
+            'so_dien_thoai' => '0901111111',
+            'quyen_han'     => User::GIAM_DOC,      // 3
             'kich_hoat'     => true,
         ]);
 
@@ -26,7 +36,7 @@ class UserSeeder extends Seeder
             'email'         => 'ketoan01@deskdecor.vn',
             'mat_khau'      => Hash::make('123456'),
             'so_dien_thoai' => '0903456789',
-            'quyen_han'     => User::KETOAN,    // 2
+            'quyen_han'     => User::KETOAN,        // 2
             'kich_hoat'     => true,
         ]);
 
@@ -36,7 +46,7 @@ class UserSeeder extends Seeder
             'email'         => 'staff01@deskdecor.vn',
             'mat_khau'      => Hash::make('123456'),
             'so_dien_thoai' => '0902345678',
-            'quyen_han'     => User::STAFF,     // 1
+            'quyen_han'     => User::STAFF,         // 1
             'kich_hoat'     => true,
         ]);
 
@@ -55,7 +65,7 @@ class UserSeeder extends Seeder
                 'email'         => $k['email'],
                 'mat_khau'      => Hash::make('123456'),
                 'so_dien_thoai' => $k['sdt'],
-                'quyen_han'     => User::USER,  // 0
+                'quyen_han'     => User::USER,      // 0
                 'kich_hoat'     => true,
             ]);
         }

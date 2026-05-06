@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('mat_khau');
             $table->tinyInteger('quyen_han')
                   ->default(0)
-                  ->comment('0=user, 1=staff, 2=ketoan, 3=admin');
+                  ->comment('0=khach_hang, 1=nhan_vien, 2=ke_toan, 3=giam_doc, 4=admin');
             $table->boolean('kich_hoat')->default(true);
             $table->rememberToken();
             $table->timestamps();

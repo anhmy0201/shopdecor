@@ -107,9 +107,10 @@
         }
 
         /* ── BADGE QUYỀN HẠN ── */
-        .badge-role-admin  { background: #c0392b; }
-        .badge-role-ketoan { background: #2980b9; }
-        .badge-role-staff  { background: #27ae60; }
+        .badge-role-superadmin { background: #6c3483; }
+        .badge-role-giamdoc    { background: #c0392b; }
+        .badge-role-ketoan     { background: #2980b9; }
+        .badge-role-staff      { background: #27ae60; }
 
         @media(max-width:768px){
             .sidebar { width:100%; height:auto; position:relative; }
@@ -235,7 +236,7 @@
             </a>
         </li>
 
-        @if(Auth::user()->isAdmin())
+        @if(Auth::user()->isAdmin() || Auth::user()->isGiamDoc())
         <li><div class="sidebar-section">Người Dùng</div></li>
         <li>
             <a href="{{ route('admin.nguoidung.index') }}"
@@ -269,9 +270,8 @@
             </a>
         </li>
 
-
         {{-- ── BÁO CÁO & HỆ THỐNG ── --}}
-        @if(Auth::user()->isAdmin() || Auth::user()->isKetoan())
+        @if(Auth::user()->isAdmin() || Auth::user()->isGiamDoc() || Auth::user()->isKetoan())
         <li><div class="sidebar-section">Báo Cáo & Hệ Thống</div></li>
         <li>
             <a href="{{ route('admin.baocao.index') }}"
@@ -338,11 +338,13 @@
                         <span class="dropdown-item-text small text-muted d-flex align-items-center gap-2">
                             @php $u = Auth::user(); @endphp
                             @if($u->isAdmin())
-                                <span class="badge badge-role-admin">Giám đốc</span>
+                                <span class="badge badge-role-superadmin">Super Admin</span>
+                            @elseif($u->isGiamDoc())
+                                <span class="badge badge-role-giamdoc">Giám Đốc</span>
                             @elseif($u->isKetoan())
-                                <span class="badge badge-role-ketoan">Kế toán</span>
+                                <span class="badge badge-role-ketoan">Kế Toán</span>
                             @elseif($u->isNhanVien())
-                                <span class="badge badge-role-staff">Nhân viên</span>
+                                <span class="badge badge-role-staff">Nhân Viên</span>
                             @endif
                             {{ $u->email }}
                         </span>
