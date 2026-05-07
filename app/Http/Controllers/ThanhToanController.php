@@ -203,7 +203,7 @@ class ThanhToanController extends Controller
         $request->validate([
             'ten_nguoi_nhan'        => 'required|string|max:255',
             'so_dien_thoai'         => ['required', 'string', 'max:15', 'regex:/^(0[3|5|7|8|9])[0-9]{8}$/'],
-            'email'                 => Auth::check() ? 'nullable' : 'required|email|max:255',
+            'email'                 => 'nullable|email|max:255',
             'dia_chi_chi_tiet'      => 'required|string|max:500',
             'phuong_xa'             => 'required|string|max:100',
             'tinh_thanh'            => 'required|string|max:100',
@@ -214,7 +214,6 @@ class ThanhToanController extends Controller
             'ten_nguoi_nhan.required'        => 'Vui lòng nhập họ tên người nhận.',
             'so_dien_thoai.required'         => 'Vui lòng nhập số điện thoại.',
             'so_dien_thoai.regex'            => 'Số điện thoại không hợp lệ (VD: 0901234567).',
-            'email.required'                 => 'Vui lòng nhập email để nhận xác nhận đơn hàng.',
             'email.email'                    => 'Email không hợp lệ.',
             'dia_chi_chi_tiet.required'      => 'Vui lòng nhập địa chỉ chi tiết.',
             'phuong_xa.required'             => 'Vui lòng nhập phường/xã.',

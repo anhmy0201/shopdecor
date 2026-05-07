@@ -228,10 +228,13 @@ textarea.form-control { resize:vertical; min-height:80px; }
                 </div>
                 @guest
                 <div class="col-12">
-                  <label class="form-label small fw-semibold">Email <span class="text-danger">*</span></label>
+                  <label class="form-label small fw-semibold">
+                    Email
+                    <span class="text-muted fw-normal" style="font-size:.75rem">(không bắt buộc — để nhận xác nhận đơn hàng)</span>
+                  </label>
                   <input type="email" name="email" id="email"
                          class="form-control form-control-sm @error('email') is-invalid @enderror"
-                         value="{{ old('email') }}" placeholder="example@email.com" required>
+                         value="{{ old('email') }}" placeholder="example@email.com">
                   @error('email')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>
                 @endguest

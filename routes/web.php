@@ -55,27 +55,32 @@ Route::get('/san-pham',        [DanhMucController::class, 'index']);
 Route::get('/danh-muc/{slug}', [DanhMucController::class, 'show']);
 Route::get('/san-pham/{slug}', [SanphamController::class, 'show']);
 
-Route::get('/gio-hang',                  [GioHangController::class, 'index'])->name('gio-hang');
+Route::get('/gio-hang', [GioHangController::class, 'index'])->name('gio-hang');
 
-// Chỉ khách hàng (cấp 0) mới được mua hàng — staff/kế toán/giám đốc bị chặn
-Route::middleware(['auth', 'check.admin:khach_hang'])->group(function () {
-    Route::post('/gio-hang/mua-ngay',        [GioHangController::class, 'muaNgay']);
+// Giỏ hàng + Thanh toán:
+// - Khách vãng lai (chưa đăng nhập) → được phép (dùng session)
+// - Khách hàng cấp 0 → được phép
+// - Admin cấp 4 → được phép
+// - Staff / Quản lý / Giám đốc (cấp 1-3) → bị chặn 403
+Route::middleware('check.admin:khach_hang')->group(function () {
     Route::post('/gio-hang/them',            [GioHangController::class, 'them']);
-    Route::patch('/gio-hang/cap-nhat/{id}', [GioHangController::class, 'capNhat']);
-    Route::post('/gio-hang/cap-nhat/{id}',  [GioHangController::class, 'capNhat']);
-    Route::delete('/gio-hang/xoa/{id}',     [GioHangController::class, 'xoa']);
-    Route::post('/gio-hang/xoa/{id}',       [GioHangController::class, 'xoa']);
-    Route::delete('/gio-hang/xoa-tat',      [GioHangController::class, 'xoaTat']);
+    Route::patch('/gio-hang/cap-nhat/{id}',  [GioHangController::class, 'capNhat']);
+    Route::post('/gio-hang/cap-nhat/{id}',   [GioHangController::class, 'capNhat']);
+    Route::delete('/gio-hang/xoa/{id}',      [GioHangController::class, 'xoa']);
+    Route::post('/gio-hang/xoa/{id}',        [GioHangController::class, 'xoa']);
+    Route::delete('/gio-hang/xoa-tat',       [GioHangController::class, 'xoaTat']);
+    Route::post('/gio-hang/mua-ngay',        [GioHangController::class, 'muaNgay']);
 
     Route::get('/thanh-toan',             [ThanhToanController::class, 'index'])->name('thanh-toan');
     Route::post('/thanh-toan',            [ThanhToanController::class, 'store']);
     Route::post('/thanh-toan/ap-ma',      [ThanhToanController::class, 'apMa']);
     Route::get('/xac-nhan-don-hang/{id}', [ThanhToanController::class, 'xacNhan'])->name('xac-nhan-don-hang');
-    Route::get('/payos/checkout/{id}', [ThanhToanController::class, 'payosCheckout'])->name('payos.checkout');
-    Route::get('/payos/success',       [ThanhToanController::class, 'payosSuccess'])->name('payos.success');
-    Route::get('/payos/cancel',        [ThanhToanController::class, 'payosCancel'])->name('payos.cancel');
+    Route::get('/payos/checkout/{id}',    [ThanhToanController::class, 'payosCheckout'])->name('payos.checkout');
+    Route::get('/payos/success',          [ThanhToanController::class, 'payosSuccess'])->name('payos.success');
+    Route::get('/payos/cancel',           [ThanhToanController::class, 'payosCancel'])->name('payos.cancel');
 });
-Route::post('/payos/webhook',      [ThanhToanController::class, 'payosWebhook'])
+
+Route::post('/payos/webhook', [ThanhToanController::class, 'payosWebhook'])
     ->name('payos.webhook')
     ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
 
@@ -156,11 +161,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'check.admin:staff']
         Route::get('baocao',        [BaocaoController::class, 'index'])->name('baocao.index');
         Route::get('baocao/export', [BaocaoController::class, 'exportExcel'])->name('baocao.export');
 
-        // Giam doc chi duoc XEM cai dat (GET)
+        // Giám đốc chỉ được XEM cài đặt (GET)
         Route::get('caidat', [CaidatController::class, 'index'])->name('caidat.index');
     });
 
-    // Chi Admin moi duoc sua cai dat va xoa log
+    // Chỉ Admin mới được sửa cài đặt và xóa log
     Route::middleware('check.admin:admin')->group(function () {
         Route::post('caidat', [CaidatController::class, 'update'])->name('caidat.update');
         Route::delete('caidat/log/all',        [CaidatController::class, 'destroyAllLog'])
@@ -169,7 +174,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'check.admin:staff']
                ->name('caidat.log.destroy');
     });
 
-    // Chi Admin moi duoc vao trang Nguoi Dung
+    // Chỉ Admin mới được vào trang Người Dùng
     Route::middleware('check.admin:admin')->group(function () {
         Route::resource('nguoidung', NguoidungController::class)
              ->only(['index', 'show', 'edit', 'update']);
